@@ -1,0 +1,3 @@
+[submodule "bloodSheltie"]
+	path = bloodSheltie
+	url = git@github.com:alexandre-normand/bloodSheltie.git
