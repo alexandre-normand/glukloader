@@ -10,6 +10,8 @@
 
 @interface org_glukitAppDelegate : NSObject <NSApplicationDelegate>
 
-@property (assign) IBOutlet NSWindow *window;
+@property (strong, nonatomic) NSStatusItem *statusBar;
+
+@property (assign) IBOutlet NSMenu *statusMenu;
 
 @end
