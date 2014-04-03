@@ -73,6 +73,8 @@
 		0B488CCB18C83C3A00631DA1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = glukloaderTests.m; sourceTree = "<group>"; };
 		0B488CD718C83D1100631DA1 /* bloodSheltie.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bloodSheltie.xcodeproj; path = bloodSheltie/bloodSheltie.xcodeproj; sourceTree = "<group>"; };
+		0B6EF68618CAE7D70076DAEE /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,8 @@
 		0B488CA218C83C3A00631DA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */,
+				0B6EF68618CAE7D70076DAEE /* QuartzCore.framework */,
 				0B488CA318C83C3A00631DA1 /* Cocoa.framework */,
 				0B488CC218C83C3A00631DA1 /* XCTest.framework */,
 				0B488CA518C83C3A00631DA1 /* Other Frameworks */,
@@ -416,6 +420,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -453,6 +458,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = macosx;
 			};
 			name = Release;
