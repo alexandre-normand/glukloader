@@ -18,12 +18,14 @@
 @synthesize statusBar = _statusBar;
 
 - (void) awakeFromNib {
-    self.statusBar = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+    self.statusBar = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
     
     
     self.statusBar.menu = self.statusMenu;
     self.statusBar.highlightMode = YES;
-    self.statusBar.title = @"glukloader";
+    //self.statusBar.title = @"glukloader";
+    [self.statusBar setImage: [NSImage imageNamed:@"droplet"]];
+    [self.statusBar setAlternateImage: [NSImage imageNamed:@"droplet.alt"]];
     
 }
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification

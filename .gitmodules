@@ -1,3 +1,6 @@
 [submodule "bloodSheltie"]
 	path = bloodSheltie
 	url = git@github.com:alexandre-normand/bloodSheltie.git
+[submodule "SVGKit"]
+	path = SVGKit
+	url = git@github.com:alexandre-normand/SVGKit.git
