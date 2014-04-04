@@ -9,21 +9,15 @@
 #import "org_glukitAppDelegate.h"
 #import <bloodSheltie/SyncManager.h>
 #import <bloodSheltie/SyncTag.h>
-#import <MPOAuth/MPOAuth.h>
 
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
-    MPOAuthAPI *_oauthAPI;
 }
 
 @synthesize statusMenu = _statusMenu;
 @synthesize statusBar = _statusBar;
 
 - (id)init {
-    if ((self = [super init])) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestTokenReceived:) name:MPOAuthNotificationRequestTokenReceived object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accessTokenReceived:) name:MPOAuthNotificationAccessTokenReceived object:nil];
-    }
     return self;
 }
 
@@ -52,18 +46,6 @@
 }
 
 - (IBAction)authenticate:(id)sender {
-    if (!_oauthAPI) {
-        NSDictionary *credentials = [NSDictionary dictionaryWithObjectsAndKeys:@"414109645872-tevu6as5d3velf5nooolfs8r1cnmgct1.apps.googleusercontent.com", kMPOAuthCredentialConsumerKey,
-                                                                               @"enFuzLKm2Cwnf5X_uZU48YKB", kMPOAuthCredentialConsumerSecret,
-                                                                               nil];
-        _oauthAPI = [[MPOAuthAPI alloc] initWithCredentials:credentials
-                                          authenticationURL:[NSURL URLWithString:@"https://accounts.google.com/o/oauth2/auth"]
-                                                 andBaseURL:[NSURL URLWithString:@"https://www.googleapis.com/auth/userinfo.profile"]];
-    } else {
-        [_oauthAPI authenticate];
-    }
-
-//    [_oauthAPI performMethod:@"GET" withTarget:self andAction:@selector(performedMethodLoadForURL:withResponseBody:)];
 }
 
 - (void)requestTokenReceived:(NSNotification *)inNotification {
