@@ -1,2 +1,1 @@
-pod 'AFNetworking'
-pod 'AFOAuth2Client'
+pod 'NXOAuth2Client', '~> 1.2.5'

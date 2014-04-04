@@ -9,6 +9,7 @@
 #import "org_glukitAppDelegate.h"
 #import <bloodSheltie/SyncManager.h>
 #import <bloodSheltie/SyncTag.h>
+#import <NXOAuth2.h>
 
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
@@ -18,6 +19,13 @@
 @synthesize statusBar = _statusBar;
 
 - (id)init {
+    [[NXOAuth2AccountStore sharedStore] setClientID:@"414109645872-tevu6as5d3velf5nooolfs8r1cnmgct1.apps.googleusercontent.com"
+                                             secret:@"enFuzLKm2Cwnf5X_uZU48YKB"
+                                              scope:[NSSet setWithObject:@"https://www.googleapis.com/auth/userinfo.profile"]
+                                   authorizationURL:[NSURL URLWithString:@"https://accounts.google.com/o/oauth2/auth"]
+                                           tokenURL:[NSURL URLWithString:@"https://accounts.google.com/o/oauth2/token"]
+                                        redirectURL:[NSURL URLWithString:@"urn:ietf:wg:oauth:2.0:oob"]
+                                     forAccountType:@"glukloader"];
     return self;
 }
 
@@ -46,6 +54,7 @@
 }
 
 - (IBAction)authenticate:(id)sender {
+    [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:@"glukloader"];
 }
 
 - (void)requestTokenReceived:(NSNotification *)inNotification {
