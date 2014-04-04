@@ -42,3 +42,9 @@
 #define COCOAPODS_VERSION_MINOR_AFNetworking_Serialization 2
 #define COCOAPODS_VERSION_PATCH_AFNetworking_Serialization 1
 
+// AFOAuth2Client
+#define COCOAPODS_POD_AVAILABLE_AFOAuth2Client
+#define COCOAPODS_VERSION_MAJOR_AFOAuth2Client 0
+#define COCOAPODS_VERSION_MINOR_AFOAuth2Client 1
+#define COCOAPODS_VERSION_PATCH_AFOAuth2Client 2
+
