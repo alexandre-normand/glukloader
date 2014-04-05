@@ -56,7 +56,7 @@
 - (IBAction)authenticate:(id)sender {
     [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:@"glukloader"
                                    withPreparedAuthorizationURLHandler:^(NSURL *preparedURL) {
-                                       // TODO write auth handler
+                                       [[_loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:preparedURL]];
                                    }];
 }
 
