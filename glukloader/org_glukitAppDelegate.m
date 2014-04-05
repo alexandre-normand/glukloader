@@ -54,7 +54,10 @@
 }
 
 - (IBAction)authenticate:(id)sender {
-    [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:@"glukloader"];
+    [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:@"glukloader"
+                                   withPreparedAuthorizationURLHandler:^(NSURL *preparedURL) {
+                                       // TODO write auth handler
+                                   }];
 }
 
 - (void)requestTokenReceived:(NSNotification *)inNotification {
