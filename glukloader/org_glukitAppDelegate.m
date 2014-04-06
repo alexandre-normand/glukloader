@@ -11,11 +11,14 @@
 #import <bloodSheltie/SyncTag.h>
 #import <NXOAuth2.h>
 
-NSString *AUTHORIZATION_URL = @"https://accounts.google.com/o/oauth2/auth";
-NSString *SUCCESS_PREFIX = @"Success";
-NSString *REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
-NSString *ACCOUNT_TYPE = @"glukloader";
-
+static NSString *const TOKEN_URL = @"https://glukit.appspot.com/_ah/OAuthGetRequestToken";
+static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/_ah/OAuthAuthorizeToken";
+static NSString *const SUCCESS_URL = @"https://accounts.google.com/o/oauth2/approval";
+static NSString *const SUCCESS_PREFIX = @"Success";
+static NSString *const REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
+static NSString *const ACCOUNT_TYPE = @"glukloader";
+static NSString *const CLIENT_SECRET = @"xEh2sZvNRvYnK9his1S_MlUc";
+static NSString *const CLIENT_ID = @"834681386231.apps.googleusercontent.com";
 
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
@@ -60,11 +63,10 @@ NSString *ACCOUNT_TYPE = @"glukloader";
 #pragma mark - OAuth2 Logic
 
 - (void)setupOauth2AccountStore {
-    [[NXOAuth2AccountStore sharedStore] setClientID:@"414109645872-tevu6as5d3velf5nooolfs8r1cnmgct1.apps.googleusercontent.com"
-                                             secret:@"enFuzLKm2Cwnf5X_uZU48YKB"
-                                              scope:[NSSet setWithObject:@"https://www.googleapis.com/auth/userinfo.profile"]
+    [[NXOAuth2AccountStore sharedStore] setClientID:CLIENT_ID
+                                             secret:CLIENT_SECRET
                                    authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
-                                           tokenURL:[NSURL URLWithString:@"https://accounts.google.com/o/oauth2/token"]
+                                           tokenURL:[NSURL URLWithString:TOKEN_URL]
                                         redirectURL:[NSURL URLWithString:REDIRECT_URL]
                                      forAccountType:ACCOUNT_TYPE];
 
@@ -134,7 +136,7 @@ NSString *ACCOUNT_TYPE = @"glukloader";
 
 
     [NXOAuth2Request performMethod:@"GET"
-                        onResource:[NSURL URLWithString:@"https://www.googleapis.com/oauth2/v1/userinfo"]
+                        onResource:[NSURL URLWithString:@"http://localhost:8080/data"]
                    usingParameters:nil
                        withAccount:accounts[0]
                sendProgressHandler:^(unsigned long long bytesSend, unsigned long long bytesTotal) {
@@ -157,7 +159,7 @@ NSString *ACCOUNT_TYPE = @"glukloader";
 - (void)webView:(WebView *)webView didFinishLoadForFrame:(WebFrame *)frame {
     NSLog(@"Finished loading frame with %@", frame.dataSource.request.URL.absoluteString);
     //if the UIWebView is showing our authorization URL, show the UIWebView control
-    if ([frame.dataSource.request.URL.absoluteString rangeOfString:AUTHORIZATION_URL options:NSCaseInsensitiveSearch].location != NSNotFound) {
+    if ([frame.dataSource.request.URL.absoluteString rangeOfString:SUCCESS_URL options:NSCaseInsensitiveSearch].location == NSNotFound) {
         NSLog(@"Not hiding web view since looking at %@", frame.dataSource.request.URL.absoluteString);
         self.loginWebView.hidden = NO;
     } else {
