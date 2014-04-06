@@ -7,11 +7,15 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
 
 @interface org_glukitAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (strong, nonatomic) NSStatusItem *statusBar;
 
 @property (assign) IBOutlet NSMenu *statusMenu;
+@property (strong, nonatomic) IBOutlet NSWindow *authenticationWindow;
+@property (strong, nonatomic) IBOutlet WebView *loginWebView;
+
 
 @end

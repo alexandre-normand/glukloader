@@ -19,6 +19,7 @@
 		0B488CCC18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CCA18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B488CCE18C83C3A00631DA1 /* glukloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */; };
 		0B4A60E918ED1574006DD71E /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B4A60E818ED1574006DD71E /* Mantle.framework */; };
+		0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8AD1A818F0989500E223C8 /* WebKit.framework */; };
 		0BDC7BD118C9999F00D36BA5 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DC192142C3E48BA9493BAD0 /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -78,6 +79,7 @@
 		0B4A60E818ED1574006DD71E /* Mantle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mantle.framework; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-dhqncdfvrfzylsffhpcnykglsgxe/Build/Products/Debug/Mantle.framework"; sourceTree = "<group>"; };
 		0B6EF68618CAE7D70076DAEE /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		0B8AD1A818F0989500E223C8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		4DC192142C3E48BA9493BAD0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B81981D524D474690A6E907 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -87,6 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
 				0B4A60E918ED1574006DD71E /* Mantle.framework in Frameworks */,
 				0BDC7BD118C9999F00D36BA5 /* bloodSheltie.framework in Frameworks */,
 				0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
@@ -130,6 +133,7 @@
 		0B488CA218C83C3A00631DA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0B8AD1A818F0989500E223C8 /* WebKit.framework */,
 				0B4A60E818ED1574006DD71E /* Mantle.framework */,
 				0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */,
 				0B6EF68618CAE7D70076DAEE /* QuartzCore.framework */,
