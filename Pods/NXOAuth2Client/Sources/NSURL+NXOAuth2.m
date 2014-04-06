@@ -24,7 +24,7 @@
     }
 
     NSString *newParameterString = [NSString nxoauth2_stringWithEncodedQueryParameters:parameterDictionary];
-    
+
     NSString *absoluteString = [self absoluteString];
     if ([absoluteString rangeOfString:@"?"].location == NSNotFound) {    // append parameters?
         absoluteString = [NSString stringWithFormat:@"%@?%@", absoluteString, newParameterString];
@@ -35,20 +35,26 @@
     return [NSURL URLWithString:absoluteString];
 }
 
-- (NSString *)nxoauth2_valueForQueryParameterKey:(NSString *)key;
-{
-    NSString *queryString = [self query];
+- (NSString *)nxoauth2_valueForQueryParameterKey:(NSString *)key; {
+    //self may not contain a scheme
+    //for instance Google API redirect url may look like urn:ietf:wg:oauth:2.0:oob
+    //NSURL requires a valid scheme or query will return nil
+    NSString *absoluteString = self.absoluteString;
+    if ([absoluteString rangeOfString:@"://"].location == NSNotFound) {
+        absoluteString = [NSString stringWithFormat:@"http://%@", absoluteString];
+    }
+    NSURL *qualifiedURL = [NSURL URLWithString:absoluteString];
+
+    NSString *queryString = [qualifiedURL query];
     NSDictionary *parameters = [queryString nxoauth2_parametersFromEncodedQueryString];
     return [parameters objectForKey:key];
 }
 
-- (NSURL *)nxoauth2_URLWithoutQueryString;
-{
+- (NSURL *)nxoauth2_URLWithoutQueryString; {
     return [NSURL URLWithString:[self nxoauth2_URLStringWithoutQueryString]];
 }
 
-- (NSString *)nxoauth2_URLStringWithoutQueryString;
-{
+- (NSString *)nxoauth2_URLStringWithoutQueryString; {
     NSArray *parts = [[self absoluteString] componentsSeparatedByString:@"?"];
     return [parts objectAtIndex:0];
 }

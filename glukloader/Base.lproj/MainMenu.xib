@@ -51,6 +51,10 @@
                         <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" javaEnabled="NO">
                             <nil key="identifier"/>
                         </webPreferences>
+                        <connections>
+                            <outlet property="frameLoadDelegate" destination="494" id="UCQ-NC-ZAo"/>
+                            <outlet property="resourceLoadDelegate" destination="494" id="AcZ-sq-tUn"/>
+                        </connections>
                     </webView>
                 </subviews>
             </view>
