@@ -11,14 +11,14 @@
 #import <bloodSheltie/SyncTag.h>
 #import <NXOAuth2.h>
 
-static NSString *const TOKEN_URL = @"https://glukit.appspot.com/_ah/OAuthGetRequestToken";
-static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/_ah/OAuthAuthorizeToken";
+static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
+static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
 static NSString *const SUCCESS_URL = @"https://accounts.google.com/o/oauth2/approval";
 static NSString *const SUCCESS_PREFIX = @"Success";
 static NSString *const REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
 static NSString *const ACCOUNT_TYPE = @"glukloader";
-static NSString *const CLIENT_SECRET = @"xEh2sZvNRvYnK9his1S_MlUc";
-static NSString *const CLIENT_ID = @"834681386231.apps.googleusercontent.com";
+static NSString *const CLIENT_SECRET = @"***REMOVED***";
+static NSString *const CLIENT_ID = @"***REMOVED***";
 
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
