@@ -14,7 +14,6 @@
 static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
 static NSString *const SUCCESS_URL = @"https://glukit.appspot.com/authorize";
-static NSString *const SUCCESS_PREFIX = @"Success";
 static NSString *const REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
 static NSString *const ACCOUNT_TYPE = @"glukloader";
 static NSString *const CLIENT_SECRET = @"xEh2sZvNRvYnK9his1S_sdd2MlUc";
@@ -113,7 +112,7 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
     //if success, complete the OAuth2 flow by handling the redirect URL and obtaining a token
     if (success) {
         //append the arguments found in the page title to the redirect URL assigned by Glukit
-        NSString *redirectURL = [NSString stringWithFormat:@"%@?code=%@", REDIRECT_URL, [responseData objectForKey:CODE_KEY]];
+        NSString *redirectURL = [NSString stringWithFormat:@"%@?state=%@&code=%@", REDIRECT_URL, [responseData objectForKey:STATE_KEY], [responseData objectForKey:CODE_KEY]];
 
         NSLog(@"Complete auth access by redirecting to %@", redirectURL);
 
