@@ -11,11 +11,13 @@
 #import <bloodSheltie/SyncTag.h>
 #import <NXOAuth2.h>
 
-NSString *AUTHORIZATION_URL = @"https://accounts.google.com/o/oauth2/auth";
-NSString *SUCCESS_PREFIX = @"Success";
-NSString *REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
-NSString *ACCOUNT_TYPE = @"glukloader";
-
+static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
+static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
+static NSString *const SUCCESS_URL = @"https://glukit.appspot.com/authorize";
+static NSString *const REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
+static NSString *const ACCOUNT_TYPE = @"glukloader";
+static NSString *const CLIENT_SECRET = @"xEh2sZvNRvYnK9his1S_sdd2MlUc";
+static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
 
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
@@ -60,11 +62,10 @@ NSString *ACCOUNT_TYPE = @"glukloader";
 #pragma mark - OAuth2 Logic
 
 - (void)setupOauth2AccountStore {
-    [[NXOAuth2AccountStore sharedStore] setClientID:@"414109645872-tevu6as5d3velf5nooolfs8r1cnmgct1.apps.googleusercontent.com"
-                                             secret:@"enFuzLKm2Cwnf5X_uZU48YKB"
-                                              scope:[NSSet setWithObject:@"https://www.googleapis.com/auth/userinfo.profile"]
+    [[NXOAuth2AccountStore sharedStore] setClientID:CLIENT_ID
+                                             secret:CLIENT_SECRET
                                    authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
-                                           tokenURL:[NSURL URLWithString:@"https://accounts.google.com/o/oauth2/token"]
+                                           tokenURL:[NSURL URLWithString:TOKEN_URL]
                                         redirectURL:[NSURL URLWithString:REDIRECT_URL]
                                      forAccountType:ACCOUNT_TYPE];
 
@@ -102,21 +103,16 @@ NSString *ACCOUNT_TYPE = @"glukloader";
                                    }];
 }
 
-- (void)handleOAuth2AccessResult:(NSString *)accessResult {
+- (void)handleOAuth2AccessResult:(NSDictionary *)responseData{
     //parse the page title for success or failure
-    BOOL success = [accessResult rangeOfString:SUCCESS_PREFIX options:NSCaseInsensitiveSearch].location != NSNotFound;
+    NSString *code = [responseData objectForKey:CODE_KEY];
+    BOOL success = code != nil;
+    NSLog(@"Oauth2 success? %d", success);
 
     //if success, complete the OAuth2 flow by handling the redirect URL and obtaining a token
     if (success) {
-        //authentication code and details are passed back in the form of a query string in the page title
-        //parse those arguments out
-        NSString *arguments = accessResult;
-        if ([arguments hasPrefix:SUCCESS_PREFIX]) {
-            arguments = [arguments substringFromIndex:SUCCESS_PREFIX.length + 1];
-        }
-
-        //append the arguments found in the page title to the redirect URL assigned by Google APIs
-        NSString *redirectURL = [NSString stringWithFormat:@"%@?%@", REDIRECT_URL, arguments];
+        //append the arguments found in the page title to the redirect URL assigned by Glukit
+        NSString *redirectURL = [NSString stringWithFormat:@"%@?state=%@&code=%@", REDIRECT_URL, [responseData objectForKey:STATE_KEY], [responseData objectForKey:CODE_KEY]];
 
         NSLog(@"Complete auth access by redirecting to %@", redirectURL);
 
@@ -134,7 +130,7 @@ NSString *ACCOUNT_TYPE = @"glukloader";
 
 
     [NXOAuth2Request performMethod:@"GET"
-                        onResource:[NSURL URLWithString:@"https://www.googleapis.com/oauth2/v1/userinfo"]
+                        onResource:[NSURL URLWithString:@"http://localhost:8080/data"]
                    usingParameters:nil
                        withAccount:accounts[0]
                sendProgressHandler:^(unsigned long long bytesSend, unsigned long long bytesTotal) {
@@ -157,7 +153,7 @@ NSString *ACCOUNT_TYPE = @"glukloader";
 - (void)webView:(WebView *)webView didFinishLoadForFrame:(WebFrame *)frame {
     NSLog(@"Finished loading frame with %@", frame.dataSource.request.URL.absoluteString);
     //if the UIWebView is showing our authorization URL, show the UIWebView control
-    if ([frame.dataSource.request.URL.absoluteString rangeOfString:AUTHORIZATION_URL options:NSCaseInsensitiveSearch].location != NSNotFound) {
+    if ([frame.dataSource.request.URL.absoluteString rangeOfString:SUCCESS_URL options:NSCaseInsensitiveSearch].location == NSNotFound) {
         NSLog(@"Not hiding web view since looking at %@", frame.dataSource.request.URL.absoluteString);
         self.loginWebView.hidden = NO;
     } else {
@@ -167,12 +163,17 @@ NSString *ACCOUNT_TYPE = @"glukloader";
         //otherwise hide the UIWebView, we've left the authorization flow
         self.loginWebView.hidden = YES;
 
-        //read the page title from the UIWebView, this is how Google APIs is returning the
-        //authentication code and relation information
-        //this is controlled by the redirect URL we chose to use from Google APIs
-        NSString *pageTitle = frame.dataSource.pageTitle;
+        NSLog(@"Page is\n%s\n", [[NSString stringWithUTF8String:[frame.dataSource.data bytes]] UTF8String]);
+        // Read the json response
+        NSError *error = nil;
+        NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:frame.dataSource.data options:kNilOptions error:&error];
 
-        [self handleOAuth2AccessResult:pageTitle];
+        if (error) {
+            NSLog(@"Could not read authorization response: [%s]", [[NSString stringWithUTF8String:[frame.dataSource.data bytes]] UTF8String]);
+            return;
+        }
+
+        [self handleOAuth2AccessResult:responseData];
     }
 }
 @end

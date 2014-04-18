@@ -9,6 +9,9 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 
+static NSString *const CODE_KEY = @"code";
+static NSString *const STATE_KEY = @"state";
+
 @interface org_glukitAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (strong, nonatomic) NSStatusItem *statusBar;
