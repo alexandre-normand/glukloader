@@ -130,7 +130,7 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
 
 
     [NXOAuth2Request performMethod:@"GET"
-                        onResource:[NSURL URLWithString:@"http://localhost:8080/data"]
+                        onResource:[NSURL URLWithString:@"https://glukit.appspot.com/data"]
                    usingParameters:nil
                        withAccount:accounts[0]
                sendProgressHandler:^(unsigned long long bytesSend, unsigned long long bytesTotal) {
