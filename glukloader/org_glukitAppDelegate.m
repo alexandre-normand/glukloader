@@ -129,8 +129,8 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
     NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
 
-    [NXOAuth2Request performMethod:@"GET"
-                        onResource:[NSURL URLWithString:@"https://glukit.appspot.com/data"]
+    [NXOAuth2Request performMethod:@"POST"
+                        onResource:[NSURL URLWithString:@"https://glukit.appspot.com/v1/glucosereads"]
                    usingParameters:nil
                        withAccount:accounts[0]
                sendProgressHandler:^(unsigned long long bytesSend, unsigned long long bytesTotal) {
