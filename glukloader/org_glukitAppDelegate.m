@@ -144,7 +144,9 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
                            NSLog(@"%@", userInfo);
                        }
                        if (error) {
-                           NSLog(@"%@", error.localizedDescription);
+                           NSLog(@"Error accessing ressource, clearing account [%@]: %@", accounts[0],
+                                   error.localizedDescription);
+                           [store removeAccount:accounts[0]];
                        }
                    }];
 }
