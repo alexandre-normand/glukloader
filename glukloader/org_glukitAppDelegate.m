@@ -144,7 +144,9 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
                            NSLog(@"%@", userInfo);
                        }
                        if (error) {
-                           NSLog(@"%@", error.localizedDescription);
+                           NSLog(@"Error accessing ressource, clearing account [%@]: %@", accounts[0],
+                                   error.localizedDescription);
+                           [store removeAccount:accounts[0]];
                        }
                    }];
 }
