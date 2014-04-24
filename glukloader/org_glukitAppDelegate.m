@@ -38,8 +38,14 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
     self.statusBar.menu = self.statusMenu;
     self.statusBar.highlightMode = YES;
     //self.statusBar.title = @"glukloader";
-    [self.statusBar setImage:[NSImage imageNamed:@"droplet"]];
+    [self.statusBar setImage:[NSImage imageNamed:@"dropletbw"]];
     [self.statusBar setAlternateImage:[NSImage imageNamed:@"droplet.alt"]];
+    
+    NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
+    NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
+    if ([accounts count] > 0) {
+        [self.statusBar setImage:[NSImage imageNamed:@"droplet"]];
+    }
 
 }
 
