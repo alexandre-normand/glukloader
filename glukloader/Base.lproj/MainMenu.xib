@@ -12,8 +12,10 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application"/>
+        <viewController id="rvt-oc-vhX" customClass="GlukloaderViewController"/>
         <customObject id="494" customClass="org_glukitAppDelegate">
             <connections>
+                <outlet property="authenticationMenuItem" destination="hfo-31-VAU" id="sH6-x6-ePT"/>
                 <outlet property="authenticationWindow" destination="1ph-36-yvM" id="fJZ-Av-mEV"/>
                 <outlet property="loginWebView" destination="MMx-6s-SoS" id="rKn-rh-O00"/>
                 <outlet property="statusMenu" destination="Nk2-hP-WyJ" id="Bur-RQ-1Gh"/>
@@ -36,7 +38,7 @@
                 </menuItem>
             </items>
         </menu>
-        <window title="glukloader" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="1ph-36-yvM" userLabel="authenticationWindow">
+        <window title="glukloader" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="1ph-36-yvM" userLabel="authenticationWindow">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="163" y="199" width="545" height="332"/>

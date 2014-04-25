@@ -37,23 +37,25 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
 
     self.statusBar.menu = self.statusMenu;
     self.statusBar.highlightMode = YES;
-    //self.statusBar.title = @"glukloader";
-    [self.statusBar setImage:[NSImage imageNamed:@"dropletbw"]];
-    [self.statusBar setAlternateImage:[NSImage imageNamed:@"droplet.alt"]];
-    
     NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
     NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
+
     if ([accounts count] > 0) {
         [self.statusBar setImage:[NSImage imageNamed:@"droplet"]];
+        [self.statusMenu removeItem:_authenticationMenuItem];
+    } else {
+        [self.statusBar setImage:[NSImage imageNamed:@"dropletbw"]];
+        [self.authenticationWindow setIsVisible:TRUE];
     }
 
+    [self.statusBar setAlternateImage:[NSImage imageNamed:@"droplet.alt"]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
     // Get the SyncManager
     syncManager = [[SyncManager alloc] init];
-
+    [syncManager registerEventListener:self];
     [syncManager start:[SyncTag initialSyncTag]];
 }
 
@@ -184,4 +186,29 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
         [self handleOAuth2AccessResult:responseData];
     }
 }
+
+- (void)syncStarted:(SyncEvent *)event {
+    NSLog(@"Sync started");
+}
+
+- (void)errorReadingReceiver:(SyncEvent *)event {
+
+}
+
+- (void)syncProgress:(SyncEvent *)event {
+
+}
+
+- (void)syncComplete:(SyncEvent *)event {
+    NSLog(@"Sync complete at %@", [NSDate date]);
+}
+
+- (void)receiverPlugged:(ReceiverEvent *)event {
+
+}
+
+- (void)receiverUnplugged:(ReceiverEvent *)event {
+
+}
+
 @end
