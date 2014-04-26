@@ -37,18 +37,23 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
 
     self.statusBar.menu = self.statusMenu;
     self.statusBar.highlightMode = YES;
-    //self.statusBar.title = @"glukloader";
-    [self.statusBar setImage:[NSImage imageNamed:@"droplet"]];
-    [self.statusBar setAlternateImage:[NSImage imageNamed:@"droplet.alt"]];
+    NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
+    NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
+    if ([accounts count] > 0) {
+        [self.statusBar setImage:[NSImage imageNamed:@"droplet"]];
+        [self.statusMenu removeItem:_authenticationMenuItem];
+    } else {
+        [self.statusBar setImage:[NSImage imageNamed:@"dropletbw"]];
+        [self.authenticationWindow setIsVisible:TRUE];
+    }
+
+    [self.statusBar setAlternateImage:[NSImage imageNamed:@"droplet.alt"]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
-    // Get the SyncManager
-    syncManager = [[SyncManager alloc] init];
-
-    [syncManager start:[SyncTag initialSyncTag]];
+    [self startSyncManagerIfAuthenticated];
 }
 
 - (IBAction)quit:(id)sender {
@@ -77,10 +82,12 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
                                                       if (aNotification.userInfo) {
                                                           //account added, we have access
                                                           //we can now request protected data
-                                                          NSLog(@"Success!! We have an access token.");
-                                                          [self requestOAuth2ProtectedDetails];
+                                                          NSLog(@"Success! We have an access token.");
+                                                          [self startSyncManagerIfAuthenticated];
                                                       } else {
                                                           //account removed, we lost access
+                                                          NSLog(@"Account removed");
+                                                          [self stopSyncManagerIfEnabled];
                                                       }
                                                   }];
 
@@ -93,6 +100,32 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
                                                       NSLog(@"Error!! %@", error.localizedDescription);
 
                                                   }];
+}
+
+- (void)startSyncManagerIfAuthenticated {
+
+    NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
+    NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
+
+    if ([accounts count] > 0) {
+        NSLog(@"Authentication found, starting sync manager...");
+        // Get the SyncManager
+        syncManager = [[SyncManager alloc] init];
+        [syncManager registerEventListener:self];
+        [syncManager start:[SyncTag initialSyncTag]];    
+    }
+}
+
+- (void)stopSyncManagerIfEnabled {
+
+    if (syncManager != nil) {
+        NSLog(@"Authentication found, starting sync manager...");
+        // Get the SyncManager
+        SyncTag *tag = [syncManager stop];
+        syncManager = nil;
+
+        // TODO Save tag
+    }
 }
 
 - (void)requestOAuth2Access {
@@ -129,8 +162,8 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
     NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
 
-    [NXOAuth2Request performMethod:@"GET"
-                        onResource:[NSURL URLWithString:@"https://glukit.appspot.com/data"]
+    [NXOAuth2Request performMethod:@"POST"
+                        onResource:[NSURL URLWithString:@"https://glukit.appspot.com/v1/glucosereads"]
                    usingParameters:nil
                        withAccount:accounts[0]
                sendProgressHandler:^(unsigned long long bytesSend, unsigned long long bytesTotal) {
@@ -144,7 +177,9 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
                            NSLog(@"%@", userInfo);
                        }
                        if (error) {
-                           NSLog(@"%@", error.localizedDescription);
+                           NSLog(@"Error accessing ressource, clearing account [%@]: %@", accounts[0],
+                                   error.localizedDescription);
+                           [store removeAccount:accounts[0]];
                        }
                    }];
 }
@@ -176,4 +211,29 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
         [self handleOAuth2AccessResult:responseData];
     }
 }
+
+- (void)syncStarted:(SyncEvent *)event {
+    NSLog(@"Sync started");
+}
+
+- (void)errorReadingReceiver:(SyncEvent *)event {
+
+}
+
+- (void)syncProgress:(SyncEvent *)event {
+
+}
+
+- (void)syncComplete:(SyncEvent *)event {
+    NSLog(@"Sync complete at %@", [NSDate date]);
+}
+
+- (void)receiverPlugged:(ReceiverEvent *)event {
+
+}
+
+- (void)receiverUnplugged:(ReceiverEvent *)event {
+
+}
+
 @end
