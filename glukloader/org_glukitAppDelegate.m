@@ -53,10 +53,7 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
-    // Get the SyncManager
-    syncManager = [[SyncManager alloc] init];
-    [syncManager registerEventListener:self];
-    [syncManager start:[SyncTag initialSyncTag]];
+    [self startSyncManagerIfAuthenticated];
 }
 
 - (IBAction)quit:(id)sender {
@@ -85,10 +82,12 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
                                                       if (aNotification.userInfo) {
                                                           //account added, we have access
                                                           //we can now request protected data
-                                                          NSLog(@"Success!! We have an access token.");
-                                                          [self requestOAuth2ProtectedDetails];
+                                                          NSLog(@"Success! We have an access token.");
+                                                          [self startSyncManagerIfAuthenticated];
                                                       } else {
                                                           //account removed, we lost access
+                                                          NSLog(@"Account removed");
+                                                          [self stopSyncManagerIfEnabled];
                                                       }
                                                   }];
 
@@ -101,6 +100,32 @@ static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
                                                       NSLog(@"Error!! %@", error.localizedDescription);
 
                                                   }];
+}
+
+- (void)startSyncManagerIfAuthenticated {
+
+    NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
+    NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
+
+    if ([accounts count] > 0) {
+        NSLog(@"Authentication found, starting sync manager...");
+        // Get the SyncManager
+        syncManager = [[SyncManager alloc] init];
+        [syncManager registerEventListener:self];
+        [syncManager start:[SyncTag initialSyncTag]];    
+    }
+}
+
+- (void)stopSyncManagerIfEnabled {
+
+    if (syncManager != nil) {
+        NSLog(@"Authentication found, starting sync manager...");
+        // Get the SyncManager
+        SyncTag *tag = [syncManager stop];
+        syncManager = nil;
+
+        // TODO Save tag
+    }
 }
 
 - (void)requestOAuth2Access {
