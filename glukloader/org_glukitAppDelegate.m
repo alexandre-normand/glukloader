@@ -213,18 +213,18 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
 }
 
 - (void)syncStarted:(SyncEvent *)event {
-    NSLog(@"Sync started");
+    NSLog(@"Sync started at %@", [NSDate date]);
 }
 
 - (void)errorReadingReceiver:(SyncEvent *)event {
 
 }
 
-- (void)syncProgress:(SyncEvent *)event {
+- (void)syncProgress:(SyncProgressEvent *)event {
 
 }
 
-- (void)syncComplete:(SyncEvent *)event {
+- (void)syncComplete:(SyncCompletionEvent *)event {
     NSLog(@"Sync complete at %@", [NSDate date]);
 }
 
