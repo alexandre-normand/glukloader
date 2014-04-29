@@ -217,11 +217,13 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
 }
 
 - (void)errorReadingReceiver:(SyncEvent *)event {
-
+    NSLog(@"Error received");
+    // TODO Change icon to warning about failure?
 }
 
 - (void)syncProgress:(SyncProgressEvent *)event {
-
+    NSLog(@"Sync progressing");
+    // TODO: Animate icon
 }
 
 - (void)syncComplete:(SyncCompletionEvent *)event {
@@ -229,11 +231,12 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
-
+    NSLog(@"Received plugged in");
+    // TODO: Change or animate icon.
 }
 
 - (void)receiverUnplugged:(ReceiverEvent *)event {
-
+    // TODO: Change icon to represent idleness.
 }
 
 @end
