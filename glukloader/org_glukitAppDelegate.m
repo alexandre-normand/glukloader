@@ -10,6 +10,7 @@
 #import <bloodSheltie/SyncManager.h>
 #import <bloodSheltie/SyncTag.h>
 #import <NXOAuth2.h>
+#import "GlukloaderIcon.h"
 
 static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
@@ -41,14 +42,14 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
     NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
     if ([accounts count] > 0) {
-        [self.statusBar setImage:[NSImage imageNamed:@"droplet"]];
+        [self.statusBar setImage:[GlukloaderIcon imageOfIconWithSize:16.f]];
         [self.statusMenu removeItem:_authenticationMenuItem];
     } else {
-        [self.statusBar setImage:[NSImage imageNamed:@"dropletbw"]];
+        [self.statusBar setImage:[GlukloaderIcon imageOfIconWithSize:16.f]];
         [self.authenticationWindow setIsVisible:TRUE];
     }
 
-    [self.statusBar setAlternateImage:[NSImage imageNamed:@"droplet.alt"]];
+    [self.statusBar setAlternateImage:[GlukloaderIcon imageOfIconWithSize:16.f]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
