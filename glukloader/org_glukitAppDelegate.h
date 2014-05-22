@@ -13,6 +13,8 @@
 static NSString *const CODE_KEY = @"code";
 static NSString *const STATE_KEY = @"state";
 
+static NSString *const SYNC_TAG_KEY = @"syncTag";
+
 @interface org_glukitAppDelegate : NSObject <NSApplicationDelegate, SyncEventObserver>
 
 @property (strong, nonatomic) NSStatusItem *statusBar;
