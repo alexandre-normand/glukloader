@@ -8,8 +8,8 @@
 
 #import "org_glukitAppDelegate.h"
 #import <bloodSheltie/SyncManager.h>
-#import <bloodSheltie/SyncTag.h>
 #import <NXOAuth2.h>
+#import "GlukloaderIcon.h"
 
 static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
@@ -19,12 +19,24 @@ static NSString *const ACCOUNT_TYPE = @"glukloader";
 static NSString *const CLIENT_SECRET = @"***REMOVED***";
 static NSString *const CLIENT_ID = @"***REMOVED***";
 
+
+static NSImage* _synchingIcon = nil;
+static NSImage* _unconnectedIcon = nil;
+static NSImage* _connectedIcon = nil;
+
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
 }
 
 @synthesize statusMenu = _statusMenu;
 @synthesize statusBar = _statusBar;
+
++ (void)initialize
+{
+    _synchingIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:true];
+    _unconnectedIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:false isSyncInProgress:false];
+    _connectedIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:false];
+}
 
 - (id)init {
     [self setupOauth2AccountStore];
@@ -41,14 +53,12 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
     NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
     if ([accounts count] > 0) {
-        [self.statusBar setImage:[NSImage imageNamed:@"droplet"]];
+        [self.statusBar setImage:_unconnectedIcon];
         [self.statusMenu removeItem:_authenticationMenuItem];
     } else {
-        [self.statusBar setImage:[NSImage imageNamed:@"dropletbw"]];
+        [self.statusBar setImage:_unconnectedIcon];
         [self.authenticationWindow setIsVisible:TRUE];
     }
-
-    [self.statusBar setAlternateImage:[NSImage imageNamed:@"droplet.alt"]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
@@ -112,7 +122,12 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
         // Get the SyncManager
         syncManager = [[SyncManager alloc] init];
         [syncManager registerEventListener:self];
-        [syncManager start:[SyncTag initialSyncTag]];    
+        SyncTag *tag = [self loadDataFromDisk];
+        if (tag == nil) {
+            tag = [SyncTag initialSyncTag];
+        }
+        
+        [syncManager start:tag];    
     }
 }
 
@@ -123,8 +138,6 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
         // Get the SyncManager
         SyncTag *tag = [syncManager stop];
         syncManager = nil;
-
-        // TODO Save tag
     }
 }
 
@@ -183,6 +196,49 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
                        }
                    }];
 }
+
+- (NSString *)pathForDataFile
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    NSString *folder = @"~/Library/Application Support/Glukloader/";
+    folder = [folder stringByExpandingTildeInPath];
+
+    if (![fileManager fileExistsAtPath: folder])
+    {
+        NSError *error = nil;
+        if (![fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes: nil error:&error]) {
+            NSLog(@"Error creating directory to hold configuration: %@", error);
+        };
+
+    }
+
+    NSString *fileName = @"Glukloader.state";
+    return [folder stringByAppendingPathComponent: fileName];
+}
+
+- (void)saveSyncTagToDisk:(SyncTag *)tag
+{    
+    NSString * path = [self pathForDataFile];
+
+    NSMutableDictionary * rootObject;
+    rootObject = [NSMutableDictionary dictionary];
+
+    [rootObject setValue:tag forKey:SYNC_TAG_KEY];
+    [NSKeyedArchiver archiveRootObject: rootObject toFile: path];
+    NSLog(@"Saved tag [%@] to disk", tag);
+}
+
+- (SyncTag *)loadDataFromDisk {
+    NSString     * path        = [self pathForDataFile];
+    NSDictionary * rootObject;
+
+    rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+    SyncTag *tag = [rootObject valueForKey:SYNC_TAG_KEY];
+    NSLog(@"Loaded tag [%@] from disk", tag);
+    return tag;
+}
+
 #pragma mark - UIWebViewDelegate methods
 
 - (void)webView:(WebView *)webView didFinishLoadForFrame:(WebFrame *)frame {
@@ -214,6 +270,7 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
 
 - (void)syncStarted:(SyncEvent *)event {
     NSLog(@"Sync started at %@", [NSDate date]);
+    [self.statusBar setImage:_synchingIcon];
 }
 
 - (void)errorReadingReceiver:(SyncEvent *)event {
@@ -227,16 +284,25 @@ static NSString *const CLIENT_ID = @"***REMOVED***";
 }
 
 - (void)syncComplete:(SyncCompletionEvent *)event {
-    NSLog(@"Sync complete at %@", [NSDate date]);
+    NSLog(@"Sync complete at %@ with %lu reads, %lu calibrations, %lu injections, %lu exercises, %lu meals",
+            [NSDate date],
+            event.syncData.glucoseReads.count,
+            event.syncData.calibrationReads.count,
+            event.syncData.insulinInjections.count,
+            event.syncData.exerciseEvents.count,
+            event.syncData.foodEvents.count);
+
+    [self.statusBar setImage:_connectedIcon];
+    [self saveSyncTagToDisk:event.syncTag];
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
     NSLog(@"Received plugged in");
-    // TODO: Change or animate icon.
+    [self.statusBar setImage:_connectedIcon];
 }
 
 - (void)receiverUnplugged:(ReceiverEvent *)event {
-    // TODO: Change icon to represent idleness.
+    [self.statusBar setImage:_unconnectedIcon];
 }
 
 @end
