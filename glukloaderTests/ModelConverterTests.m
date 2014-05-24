@@ -35,10 +35,19 @@
     [glucoseRecords addObject:[GlucoseRead valueWithInternalTime:[NSDate dateWithTimeIntervalSinceNow:0] userTime:[NSDate dateWithTimeIntervalSinceNow:200] timezone:[NSTimeZone timeZoneWithName:@"America/Montreal"] value:4.2 unit:MMOL_PER_L]];
 
     NSArray *glukitGlucoseReads = [ModelConverter convertGlucoseReads:glucoseRecords];
-    NSArray *JSONDictionary = [MTLJSONAdapter JSONArrayFromModels:glukitGlucoseReads];
+    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitGlucoseReads];
     NSError *error;
-    NSString *serialized = [EncodingUtils dictionaryToJSON:JSONDictionary error:&error];
-    NSLog(@"Reads are %@", serialized);
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionaries
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:&error];
+
+    if (error == nil) {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        NSLog(@"Reads are %@", jsonString);
+    } else {
+        XCTFail(@"Error encoding: %@", error);
+    }
+
 }
 
 @end

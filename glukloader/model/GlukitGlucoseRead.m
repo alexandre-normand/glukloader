@@ -1,4 +1,5 @@
 #import <Mantle/MTLModel+NSCoding.h>
+#import <Mantle/Mantle.h>
 #import "GlukitGlucoseRead.h"
 
 
@@ -39,6 +40,24 @@
     else {
         return [NSString stringWithFormat:@"<%@: %@>", NSStringFromClass([self class]), description];
     }
+}
+
++ (NSValueTransformer *)timezoneJSONTransformer
+{
+    return [MTLValueTransformer reversibleTransformerWithForwardBlock:^(NSString *name) {
+        return [NSTimeZone timeZoneWithName:name];
+    } reverseBlock:^(NSTimeZone *timezone) {
+        return [timezone name];
+    }];
+}
+
++ (NSDictionary *)JSONKeyPathsByPropertyKey {
+    return @{
+            @"timestamp" : @"timestamp",
+            @"timezone" : @"timezone",
+            @"value" : @"value",
+            @"unit" : @"unit"
+    };
 }
 
 
