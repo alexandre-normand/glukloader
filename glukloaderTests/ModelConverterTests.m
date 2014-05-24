@@ -10,6 +10,7 @@
 #import <bloodSheltie/GlucoseRead.h>
 #import <bloodSheltie/EncodingUtils.h>
 #import "ModelConverter.h"
+#import "JsonEncoder.h"
 
 @interface ModelConverterTests : XCTestCase
 
@@ -37,17 +38,13 @@
     NSArray *glukitGlucoseReads = [ModelConverter convertGlucoseReads:glucoseRecords];
     NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitGlucoseReads];
     NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionaries
-                                                       options:NSJSONWritingPrettyPrinted
-                                                         error:&error];
+    NSString *json = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
-    if (error == nil) {
-        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        NSLog(@"Reads are %@", jsonString);
+    if (error == nil) {        
+        NSLog(@"Reads are %@", json);
     } else {
         XCTFail(@"Error encoding: %@", error);
     }
-
 }
 
 @end
