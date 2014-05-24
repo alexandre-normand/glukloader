@@ -28,6 +28,7 @@
 		0BF4FA96192F100000E576C1 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
 		0BF4FA9B192F10C600E576C1 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
 		7DCB91C198397AB64583582D /* ModelConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */; };
+		7DCB958326C7D23B089846AF /* JsonEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */; };
 		7DCB9A3A244A661C4A22C582 /* GlukitGlucoseRead.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */; };
 		7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DC192142C3E48BA9493BAD0 /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -101,6 +102,8 @@
 		7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitGlucoseRead.m; sourceTree = "<group>"; };
 		7DCB975FB58355B8CE96B24D /* ModelConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelConverter.h; sourceTree = "<group>"; };
 		7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelConverter.m; sourceTree = "<group>"; };
+		7DCB9C871BAAFC152EE69CA7 /* JsonEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonEncoder.h; sourceTree = "<group>"; };
+		7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JsonEncoder.m; sourceTree = "<group>"; };
 		7DCB9FF5F88C5978CC0A44FA /* GlukitGlucoseRead.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukitGlucoseRead.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -195,6 +198,8 @@
 				7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */,
 				7DCB975FB58355B8CE96B24D /* ModelConverter.h */,
 				7DCB9D1DAA531CC02B71473D /* model */,
+				7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */,
+				7DCB9C871BAAFC152EE69CA7 /* JsonEncoder.h */,
 			);
 			path = glukloader;
 			sourceTree = "<group>";
@@ -420,6 +425,7 @@
 				0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */,
 				7DCB91C198397AB64583582D /* ModelConverter.m in Sources */,
 				7DCB9A3A244A661C4A22C582 /* GlukitGlucoseRead.m in Sources */,
+				7DCB958326C7D23B089846AF /* JsonEncoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
