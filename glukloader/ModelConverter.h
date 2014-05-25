@@ -1,11 +1,29 @@
 #import <Foundation/Foundation.h>
-
+#import "GlukitGlucoseRead.h"
+#import "GlukitInjection.h"
+#import "GlukitCalibrationRead.h"
+#import "GlukitMeal.h"
+#import "GlukitExercise.h"
+#import <bloodSheltie/GlucoseRead.h>
+#import <bloodSheltie/InsulinInjection.h>
+#import <bloodSheltie/FoodEvent.h>
+#import <bloodSheltie/MeterRead.h>
+#import <bloodSheltie/ExerciseEvent.h>
 
 @interface ModelConverter : NSObject
 +(NSArray *) convertGlucoseReads:(NSArray *) glucoseReads;
++(GlukitGlucoseRead *) convertGlucoseRead:(GlucoseRead *) glucoseRead;
+
 +(NSArray *) convertCalibrationReads:(NSArray *) calibrationReads;
++(GlukitCalibrationRead *) convertCalibrationRead:(MeterRead *) calibrationRead;
+
 +(NSArray *) convertInjections:(NSArray *) injections;
-+(NSArray *) convertCarbs:(NSArray *) carbs;
++(GlukitInjection *) convertInjection:(InsulinInjection *) injection;
+
++(NSArray *)convertMeals:(NSArray *)foodEvents;
++(GlukitMeal *)convertMeal:(FoodEvent *)foodEvent;
+
 +(NSArray *) convertExercises:(NSArray *) exercises;
++(GlukitExercise *) convertExercise:(ExerciseEvent *) exercise;
 
 @end

@@ -1,17 +1,14 @@
-#import <Mantle/MTLModel+NSCoding.h>
-#import <Mantle/Mantle.h>
-#import "GlukitGlucoseRead.h"
+#import "GlukitCalibrationRead.h"
 
 
-@implementation GlukitGlucoseRead {
+@implementation GlukitCalibrationRead {
 
 }
-- (instancetype)initWithTime:(GlukitTime *)time value:(float)value unit:(NSString *)unit {
+- (instancetype)initWithTime:(GlukitTime *)time value:(float)value {
     self = [super init];
     if (self) {
         _time = time;
         _value=value;
-        _unit=unit;
     }
 
     return self;
@@ -20,7 +17,6 @@
 - (NSString *)description {
     NSMutableString *description = [NSMutableString string];
     [description appendFormat:@"self.value=%f", self.value];
-    [description appendFormat:@", self.unit=%@", self.unit];
     [description appendFormat:@", self.time=%@", self.time];
 
     NSMutableString *superDescription = [[super description] mutableCopy];
@@ -37,8 +33,8 @@
 }
 
 
-+ (instancetype)readWithTime:(GlukitTime *)time value:(float)value unit:(NSString *)unit {
-    return [[self alloc] initWithTime:time value:value unit:unit];
++ (instancetype)calibrationReadWithTime:(GlukitTime *)time value:(float)value {
+    return [[self alloc] initWithTime:time value:value];
 }
 
 + (NSValueTransformer *)timeJSONTransformer {
@@ -48,8 +44,7 @@
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
     return @{
             @"time" : @"time",
-            @"value" : @"value",
-            @"unit" : @"unit"
+            @"value" : @"value"
     };
 }
 
