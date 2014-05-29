@@ -18,12 +18,23 @@
 		0B488CC418C83C3A00631DA1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CA318C83C3A00631DA1 /* Cocoa.framework */; };
 		0B488CCC18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CCA18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B488CCE18C83C3A00631DA1 /* glukloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */; };
-		0B4A60E918ED1574006DD71E /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B4A60E818ED1574006DD71E /* Mantle.framework */; };
+		0B5E6992192EFCEF008FD7A5 /* ModelConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */; };
 		0B74AFD5190E0E0A00E03CB0 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */; };
 		0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8AD1A818F0989500E223C8 /* WebKit.framework */; };
 		0B92B12E190A1AF700CEF4DD /* GlukloaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B12D190A1AF700CEF4DD /* GlukloaderViewController.m */; };
 		0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */; };
+		0BC55F1C192F09C100E6AD98 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
+		0BF4FA96192F100000E576C1 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
+		0BF4FA9B192F10C600E576C1 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
+		7DCB91C198397AB64583582D /* ModelConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */; };
+		7DCB91D42680CBEE5EDFA6A7 /* GlukitMeal.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9A00668082B49942E79C /* GlukitMeal.m */; };
+		7DCB91E62C34EE1FB3ECF4A0 /* GlukitTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9372CE43FEB3EB60D8F5 /* GlukitTime.m */; };
+		7DCB958326C7D23B089846AF /* JsonEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */; };
+		7DCB99F20ABC96CF22336134 /* GlukitInjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB95F5024C0C1B0F86387B /* GlukitInjection.m */; };
+		7DCB9A3A244A661C4A22C582 /* GlukitGlucoseRead.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */; };
+		7DCB9DE57DCBB87AD8DFF762 /* GlukitExercise.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB925B9F670C898282DD02 /* GlukitExercise.m */; };
+		7DCB9F0023DDF3D95E8CD05E /* GlukitCalibrationRead.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB94EAF3291CAFE946A34B /* GlukitCalibrationRead.m */; };
 		7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DC192142C3E48BA9493BAD0 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -80,6 +91,7 @@
 		0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = glukloaderTests.m; sourceTree = "<group>"; };
 		0B488CD718C83D1100631DA1 /* bloodSheltie.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bloodSheltie.xcodeproj; path = bloodSheltie/bloodSheltie.xcodeproj; sourceTree = "<group>"; };
 		0B4A60E818ED1574006DD71E /* Mantle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mantle.framework; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-dhqncdfvrfzylsffhpcnykglsgxe/Build/Products/Debug/Mantle.framework"; sourceTree = "<group>"; };
+		0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelConverterTests.m; sourceTree = "<group>"; };
 		0B6EF68618CAE7D70076DAEE /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		0B7629E3191C8D950040BC5A /* GlukloaderIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukloaderIcon.h; sourceTree = "<group>"; };
@@ -89,8 +101,25 @@
 		0B92B12D190A1AF700CEF4DD /* GlukloaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukloaderViewController.m; sourceTree = "<group>"; };
 		0B92B12F190A1DE200CEF4DD /* OauthMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OauthMenuItem.h; sourceTree = "<group>"; };
 		0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OauthMenuItem.m; sourceTree = "<group>"; };
+		0BF4FA95192F100000E576C1 /* Mantle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mantle.framework; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/Mantle.framework"; sourceTree = "<group>"; };
 		4DC192142C3E48BA9493BAD0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B81981D524D474690A6E907 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		7DCB906A277D26DDC4BB7560 /* GlukitInjection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukitInjection.h; sourceTree = "<group>"; };
+		7DCB92477B70AFB2C9EDADD2 /* GlukitCalibrationRead.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukitCalibrationRead.h; sourceTree = "<group>"; };
+		7DCB925B9F670C898282DD02 /* GlukitExercise.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitExercise.m; sourceTree = "<group>"; };
+		7DCB9372CE43FEB3EB60D8F5 /* GlukitTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitTime.m; sourceTree = "<group>"; };
+		7DCB94EAF3291CAFE946A34B /* GlukitCalibrationRead.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitCalibrationRead.m; sourceTree = "<group>"; };
+		7DCB95F5024C0C1B0F86387B /* GlukitInjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitInjection.m; sourceTree = "<group>"; };
+		7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitGlucoseRead.m; sourceTree = "<group>"; };
+		7DCB975FB58355B8CE96B24D /* ModelConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelConverter.h; sourceTree = "<group>"; };
+		7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelConverter.m; sourceTree = "<group>"; };
+		7DCB99F5734D391B54394DEB /* GlukitMeal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukitMeal.h; sourceTree = "<group>"; };
+		7DCB9A00668082B49942E79C /* GlukitMeal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitMeal.m; sourceTree = "<group>"; };
+		7DCB9BD835551CF8D259632B /* GlukitTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukitTime.h; sourceTree = "<group>"; };
+		7DCB9C871BAAFC152EE69CA7 /* JsonEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonEncoder.h; sourceTree = "<group>"; };
+		7DCB9EE42F649425B3AFC663 /* GlukitExercise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukitExercise.h; sourceTree = "<group>"; };
+		7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JsonEncoder.m; sourceTree = "<group>"; };
+		7DCB9FF5F88C5978CC0A44FA /* GlukitGlucoseRead.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukitGlucoseRead.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,9 +127,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BF4FA96192F100000E576C1 /* Mantle.framework in Frameworks */,
 				0B74AFD5190E0E0A00E03CB0 /* bloodSheltie.framework in Frameworks */,
 				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
-				0B4A60E918ED1574006DD71E /* Mantle.framework in Frameworks */,
 				0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
 				7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */,
 			);
@@ -110,6 +139,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BF4FA9B192F10C600E576C1 /* Mantle.framework in Frameworks */,
+				0BC55F1C192F09C100E6AD98 /* bloodSheltie.framework in Frameworks */,
 				0B488CC418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
 				0B488CC318C83C3A00631DA1 /* XCTest.framework in Frameworks */,
 			);
@@ -142,6 +173,7 @@
 		0B488CA218C83C3A00631DA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0BF4FA95192F100000E576C1 /* Mantle.framework */,
 				0B8AD1A818F0989500E223C8 /* WebKit.framework */,
 				0B4A60E818ED1574006DD71E /* Mantle.framework */,
 				0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */,
@@ -178,6 +210,11 @@
 				0B92B12D190A1AF700CEF4DD /* GlukloaderViewController.m */,
 				0B92B12F190A1DE200CEF4DD /* OauthMenuItem.h */,
 				0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */,
+				7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */,
+				7DCB975FB58355B8CE96B24D /* ModelConverter.h */,
+				7DCB9D1DAA531CC02B71473D /* model */,
+				7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */,
+				7DCB9C871BAAFC152EE69CA7 /* JsonEncoder.h */,
 			);
 			path = glukloader;
 			sourceTree = "<group>";
@@ -199,6 +236,7 @@
 			children = (
 				0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */,
 				0B488CC818C83C3A00631DA1 /* Supporting Files */,
+				0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */,
 			);
 			path = glukloaderTests;
 			sourceTree = "<group>";
@@ -220,6 +258,25 @@
 				0B488CE518C83D1100631DA1 /* bloodSheltie-cli */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7DCB9D1DAA531CC02B71473D /* model */ = {
+			isa = PBXGroup;
+			children = (
+				7DCB9FF5F88C5978CC0A44FA /* GlukitGlucoseRead.h */,
+				7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */,
+				7DCB9372CE43FEB3EB60D8F5 /* GlukitTime.m */,
+				7DCB9BD835551CF8D259632B /* GlukitTime.h */,
+				7DCB95F5024C0C1B0F86387B /* GlukitInjection.m */,
+				7DCB906A277D26DDC4BB7560 /* GlukitInjection.h */,
+				7DCB94EAF3291CAFE946A34B /* GlukitCalibrationRead.m */,
+				7DCB92477B70AFB2C9EDADD2 /* GlukitCalibrationRead.h */,
+				7DCB9A00668082B49942E79C /* GlukitMeal.m */,
+				7DCB99F5734D391B54394DEB /* GlukitMeal.h */,
+				7DCB925B9F670C898282DD02 /* GlukitExercise.m */,
+				7DCB9EE42F649425B3AFC663 /* GlukitExercise.h */,
+			);
+			path = model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -391,6 +448,14 @@
 				0B488CB718C83C3A00631DA1 /* org_glukitAppDelegate.m in Sources */,
 				0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */,
 				0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */,
+				7DCB91C198397AB64583582D /* ModelConverter.m in Sources */,
+				7DCB9A3A244A661C4A22C582 /* GlukitGlucoseRead.m in Sources */,
+				7DCB958326C7D23B089846AF /* JsonEncoder.m in Sources */,
+				7DCB91E62C34EE1FB3ECF4A0 /* GlukitTime.m in Sources */,
+				7DCB99F20ABC96CF22336134 /* GlukitInjection.m in Sources */,
+				7DCB9F0023DDF3D95E8CD05E /* GlukitCalibrationRead.m in Sources */,
+				7DCB91D42680CBEE5EDFA6A7 /* GlukitMeal.m in Sources */,
+				7DCB9DE57DCBB87AD8DFF762 /* GlukitExercise.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,6 +463,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B5E6992192EFCEF008FD7A5 /* ModelConverterTests.m in Sources */,
 				0B488CCE18C83C3A00631DA1 /* glukloaderTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -539,6 +605,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-dhqncdfvrfzylsffhpcnykglsgxe/Build/Products/Debug",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
@@ -557,6 +624,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-dhqncdfvrfzylsffhpcnykglsgxe/Build/Products/Debug",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
@@ -574,6 +642,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
@@ -596,6 +665,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
