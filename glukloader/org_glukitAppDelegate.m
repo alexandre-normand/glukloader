@@ -10,6 +10,8 @@
 #import <bloodSheltie/SyncManager.h>
 #import <NXOAuth2.h>
 #import "GlukloaderIcon.h"
+#import "JsonEncoder.h"
+#import "ModelConverter.h"
 
 static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
@@ -291,6 +293,14 @@ static NSImage* _connectedIcon = nil;
             event.syncData.insulinInjections.count,
             event.syncData.exerciseEvents.count,
             event.syncData.foodEvents.count);
+    NSArray *glukitReads = [ModelConverter convertGlucoseReads:[[event syncData] glucoseReads]];
+    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitReads];
+    NSError *error;
+    NSString *request = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+    
+    if (error == nil) {
+        NSLog(@"Will be posting glucose reads as this\n%s", [request UTF8String]);
+    }
 
     [self.statusBar setImage:_connectedIcon];
     [self saveSyncTagToDisk:event.syncTag];
