@@ -67,7 +67,7 @@
 - (void)testCalibrationConversion
 {
     NSMutableArray *calibrations = [NSMutableArray array];
-    [calibrations addObject:[MeterRead valueWithInternalTime:[NSDate dateWithTimeIntervalSinceNow:0] userTime:[NSDate dateWithTimeIntervalSinceNow:110] timezone:[NSTimeZone timeZoneWithName:@"America/Montreal"] meterTime:[NSDate dateWithTimeIntervalSinceNow:230] meterRead:75.f]];
+    [calibrations addObject:[MeterRead valueWithInternalTime:[NSDate dateWithTimeIntervalSinceNow:0] userTime:[NSDate dateWithTimeIntervalSinceNow:110] timezone:[NSTimeZone timeZoneWithName:@"America/Montreal"] meterTime:[NSDate dateWithTimeIntervalSinceNow:230] meterRead:75.f glucoseMeasurementUnit:MG_PER_DL]];
 
     NSArray *glukitCalibrations = [ModelConverter convertCalibrationReads:calibrations];
     NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitCalibrations];

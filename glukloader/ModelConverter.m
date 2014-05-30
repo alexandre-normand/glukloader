@@ -46,7 +46,7 @@
 + (GlukitCalibrationRead *)convertCalibrationRead:(MeterRead *)calibrationRead {
     long long timestamp = (long long) ([[calibrationRead userTime] timeIntervalSince1970] * 1000.0);
     GlukitTime *time = [GlukitTime timeWithTimezone:[calibrationRead timezone] timestamp:timestamp];
-    return [GlukitCalibrationRead calibrationReadWithTime:time value:[calibrationRead meterRead]];
+    return [GlukitCalibrationRead calibrationReadWithTime:time value:[calibrationRead meterRead] unit:[self getUnit:[calibrationRead glucoseMeasurementUnit]]];
 }
 
 + (NSArray *)convertInjections:(NSArray *)injections {
