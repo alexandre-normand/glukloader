@@ -42,7 +42,7 @@
     return [MTLValueTransformer reversibleTransformerWithForwardBlock:^(NSString *name) {
         return [NSTimeZone timeZoneWithName:name];
     } reverseBlock:^(NSTimeZone *timezone) {
-        return [timezone name];
+        return [[timezone name] substringFromIndex:3];
     }];
 }
 

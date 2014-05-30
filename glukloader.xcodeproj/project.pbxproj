@@ -19,7 +19,7 @@
 		0B488CCC18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CCA18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B488CCE18C83C3A00631DA1 /* glukloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */; };
 		0B5E6992192EFCEF008FD7A5 /* ModelConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */; };
-		0B74AFD5190E0E0A00E03CB0 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
+		0B6EA59C1938332700810969 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */; };
 		0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8AD1A818F0989500E223C8 /* WebKit.framework */; };
 		0B92B12E190A1AF700CEF4DD /* GlukloaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B12D190A1AF700CEF4DD /* GlukloaderViewController.m */; };
@@ -127,8 +127,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B6EA59C1938332700810969 /* bloodSheltie.framework in Frameworks */,
 				0BF4FA96192F100000E576C1 /* Mantle.framework in Frameworks */,
-				0B74AFD5190E0E0A00E03CB0 /* bloodSheltie.framework in Frameworks */,
 				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
 				0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
 				7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */,
