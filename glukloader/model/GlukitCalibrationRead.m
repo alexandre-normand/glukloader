@@ -4,11 +4,12 @@
 @implementation GlukitCalibrationRead {
 
 }
-- (instancetype)initWithTime:(GlukitTime *)time value:(float)value {
+- (instancetype)initWithTime:(GlukitTime *)time value:(float)value unit:(NSString *)unit {
     self = [super init];
     if (self) {
         _time = time;
         _value=value;
+        _unit=unit;
     }
 
     return self;
@@ -33,8 +34,8 @@
 }
 
 
-+ (instancetype)calibrationReadWithTime:(GlukitTime *)time value:(float)value {
-    return [[self alloc] initWithTime:time value:value];
++ (instancetype)calibrationReadWithTime:(GlukitTime *)time value:(float)value unit:(NSString *)unit {
+    return [[self alloc] initWithTime:time value:value unit:unit];
 }
 
 + (NSValueTransformer *)timeJSONTransformer {
