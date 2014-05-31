@@ -172,31 +172,32 @@ static NSImage* _connectedIcon = nil;
     }
 }
 
-- (void)requestOAuth2ProtectedDetails {
+- (void)requestOAuth2ProtectedDetails:(NSString *)endpoint content:(NSData *)content {
     NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
     NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
+    NXOAuth2Request *request = [[NXOAuth2Request alloc] initWithResource:[NSURL URLWithString:endpoint]
+                                                                  method:@"POST"
+                                                              parameters:nil];
+    request.account = accounts[0];
+    NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
+    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setHTTPBody:content];
 
-    [NXOAuth2Request performMethod:@"POST"
-                        onResource:[NSURL URLWithString:@"https://glukit.appspot.com/v1/glucosereads"]
-                   usingParameters:nil
-                       withAccount:accounts[0]
-               sendProgressHandler:^(unsigned long long bytesSend, unsigned long long bytesTotal) {
-                   // e.g., update a progress indicator
-               }
-                   responseHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
-                       // Process the response
-                       if (responseData) {
-                           NSError *error;
-                           NSDictionary *userInfo = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-                           NSLog(@"%@", userInfo);
-                       }
-                       if (error) {
-                           NSLog(@"Error accessing ressource, clearing account [%@]: %@", accounts[0],
-                                   error.localizedDescription);
-                           [store removeAccount:accounts[0]];
-                       }
-                   }];
+    [NSURLConnection sendAsynchronousRequest:urlRequest
+                                       queue:nil
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+        // Process the response
+        if ([httpResponse statusCode] == [@200 integerValue]) {
+            NSLog(@"Success");
+        }
+        if (connectionError) {
+            NSLog(@"Error accessing ressource, clearing account [%@]: %@", accounts[0],
+                    connectionError.localizedDescription);
+            [store removeAccount:accounts[0]];
+        }
+    }];
 }
 
 - (NSString *)pathForDataFile
@@ -297,10 +298,13 @@ static NSImage* _connectedIcon = nil;
     NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitReads];
     NSError *error;
     NSString *request = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
-    
+
     if (error == nil) {
         NSLog(@"Will be posting glucose reads as this\n%s", [request UTF8String]);
     }
+
+    NSData *myData = [NSKeyedArchiver archivedDataWithRootObject:dictionaries];
+    [self requestOAuth2ProtectedDetails:@"https://glukit.appspot.com/v1/glucosereads" content:myData];
 
     [self.statusBar setImage:_connectedIcon];
     [self saveSyncTagToDisk:event.syncTag];
