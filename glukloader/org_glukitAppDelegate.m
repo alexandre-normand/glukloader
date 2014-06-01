@@ -22,9 +22,9 @@ static NSString *const CLIENT_SECRET = @"***REMOVED***";
 static NSString *const CLIENT_ID = @"***REMOVED***";
 
 
-static NSImage* _synchingIcon = nil;
-static NSImage* _unconnectedIcon = nil;
-static NSImage* _connectedIcon = nil;
+static NSImage *_synchingIcon = nil;
+static NSImage *_unconnectedIcon = nil;
+static NSImage *_connectedIcon = nil;
 
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
@@ -33,8 +33,7 @@ static NSImage* _connectedIcon = nil;
 @synthesize statusMenu = _statusMenu;
 @synthesize statusBar = _statusBar;
 
-+ (void)initialize
-{
++ (void)initialize {
     _synchingIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:true];
     _unconnectedIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:false isSyncInProgress:false];
     _connectedIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:false];
@@ -91,27 +90,27 @@ static NSImage* _connectedIcon = nil;
                                                        queue:nil
                                                   usingBlock:^(NSNotification *aNotification) {
 
-                                                      if (aNotification.userInfo) {
-                                                          //account added, we have access
-                                                          //we can now request protected data
-                                                          NSLog(@"Success! We have an access token.");
-                                                          [self startSyncManagerIfAuthenticated];
-                                                      } else {
-                                                          //account removed, we lost access
-                                                          NSLog(@"Account removed");
-                                                          [self stopSyncManagerIfEnabled];
-                                                      }
-                                                  }];
+        if (aNotification.userInfo) {
+            //account added, we have access
+            //we can now request protected data
+            NSLog(@"Success! We have an access token.");
+            [self startSyncManagerIfAuthenticated];
+        } else {
+            //account removed, we lost access
+            NSLog(@"Account removed");
+            [self stopSyncManagerIfEnabled];
+        }
+    }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:NXOAuth2AccountStoreDidFailToRequestAccessNotification
                                                       object:[NXOAuth2AccountStore sharedStore]
                                                        queue:nil
                                                   usingBlock:^(NSNotification *aNotification) {
 
-                                                      NSError *error = [aNotification.userInfo objectForKey:NXOAuth2AccountStoreErrorKey];
-                                                      NSLog(@"Error!! %@", error.localizedDescription);
+        NSError *error = [aNotification.userInfo objectForKey:NXOAuth2AccountStoreErrorKey];
+        NSLog(@"Error!! %@", error.localizedDescription);
 
-                                                  }];
+    }];
 }
 
 - (void)startSyncManagerIfAuthenticated {
@@ -128,8 +127,8 @@ static NSImage* _connectedIcon = nil;
         if (tag == nil) {
             tag = [SyncTag initialSyncTag];
         }
-        
-        [syncManager start:tag];    
+
+        [syncManager start:tag];
     }
 }
 
@@ -147,11 +146,11 @@ static NSImage* _connectedIcon = nil;
 //    [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:@"glukloader"];
     [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:ACCOUNT_TYPE
                                    withPreparedAuthorizationURLHandler:^(NSURL *preparedURL) {
-                                       [[_loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:preparedURL]];
-                                   }];
+        [[_loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:preparedURL]];
+    }];
 }
 
-- (void)handleOAuth2AccessResult:(NSDictionary *)responseData{
+- (void)handleOAuth2AccessResult:(NSDictionary *)responseData {
     //parse the page title for success or failure
     NSString *code = [responseData objectForKey:CODE_KEY];
     BOOL success = code != nil;
@@ -183,58 +182,55 @@ static NSImage* _connectedIcon = nil;
     NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
     [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [urlRequest setHTTPBody:content];
+    NSError *error = nil;
+    NSURLResponse *response;
+    NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&response error:&error];
 
-    [NSURLConnection sendAsynchronousRequest:urlRequest
-                                       queue:nil
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-        // Process the response
-        if ([httpResponse statusCode] == [@200 integerValue]) {
-            NSLog(@"Success");
-        }
-        if (connectionError) {
-            NSLog(@"Error accessing ressource, clearing account [%@]: %@", accounts[0],
-                    connectionError.localizedDescription);
-            [store removeAccount:accounts[0]];
-        }
-    }];
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+    // Process the response
+    if ([httpResponse statusCode] == [@200 integerValue]) {
+        NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
+    }
+    if (error != nil) {
+        NSLog(@"Error accessing ressource, clearing account [%@]. Payload was [%s] and error was %@", accounts[0],
+                [[NSString stringWithUTF8String:[data bytes]] UTF8String],
+                error.localizedDescription);
+        [store removeAccount:accounts[0]];
+    }
 }
 
-- (NSString *)pathForDataFile
-{
+- (NSString *)pathForDataFile {
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
     NSString *folder = @"~/Library/Application Support/Glukloader/";
     folder = [folder stringByExpandingTildeInPath];
 
-    if (![fileManager fileExistsAtPath: folder])
-    {
+    if (![fileManager fileExistsAtPath:folder]) {
         NSError *error = nil;
-        if (![fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes: nil error:&error]) {
+        if (![fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error]) {
             NSLog(@"Error creating directory to hold configuration: %@", error);
         };
 
     }
 
     NSString *fileName = @"Glukloader.state";
-    return [folder stringByAppendingPathComponent: fileName];
+    return [folder stringByAppendingPathComponent:fileName];
 }
 
-- (void)saveSyncTagToDisk:(SyncTag *)tag
-{    
-    NSString * path = [self pathForDataFile];
+- (void)saveSyncTagToDisk:(SyncTag *)tag {
+    NSString *path = [self pathForDataFile];
 
-    NSMutableDictionary * rootObject;
+    NSMutableDictionary *rootObject;
     rootObject = [NSMutableDictionary dictionary];
 
     [rootObject setValue:tag forKey:SYNC_TAG_KEY];
-    [NSKeyedArchiver archiveRootObject: rootObject toFile: path];
+    [NSKeyedArchiver archiveRootObject:rootObject toFile:path];
     NSLog(@"Saved tag [%@] to disk", tag);
 }
 
 - (SyncTag *)loadDataFromDisk {
-    NSString     * path        = [self pathForDataFile];
-    NSDictionary * rootObject;
+    NSString *path = [self pathForDataFile];
+    NSDictionary *rootObject;
 
     rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
     SyncTag *tag = [rootObject valueForKey:SYNC_TAG_KEY];
@@ -297,14 +293,14 @@ static NSImage* _connectedIcon = nil;
     NSArray *glukitReads = [ModelConverter convertGlucoseReads:[[event syncData] glucoseReads]];
     NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitReads];
     NSError *error;
-    NSString *request = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+    NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
     if (error == nil) {
-        NSLog(@"Will be posting glucose reads as this\n%s", [request UTF8String]);
+        NSLog(@"Will be posting glucose reads as this\n%s", [requestBody UTF8String]);
     }
 
-    NSData *myData = [NSKeyedArchiver archivedDataWithRootObject:dictionaries];
-    [self requestOAuth2ProtectedDetails:@"https://glukit.appspot.com/v1/glucosereads" content:myData];
+    NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
+    [self requestOAuth2ProtectedDetails:@"https://glukit.appspot.com/v1/glucosereads" content:payload];
 
     [self.statusBar setImage:_connectedIcon];
     [self saveSyncTagToDisk:event.syncTag];
