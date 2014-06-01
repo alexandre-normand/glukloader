@@ -171,7 +171,7 @@ static NSImage *_connectedIcon = nil;
     }
 }
 
-- (void)requestOAuth2ProtectedDetails:(NSString *)endpoint content:(NSData *)content {
+- (BOOL)sendGlukitPayload:(NSString *)endpoint content:(NSData *)content {
     NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
     NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
@@ -191,12 +191,16 @@ static NSImage *_connectedIcon = nil;
     if ([httpResponse statusCode] == [@200 integerValue]) {
         NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
     }
+
     if (error != nil) {
         NSLog(@"Error accessing ressource, clearing account [%@]. Payload was [%s] and error was %@", accounts[0],
                 [[NSString stringWithUTF8String:[data bytes]] UTF8String],
                 error.localizedDescription);
         [store removeAccount:accounts[0]];
+        return NO;
     }
+
+    return YES;
 }
 
 - (NSString *)pathForDataFile {
@@ -300,10 +304,15 @@ static NSImage *_connectedIcon = nil;
     }
 
     NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
-    [self requestOAuth2ProtectedDetails:@"https://glukit.appspot.com/v1/glucosereads" content:payload];
+    BOOL status = [self sendGlukitPayload:@"https://glukit.appspot.com/v1/glucosereads" content:payload];
+
+    if (status) {
+        [self saveSyncTagToDisk:event.syncTag];
+    } else {
+        // TODO : Flag error with user action?
+    }
 
     [self.statusBar setImage:_connectedIcon];
-    [self saveSyncTagToDisk:event.syncTag];
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
