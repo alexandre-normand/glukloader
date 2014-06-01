@@ -310,6 +310,11 @@ static NSImage *_connectedIcon = nil;
         [self saveSyncTagToDisk:event.syncTag];
     } else {
         // TODO : Flag error with user action?
+
+        // This resets the manager and discards the synctag so we
+        // get to retry sending the data
+        [self stopSyncManagerIfEnabled];
+        //[self startSyncManagerIfAuthenticated];
     }
 
     [self.statusBar setImage:_connectedIcon];
