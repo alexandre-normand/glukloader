@@ -295,8 +295,16 @@ static NSImage *_connectedIcon = nil;
             event.syncData.exerciseEvents.count,
             event.syncData.foodEvents.count);
     NSArray *glukitReads = [ModelConverter convertGlucoseReads:[[event syncData] glucoseReads]];
+    NSArray *calibrationReads = [ModelConverter convertCalibrationReads:[[event syncData] calibrationReads]];
+    NSArray *injections = [ModelConverter convertInjections:[[event syncData] insulinInjections]];
+    NSArray *exercises = [ModelConverter convertExercises:[[event syncData] exerciseEvents]];
+    NSArray *meals = [ModelConverter convertMeals:[[event syncData] foodEvents]];
 
-    BOOL status = [self transmitData:glukitReads];
+    BOOL status = [self transmitData:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
+    status = status && [self transmitData:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
+    status = status && [self transmitData:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
+    status = status && [self transmitData:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
+    status = status && [self transmitData:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
 
     if (status) {
         [self saveSyncTagToDisk:event.syncTag];
@@ -312,21 +320,21 @@ static NSImage *_connectedIcon = nil;
     [self.statusBar setImage:_connectedIcon];
 }
 
-- (BOOL)transmitData:(NSArray *)records {
+- (BOOL)transmitData:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
     if ([records count] > 0) {
         NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:records];
         NSError *error;
         NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
         if (error == nil) {
-            NSLog(@"Will be posting glucose reads as this\n%s", [requestBody UTF8String]);
+            NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
         }
 
         NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
-        BOOL status = [self sendGlukitPayload:@"https://glukit.appspot.com/v1/glucosereads" content:payload];
+        BOOL status = [self sendGlukitPayload:endpoint content:payload];
         return status;
     } else {
-        NSLog(@"No records to transmit");
+        NSLog(@"No [%s] records to transmit", [recordType UTF8String]);
         return YES;
     }
 }
