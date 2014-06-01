@@ -295,16 +295,8 @@ static NSImage *_connectedIcon = nil;
             event.syncData.exerciseEvents.count,
             event.syncData.foodEvents.count);
     NSArray *glukitReads = [ModelConverter convertGlucoseReads:[[event syncData] glucoseReads]];
-    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitReads];
-    NSError *error;
-    NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
-    if (error == nil) {
-        NSLog(@"Will be posting glucose reads as this\n%s", [requestBody UTF8String]);
-    }
-
-    NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
-    BOOL status = [self sendGlukitPayload:@"https://glukit.appspot.com/v1/glucosereads" content:payload];
+    BOOL status = [self transmitData:glukitReads];
 
     if (status) {
         [self saveSyncTagToDisk:event.syncTag];
@@ -318,6 +310,25 @@ static NSImage *_connectedIcon = nil;
     }
 
     [self.statusBar setImage:_connectedIcon];
+}
+
+- (BOOL)transmitData:(NSArray *)records {
+    if ([records count] > 0) {
+        NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:records];
+        NSError *error;
+        NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+
+        if (error == nil) {
+            NSLog(@"Will be posting glucose reads as this\n%s", [requestBody UTF8String]);
+        }
+
+        NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
+        BOOL status = [self sendGlukitPayload:@"https://glukit.appspot.com/v1/glucosereads" content:payload];
+        return status;
+    } else {
+        NSLog(@"No records to transmit");
+        return YES;
+    }
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
