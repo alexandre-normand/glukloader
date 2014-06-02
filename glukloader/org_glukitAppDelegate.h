@@ -21,6 +21,7 @@ static NSString *const SYNC_TAG_KEY = @"syncTag";
 
 @property (assign) IBOutlet NSMenu *statusMenu;
 @property (assign) IBOutlet NSMenuItem *authenticationMenuItem;
+@property (assign) IBOutlet NSMenuItem *autoStartMenuItem;
 @property (strong, nonatomic) IBOutlet NSWindow *authenticationWindow;
 @property (strong, nonatomic) IBOutlet WebView *loginWebView;
 
