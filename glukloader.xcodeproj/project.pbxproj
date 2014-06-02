@@ -12,20 +12,21 @@
 		0B488CB018C83C3A00631DA1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CAF18C83C3A00631DA1 /* main.m */; };
 		0B488CB418C83C3A00631DA1 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CB218C83C3A00631DA1 /* Credits.rtf */; };
 		0B488CB718C83C3A00631DA1 /* org_glukitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CB618C83C3A00631DA1 /* org_glukitAppDelegate.m */; };
-		0B488CBA18C83C3A00631DA1 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CB818C83C3A00631DA1 /* MainMenu.xib */; };
 		0B488CBC18C83C3A00631DA1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CBB18C83C3A00631DA1 /* Images.xcassets */; };
 		0B488CC318C83C3A00631DA1 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CC218C83C3A00631DA1 /* XCTest.framework */; };
 		0B488CC418C83C3A00631DA1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CA318C83C3A00631DA1 /* Cocoa.framework */; };
 		0B488CCC18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CCA18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B488CCE18C83C3A00631DA1 /* glukloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */; };
 		0B5E6992192EFCEF008FD7A5 /* ModelConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */; };
-		0B6EA59C1938332700810969 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
+		0B75BC38193BF69600EC973C /* Mantle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
+		0B75BC39193BF75A00EC973C /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
+		0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
+		0B75BC4E193BFC5200EC973C /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */; };
 		0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8AD1A818F0989500E223C8 /* WebKit.framework */; };
 		0B92B12E190A1AF700CEF4DD /* GlukloaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B12D190A1AF700CEF4DD /* GlukloaderViewController.m */; };
 		0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */; };
 		0BC55F1C192F09C100E6AD98 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
-		0BF4FA96192F100000E576C1 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
 		0BF4FA9B192F10C600E576C1 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
 		7DCB91C198397AB64583582D /* ModelConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */; };
 		7DCB91D42680CBEE5EDFA6A7 /* GlukitMeal.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9A00668082B49942E79C /* GlukitMeal.m */; };
@@ -69,6 +70,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		0B75BC35193BF59400EC973C /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in CopyFiles */,
+				0B75BC38193BF69600EC973C /* Mantle.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0B488CA018C83C3A00631DA1 /* glukloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = glukloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B488CA318C83C3A00631DA1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -90,7 +105,6 @@
 		0B488CCB18C83C3A00631DA1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = glukloaderTests.m; sourceTree = "<group>"; };
 		0B488CD718C83D1100631DA1 /* bloodSheltie.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bloodSheltie.xcodeproj; path = bloodSheltie/bloodSheltie.xcodeproj; sourceTree = "<group>"; };
-		0B4A60E818ED1574006DD71E /* Mantle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mantle.framework; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-dhqncdfvrfzylsffhpcnykglsgxe/Build/Products/Debug/Mantle.framework"; sourceTree = "<group>"; };
 		0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelConverterTests.m; sourceTree = "<group>"; };
 		0B6EF68618CAE7D70076DAEE /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -127,10 +141,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B6EA59C1938332700810969 /* bloodSheltie.framework in Frameworks */,
-				0BF4FA96192F100000E576C1 /* Mantle.framework in Frameworks */,
 				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
+				0B75BC4E193BFC5200EC973C /* bloodSheltie.framework in Frameworks */,
 				0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
+				0B75BC39193BF75A00EC973C /* Mantle.framework in Frameworks */,
 				7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -175,7 +189,6 @@
 			children = (
 				0BF4FA95192F100000E576C1 /* Mantle.framework */,
 				0B8AD1A818F0989500E223C8 /* WebKit.framework */,
-				0B4A60E818ED1574006DD71E /* Mantle.framework */,
 				0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */,
 				0B6EF68618CAE7D70076DAEE /* QuartzCore.framework */,
 				0B488CA318C83C3A00631DA1 /* Cocoa.framework */,
@@ -288,6 +301,7 @@
 			buildPhases = (
 				F5996228F68046D695EFB36F /* Check Pods Manifest.lock */,
 				0B488C9C18C83C3A00631DA1 /* Sources */,
+				0B75BC35193BF59400EC973C /* CopyFiles */,
 				0B488C9D18C83C3A00631DA1 /* Frameworks */,
 				0B488C9E18C83C3A00631DA1 /* Resources */,
 				92CCCFEC52934D19A7578882 /* Copy Pods Resources */,
@@ -391,7 +405,6 @@
 				0B488CAE18C83C3A00631DA1 /* InfoPlist.strings in Resources */,
 				0B488CBC18C83C3A00631DA1 /* Images.xcassets in Resources */,
 				0B488CB418C83C3A00631DA1 /* Credits.rtf in Resources */,
-				0B488CBA18C83C3A00631DA1 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -610,6 +623,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
 				INFOPLIST_FILE = "glukloader/glukloader-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -629,6 +643,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
 				INFOPLIST_FILE = "glukloader/glukloader-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
