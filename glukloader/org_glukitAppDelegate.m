@@ -14,6 +14,8 @@
 #import "ModelConverter.h"
 #import <NSBundle+LoginItem.h>
 
+#define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
+
 static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
 static NSString *const SUCCESS_URL = @"https://glukit.appspot.com/authorize";
@@ -21,7 +23,6 @@ static NSString *const REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
 static NSString *const ACCOUNT_TYPE = @"glukloader";
 static NSString *const CLIENT_SECRET = @"xEh2sZvNRvYnK9his1S_sdd2MlUc";
 static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
-
 
 static NSImage *_synchingIcon = nil;
 static NSImage *_unconnectedIcon = nil;
@@ -48,7 +49,7 @@ static NSImage *_connectedIcon = nil;
 
 - (void)awakeFromNib {
     self.statusBar = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
-    
+
     self.statusBar.menu = self.statusMenu;
     self.statusBar.highlightMode = YES;
     NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
@@ -62,7 +63,18 @@ static NSImage *_connectedIcon = nil;
         [self.authenticationWindow setIsVisible:TRUE];
     }
 
+    [self initializeDefaultIfFirstRun];
     [self updateUIForAutoStart];
+}
+
+- (void)initializeDefaultIfFirstRun {
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:kAlreadyBeenLaunched]) {
+        // Setting userDefaults for next time
+        [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:YES] forKey:kAlreadyBeenLaunched];
+
+        // Set auto-start to ON by default
+        [[NSBundle mainBundle] addToLoginItems];
+    }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
