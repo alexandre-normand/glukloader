@@ -22,9 +22,9 @@ static NSString *const CLIENT_SECRET = @"xEh2sZvNRvYnK9his1S_sdd2MlUc";
 static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
 
 
-static NSImage* _synchingIcon = nil;
-static NSImage* _unconnectedIcon = nil;
-static NSImage* _connectedIcon = nil;
+static NSImage *_synchingIcon = nil;
+static NSImage *_unconnectedIcon = nil;
+static NSImage *_connectedIcon = nil;
 
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
@@ -33,8 +33,7 @@ static NSImage* _connectedIcon = nil;
 @synthesize statusMenu = _statusMenu;
 @synthesize statusBar = _statusBar;
 
-+ (void)initialize
-{
++ (void)initialize {
     _synchingIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:true];
     _unconnectedIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:false isSyncInProgress:false];
     _connectedIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:false];
@@ -91,27 +90,27 @@ static NSImage* _connectedIcon = nil;
                                                        queue:nil
                                                   usingBlock:^(NSNotification *aNotification) {
 
-                                                      if (aNotification.userInfo) {
-                                                          //account added, we have access
-                                                          //we can now request protected data
-                                                          NSLog(@"Success! We have an access token.");
-                                                          [self startSyncManagerIfAuthenticated];
-                                                      } else {
-                                                          //account removed, we lost access
-                                                          NSLog(@"Account removed");
-                                                          [self stopSyncManagerIfEnabled];
-                                                      }
-                                                  }];
+        if (aNotification.userInfo) {
+            //account added, we have access
+            //we can now request protected data
+            NSLog(@"Success! We have an access token.");
+            [self startSyncManagerIfAuthenticated];
+        } else {
+            //account removed, we lost access
+            NSLog(@"Account removed");
+            [self stopSyncManagerIfEnabled];
+        }
+    }];
 
     [[NSNotificationCenter defaultCenter] addObserverForName:NXOAuth2AccountStoreDidFailToRequestAccessNotification
                                                       object:[NXOAuth2AccountStore sharedStore]
                                                        queue:nil
                                                   usingBlock:^(NSNotification *aNotification) {
 
-                                                      NSError *error = [aNotification.userInfo objectForKey:NXOAuth2AccountStoreErrorKey];
-                                                      NSLog(@"Error!! %@", error.localizedDescription);
+        NSError *error = [aNotification.userInfo objectForKey:NXOAuth2AccountStoreErrorKey];
+        NSLog(@"Error!! %@", error.localizedDescription);
 
-                                                  }];
+    }];
 }
 
 - (void)startSyncManagerIfAuthenticated {
@@ -128,8 +127,8 @@ static NSImage* _connectedIcon = nil;
         if (tag == nil) {
             tag = [SyncTag initialSyncTag];
         }
-        
-        [syncManager start:tag];    
+
+        [syncManager start:tag];
     }
 }
 
@@ -147,11 +146,11 @@ static NSImage* _connectedIcon = nil;
 //    [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:@"glukloader"];
     [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:ACCOUNT_TYPE
                                    withPreparedAuthorizationURLHandler:^(NSURL *preparedURL) {
-                                       [[_loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:preparedURL]];
-                                   }];
+        [[_loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:preparedURL]];
+    }];
 }
 
-- (void)handleOAuth2AccessResult:(NSDictionary *)responseData{
+- (void)handleOAuth2AccessResult:(NSDictionary *)responseData {
     //parse the page title for success or failure
     NSString *code = [responseData objectForKey:CODE_KEY];
     BOOL success = code != nil;
@@ -172,68 +171,70 @@ static NSImage* _connectedIcon = nil;
     }
 }
 
-- (void)requestOAuth2ProtectedDetails {
+- (BOOL)sendGlukitPayload:(NSString *)endpoint content:(NSData *)content {
     NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
     NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
+    NXOAuth2Request *request = [[NXOAuth2Request alloc] initWithResource:[NSURL URLWithString:endpoint]
+                                                                  method:@"POST"
+                                                              parameters:nil];
+    request.account = accounts[0];
+    NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
+    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [urlRequest setHTTPBody:content];
+    NSError *error = nil;
+    NSURLResponse *response;
+    NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&response error:&error];
 
-    [NXOAuth2Request performMethod:@"POST"
-                        onResource:[NSURL URLWithString:@"https://glukit.appspot.com/v1/glucosereads"]
-                   usingParameters:nil
-                       withAccount:accounts[0]
-               sendProgressHandler:^(unsigned long long bytesSend, unsigned long long bytesTotal) {
-                   // e.g., update a progress indicator
-               }
-                   responseHandler:^(NSURLResponse *response, NSData *responseData, NSError *error) {
-                       // Process the response
-                       if (responseData) {
-                           NSError *error;
-                           NSDictionary *userInfo = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-                           NSLog(@"%@", userInfo);
-                       }
-                       if (error) {
-                           NSLog(@"Error accessing ressource, clearing account [%@]: %@", accounts[0],
-                                   error.localizedDescription);
-                           [store removeAccount:accounts[0]];
-                       }
-                   }];
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+    // Process the response
+    if ([httpResponse statusCode] == [@200 integerValue]) {
+        NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
+    }
+
+    if (error != nil) {
+        NSLog(@"Error accessing ressource, clearing account [%@]. Payload was [%s] and error was %@", accounts[0],
+                [[NSString stringWithUTF8String:[data bytes]] UTF8String],
+                error.localizedDescription);
+        [store removeAccount:accounts[0]];
+        return NO;
+    }
+
+    return YES;
 }
 
-- (NSString *)pathForDataFile
-{
+- (NSString *)pathForDataFile {
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
     NSString *folder = @"~/Library/Application Support/Glukloader/";
     folder = [folder stringByExpandingTildeInPath];
 
-    if (![fileManager fileExistsAtPath: folder])
-    {
+    if (![fileManager fileExistsAtPath:folder]) {
         NSError *error = nil;
-        if (![fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes: nil error:&error]) {
+        if (![fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error]) {
             NSLog(@"Error creating directory to hold configuration: %@", error);
         };
 
     }
 
     NSString *fileName = @"Glukloader.state";
-    return [folder stringByAppendingPathComponent: fileName];
+    return [folder stringByAppendingPathComponent:fileName];
 }
 
-- (void)saveSyncTagToDisk:(SyncTag *)tag
-{    
-    NSString * path = [self pathForDataFile];
+- (void)saveSyncTagToDisk:(SyncTag *)tag {
+    NSString *path = [self pathForDataFile];
 
-    NSMutableDictionary * rootObject;
+    NSMutableDictionary *rootObject;
     rootObject = [NSMutableDictionary dictionary];
 
     [rootObject setValue:tag forKey:SYNC_TAG_KEY];
-    [NSKeyedArchiver archiveRootObject: rootObject toFile: path];
+    [NSKeyedArchiver archiveRootObject:rootObject toFile:path];
     NSLog(@"Saved tag [%@] to disk", tag);
 }
 
 - (SyncTag *)loadDataFromDisk {
-    NSString     * path        = [self pathForDataFile];
-    NSDictionary * rootObject;
+    NSString *path = [self pathForDataFile];
+    NSDictionary *rootObject;
 
     rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
     SyncTag *tag = [rootObject valueForKey:SYNC_TAG_KEY];
@@ -293,17 +294,54 @@ static NSImage* _connectedIcon = nil;
             event.syncData.insulinInjections.count,
             event.syncData.exerciseEvents.count,
             event.syncData.foodEvents.count);
-    NSArray *glukitReads = [ModelConverter convertGlucoseReads:[[event syncData] glucoseReads]];
-    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitReads];
-    NSError *error;
-    NSString *request = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
-    
-    if (error == nil) {
-        NSLog(@"Will be posting glucose reads as this\n%s", [request UTF8String]);
+    BOOL status = [self transmitSyncedData:[event syncData]];
+
+    if (status) {
+        [self saveSyncTagToDisk:event.syncTag];
+    } else {
+        // TODO : Flag error with user action?
+
+        // This resets the manager and discards the synctag so we
+        // get to retry sending the data
+        [self stopSyncManagerIfEnabled];
+        //[self startSyncManagerIfAuthenticated];
     }
 
     [self.statusBar setImage:_connectedIcon];
-    [self saveSyncTagToDisk:event.syncTag];
+}
+
+- (BOOL)transmitSyncedData:(SyncData *)syncData {
+    NSArray *glukitReads = [ModelConverter convertGlucoseReads:[syncData glucoseReads]];
+    NSArray *calibrationReads = [ModelConverter convertCalibrationReads:[syncData calibrationReads]];
+    NSArray *injections = [ModelConverter convertInjections:[syncData insulinInjections]];
+    NSArray *exercises = [ModelConverter convertExercises:[syncData exerciseEvents]];
+    NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];
+
+    BOOL status = [self transmitData:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
+    status = status && [self transmitData:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
+    status = status && [self transmitData:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
+    status = status && [self transmitData:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
+    status = status && [self transmitData:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
+    return status;
+}
+
+- (BOOL)transmitData:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
+    if ([records count] > 0) {
+        NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:records];
+        NSError *error;
+        NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+
+        if (error == nil) {
+            NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
+        }
+
+        NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
+        BOOL status = [self sendGlukitPayload:endpoint content:payload];
+        return status;
+    } else {
+        NSLog(@"No [%s] records to transmit", [recordType UTF8String]);
+        return YES;
+    }
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
