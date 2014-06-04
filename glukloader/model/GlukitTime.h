@@ -3,13 +3,13 @@
 
 
 @interface GlukitTime : MTLModel <MTLJSONSerializing>
-@property(readonly) long long timestamp;
+@property(readonly) NSNumber *timestamp;
 @property(readonly) NSTimeZone *timezone;
 
-- (instancetype)initWithTimezone:(NSTimeZone *)timezone timestamp:(long long int)timestamp;
-
-+ (instancetype)timeWithTimezone:(NSTimeZone *)timezone timestamp:(long long int)timestamp;
+- (instancetype)initWithTimezone:(NSTimeZone *)timezone timestamp:(NSNumber *)timestamp;
 
 - (NSString *)description;
+
++ (instancetype)timeWithTimezone:(NSTimeZone *)timezone timestamp:(NSNumber *)timestamp;
 
 @end

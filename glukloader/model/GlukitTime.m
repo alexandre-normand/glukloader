@@ -4,11 +4,11 @@
 @implementation GlukitTime {
 
 }
-- (instancetype)initWithTimezone:(NSTimeZone *)timezone timestamp:(long long int)timestamp {
+- (instancetype)initWithTimezone:(NSTimeZone *)timezone timestamp:(NSNumber *)timestamp {
     self = [super init];
     if (self) {
         _timezone = timezone;
-        _timestamp=timestamp;
+        _timestamp = timestamp;
     }
 
     return self;
@@ -16,7 +16,7 @@
 
 - (NSString *)description {
     NSMutableString *description = [NSMutableString string];
-    [description appendFormat:@"self.timestamp=%qi", self.timestamp];
+    [description appendFormat:@"self.timestamp=%@", self.timestamp];
     [description appendFormat:@", self.timezone=%@", self.timezone];
 
     NSMutableString *superDescription = [[super description] mutableCopy];
@@ -32,16 +32,14 @@
     }
 }
 
-
-+ (instancetype)timeWithTimezone:(NSTimeZone *)timezone timestamp:(long long int)timestamp {
++ (instancetype)timeWithTimezone:(NSTimeZone *)timezone timestamp:(NSNumber *)timestamp {
     return [[self alloc] initWithTimezone:timezone timestamp:timestamp];
 }
 
-+ (NSValueTransformer *)timezoneJSONTransformer
-{
++ (NSValueTransformer *)timezoneJSONTransformer {
     return [MTLValueTransformer reversibleTransformerWithForwardBlock:^(NSString *name) {
         return [NSTimeZone timeZoneWithName:name];
-    } reverseBlock:^(NSTimeZone *timezone) {
+    }                                                    reverseBlock:^(NSTimeZone *timezone) {
         return [[timezone name] substringFromIndex:3];
     }];
 }
