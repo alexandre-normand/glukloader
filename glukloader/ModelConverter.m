@@ -29,8 +29,11 @@
 }
 
 + (GlukitGlucoseRead *)convertGlucoseRead:(GlucoseRead *)glucoseRead {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[glucoseRead timezone] timestamp:[glucoseRead timestamp]];
-    return [GlukitGlucoseRead readWithTime:time value:[glucoseRead glucoseValue] unit:[self getUnit:[glucoseRead glucoseMeasurementUnit]]];
+    GlukitTime *time = [GlukitTime timeWithTimezone:[glucoseRead timezone]
+                                          timestamp:[NSNumber numberWithLongLong:[glucoseRead timestamp]]];
+    return [GlukitGlucoseRead readWithTime:time
+                                     value:[glucoseRead glucoseValue]
+                                      unit:[self getUnit:[glucoseRead glucoseMeasurementUnit]]];
 }
 
 + (NSArray *)convertCalibrationReads:(NSArray *)calibrationReads {
@@ -43,8 +46,11 @@
 }
 
 + (GlukitCalibrationRead *)convertCalibrationRead:(MeterRead *)calibrationRead {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[calibrationRead timezone] timestamp:[calibrationRead timestamp]];
-    return [GlukitCalibrationRead calibrationReadWithTime:time value:[calibrationRead meterRead] unit:[self getUnit:[calibrationRead glucoseMeasurementUnit]]];
+    GlukitTime *time = [GlukitTime timeWithTimezone:[calibrationRead timezone]
+                                          timestamp:[NSNumber numberWithLongLong:[calibrationRead timestamp]]];
+    return [GlukitCalibrationRead calibrationReadWithTime:time
+                                                    value:[calibrationRead meterRead]
+                                                     unit:[self getUnit:[calibrationRead glucoseMeasurementUnit]]];
 }
 
 + (NSArray *)convertInjections:(NSArray *)injections {
@@ -57,8 +63,12 @@
 }
 
 + (GlukitInjection *)convertInjection:(InsulinInjection *)injection {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[injection  timezone] timestamp:[injection timestamp]];
-    return [GlukitInjection injectionWithTime:time units:[injection unitValue] insulinName:[injection insulinName] insulinType:[self getInsulinType:[injection insulinType]]];
+    GlukitTime *time = [GlukitTime timeWithTimezone:[injection timezone]
+                                          timestamp:[NSNumber numberWithLongLong:[injection timestamp]]];
+    return [GlukitInjection injectionWithTime:time
+                                        units:[injection unitValue]
+                                  insulinName:[injection insulinName]
+                                  insulinType:[self getInsulinType:[injection insulinType]]];
 }
 
 + (NSString *)getInsulinType:(InsulinType)insulinType {
@@ -84,8 +94,13 @@
 }
 
 + (GlukitMeal *)convertMeal:(FoodEvent *)foodEvent {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[foodEvent timezone] timestamp:[foodEvent timestamp]];
-    return [GlukitMeal mealWithTime:time carbs:[foodEvent carbohydrates] proteins:[foodEvent proteins] fat:[foodEvent fat] saturatedFat:0.f];
+    GlukitTime *time = [GlukitTime timeWithTimezone:[foodEvent timezone]
+                                          timestamp:[NSNumber numberWithLongLong:[foodEvent timestamp]]];
+    return [GlukitMeal mealWithTime:time
+                              carbs:[foodEvent carbohydrates]
+                           proteins:[foodEvent proteins]
+                                fat:[foodEvent fat]
+                       saturatedFat:0.f];
 }
 
 + (NSArray *)convertExercises:(NSArray *)exercises {
@@ -98,8 +113,12 @@
 }
 
 + (GlukitExercise *)convertExercise:(ExerciseEvent *)exercise {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[exercise timezone] timestamp:[exercise timestamp]];
-    return [GlukitExercise exerciseWithTime:time durationInMinutes:(int) ([exercise duration] / 60.f) intensity:[self getIntensity:[exercise intensity]] exerciseDescription:[exercise details]];
+    GlukitTime *time = [GlukitTime timeWithTimezone:[exercise timezone]
+                                          timestamp:[NSNumber numberWithLongLong:[exercise timestamp]]];
+    return [GlukitExercise exerciseWithTime:time
+                          durationInMinutes:(int) ([exercise duration] / 60.f)
+                                  intensity:[self getIntensity:[exercise intensity]]
+                        exerciseDescription:[exercise details]];
 }
 
 + (NSString *)getIntensity:(Intensity)intensity {
