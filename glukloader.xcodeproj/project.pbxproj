@@ -18,13 +18,13 @@
 		0B488CCC18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CCA18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B488CCE18C83C3A00631DA1 /* glukloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CCD18C83C3A00631DA1 /* glukloaderTests.m */; };
 		0B5E6992192EFCEF008FD7A5 /* ModelConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */; };
+		0B61B669193C3911009331CD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CB818C83C3A00631DA1 /* MainMenu.xib */; };
 		0B75BC38193BF69600EC973C /* Mantle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
 		0B75BC39193BF75A00EC973C /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
 		0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B75BC4E193BFC5200EC973C /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */; };
 		0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8AD1A818F0989500E223C8 /* WebKit.framework */; };
-		0B92B12E190A1AF700CEF4DD /* GlukloaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B12D190A1AF700CEF4DD /* GlukloaderViewController.m */; };
 		0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */; };
 		0BC55F1C192F09C100E6AD98 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0BF4FA9B192F10C600E576C1 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
@@ -85,6 +85,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B32A2C1193C2CD2003EF27B /* libPods-NXOAuth2Client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-NXOAuth2Client.a"; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/libPods-NXOAuth2Client.a"; sourceTree = "<group>"; };
+		0B32A2C6193C2CD7003EF27B /* libPods-IYLoginItem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-IYLoginItem.a"; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/libPods-IYLoginItem.a"; sourceTree = "<group>"; };
 		0B488CA018C83C3A00631DA1 /* glukloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = glukloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B488CA318C83C3A00631DA1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		0B488CA618C83C3A00631DA1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -111,8 +113,6 @@
 		0B7629E3191C8D950040BC5A /* GlukloaderIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukloaderIcon.h; sourceTree = "<group>"; };
 		0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukloaderIcon.m; sourceTree = "<group>"; };
 		0B8AD1A818F0989500E223C8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		0B92B12C190A1AF700CEF4DD /* GlukloaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukloaderViewController.h; sourceTree = "<group>"; };
-		0B92B12D190A1AF700CEF4DD /* GlukloaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukloaderViewController.m; sourceTree = "<group>"; };
 		0B92B12F190A1DE200CEF4DD /* OauthMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OauthMenuItem.h; sourceTree = "<group>"; };
 		0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OauthMenuItem.m; sourceTree = "<group>"; };
 		0BF4FA95192F100000E576C1 /* Mantle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mantle.framework; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/Mantle.framework"; sourceTree = "<group>"; };
@@ -187,6 +187,8 @@
 		0B488CA218C83C3A00631DA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0B32A2C6193C2CD7003EF27B /* libPods-IYLoginItem.a */,
+				0B32A2C1193C2CD2003EF27B /* libPods-NXOAuth2Client.a */,
 				0BF4FA95192F100000E576C1 /* Mantle.framework */,
 				0B8AD1A818F0989500E223C8 /* WebKit.framework */,
 				0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */,
@@ -219,8 +221,6 @@
 				0B488CB818C83C3A00631DA1 /* MainMenu.xib */,
 				0B488CBB18C83C3A00631DA1 /* Images.xcassets */,
 				0B488CAA18C83C3A00631DA1 /* Supporting Files */,
-				0B92B12C190A1AF700CEF4DD /* GlukloaderViewController.h */,
-				0B92B12D190A1AF700CEF4DD /* GlukloaderViewController.m */,
 				0B92B12F190A1DE200CEF4DD /* OauthMenuItem.h */,
 				0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */,
 				7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */,
@@ -405,6 +405,7 @@
 				0B488CAE18C83C3A00631DA1 /* InfoPlist.strings in Resources */,
 				0B488CBC18C83C3A00631DA1 /* Images.xcassets in Resources */,
 				0B488CB418C83C3A00631DA1 /* Credits.rtf in Resources */,
+				0B61B669193C3911009331CD /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,7 +458,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0B488CB018C83C3A00631DA1 /* main.m in Sources */,
-				0B92B12E190A1AF700CEF4DD /* GlukloaderViewController.m in Sources */,
 				0B488CB718C83C3A00631DA1 /* org_glukitAppDelegate.m in Sources */,
 				0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */,
 				0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */,
@@ -624,6 +624,10 @@
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
 				INFOPLIST_FILE = "glukloader/glukloader-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -644,6 +648,10 @@
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
 				INFOPLIST_FILE = "glukloader/glukloader-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks @loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
