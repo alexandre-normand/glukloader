@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
         <plugIn identifier="com.apple.WebKitIBPlugin" version="5056"/>
@@ -17,17 +17,24 @@
             <connections>
                 <outlet property="authenticationMenuItem" destination="hfo-31-VAU" id="sH6-x6-ePT"/>
                 <outlet property="authenticationWindow" destination="1ph-36-yvM" id="fJZ-Av-mEV"/>
+                <outlet property="autoStartMenuItem" destination="VTt-wS-l3L" id="EoR-gf-ETD"/>
                 <outlet property="loginWebView" destination="MMx-6s-SoS" id="rKn-rh-O00"/>
                 <outlet property="statusMenu" destination="Nk2-hP-WyJ" id="Bur-RQ-1Gh"/>
             </connections>
         </customObject>
         <customObject id="420" customClass="NSFontManager"/>
-        <menu id="Nk2-hP-WyJ">
+        <menu title="StatusMenu" id="Nk2-hP-WyJ">
             <items>
                 <menuItem title="Authenticate" id="hfo-31-VAU">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="authenticate:" target="494" id="1Uf-xs-fSi"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Start at login" id="VTt-wS-l3L">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="toggleAutoStart:" target="494" id="WZp-bT-SHb"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Quit" id="6zH-ov-WNm">

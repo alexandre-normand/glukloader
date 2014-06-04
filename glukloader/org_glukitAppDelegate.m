@@ -12,6 +12,9 @@
 #import "GlukloaderIcon.h"
 #import "JsonEncoder.h"
 #import "ModelConverter.h"
+#import <NSBundle+LoginItem.h>
+
+#define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
 
 static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
@@ -20,7 +23,6 @@ static NSString *const REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
 static NSString *const ACCOUNT_TYPE = @"glukloader";
 static NSString *const CLIENT_SECRET = @"***REMOVED***";
 static NSString *const CLIENT_ID = @"***REMOVED***";
-
 
 static NSImage *_synchingIcon = nil;
 static NSImage *_unconnectedIcon = nil;
@@ -32,6 +34,7 @@ static NSImage *_connectedIcon = nil;
 
 @synthesize statusMenu = _statusMenu;
 @synthesize statusBar = _statusBar;
+@synthesize autoStartMenuItem = _autoStartMenuItem;
 
 + (void)initialize {
     _synchingIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:true];
@@ -47,7 +50,6 @@ static NSImage *_connectedIcon = nil;
 - (void)awakeFromNib {
     self.statusBar = [[NSStatusBar systemStatusBar] statusItemWithLength:NSSquareStatusItemLength];
 
-
     self.statusBar.menu = self.statusMenu;
     self.statusBar.highlightMode = YES;
     NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
@@ -59,6 +61,19 @@ static NSImage *_connectedIcon = nil;
     } else {
         [self.statusBar setImage:_unconnectedIcon];
         [self.authenticationWindow setIsVisible:TRUE];
+    }
+
+    [self initializeDefaultIfFirstRun];
+    [self updateUIForAutoStart];
+}
+
+- (void)initializeDefaultIfFirstRun {
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:kAlreadyBeenLaunched]) {
+        // Setting userDefaults for next time
+        [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:YES] forKey:kAlreadyBeenLaunched];
+
+        // Set auto-start to ON by default
+        [[NSBundle mainBundle] addToLoginItems];
     }
 }
 
@@ -73,6 +88,27 @@ static NSImage *_connectedIcon = nil;
 
 - (IBAction)authenticate:(id)sender {
     [self requestOAuth2Access];
+}
+
+- (IBAction)toggleAutoStart:(id)sender {
+    if (self.autoStartMenuItem.state == NSOnState) {
+        // Disable autostart
+        [[NSBundle mainBundle] removeFromLoginItems];
+    } else {
+        // Enable autostart
+        [[NSBundle mainBundle] addToLoginItems];
+    }
+
+    [self updateUIForAutoStart];
+}
+
+- (void)updateUIForAutoStart {
+    BOOL isEnabled = [[NSBundle mainBundle] isLoginItem];
+    NSInteger state = NSOffState;
+    if (isEnabled) {
+        state = NSOnState;
+    }
+    [self.autoStartMenuItem setState:state];
 }
 
 #pragma mark - OAuth2 Logic
@@ -137,7 +173,7 @@ static NSImage *_connectedIcon = nil;
     if (syncManager != nil) {
         NSLog(@"Authentication found, starting sync manager...");
         // Get the SyncManager
-        SyncTag *tag = [syncManager stop];
+        [syncManager stop];
         syncManager = nil;
     }
 }
