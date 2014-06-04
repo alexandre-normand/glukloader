@@ -45,7 +45,8 @@
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
     return @{
             @"time" : @"time",
-            @"value" : @"value"
+            @"value" : @"value",
+            @"unit" : @"unit"
     };
 }
 
