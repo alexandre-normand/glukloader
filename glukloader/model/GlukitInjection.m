@@ -1,4 +1,5 @@
 #import "GlukitInjection.h"
+#import <Mantle/Mantle.h>
 
 
 @implementation GlukitInjection {
