@@ -26,4 +26,6 @@
 +(NSArray *) convertExercises:(NSArray *) exercises;
 +(GlukitExercise *) convertExercise:(ExerciseEvent *) exercise;
 
+
++ (NSArray *)JSONArrayFromModels:(NSArray *)models;
 @end
