@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B16FFBE19417C0D008B5816 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
+		0B16FFC319417F5A008B5816 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CA318C83C3A00631DA1 /* Cocoa.framework */; };
 		0B488CAE18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CAC18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B488CB018C83C3A00631DA1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CAF18C83C3A00631DA1 /* main.m */; };
@@ -18,13 +20,10 @@
 		0B488CCC18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CCA18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B5E6992192EFCEF008FD7A5 /* ModelConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */; };
 		0B61B669193C3911009331CD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CB818C83C3A00631DA1 /* MainMenu.xib */; };
-		0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
-		0B75BC4E193BFC5200EC973C /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
+		0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */; };
 		0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8AD1A818F0989500E223C8 /* WebKit.framework */; };
 		0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */; };
-		0BC55F1C192F09C100E6AD98 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
-		0BF4FA9B192F10C600E576C1 /* Mantle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4FA95192F100000E576C1 /* Mantle.framework */; };
 		7DCB91C198397AB64583582D /* ModelConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */; };
 		7DCB91D42680CBEE5EDFA6A7 /* GlukitMeal.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9A00668082B49942E79C /* GlukitMeal.m */; };
 		7DCB91E62C34EE1FB3ECF4A0 /* GlukitTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9372CE43FEB3EB60D8F5 /* GlukitTime.m */; };
@@ -37,6 +36,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0B16FFBC19417B5D008B5816 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0B488CD718C83D1100631DA1 /* bloodSheltie.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 0B18D60C19402F8A0083D19A;
+			remoteInfo = "bloodSheltie-example";
+		};
 		0B488CC518C83C3A00631DA1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0B488C9818C83C3A00631DA1 /* Project object */;
@@ -58,24 +64,18 @@
 			remoteGlobalIDString = 0BF7C5DC18C6E0A300B22BF1;
 			remoteInfo = bloodSheltieTests;
 		};
-		0B488CE418C83D1100631DA1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0B488CD718C83D1100631DA1 /* bloodSheltie.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 0B63CD0918C6EA3800BA60B6;
-			remoteInfo = "bloodSheltie-cli";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		0B75BC35193BF59400EC973C /* CopyFiles */ = {
+		0B75BC35193BF59400EC973C /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in CopyFiles */,
+				0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in Copy Files */,
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -136,10 +136,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
-				0B75BC4E193BFC5200EC973C /* bloodSheltie.framework in Frameworks */,
-				0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
 				7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */,
+				0B16FFBE19417C0D008B5816 /* bloodSheltie.framework in Frameworks */,
+				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
+				0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,8 +147,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0BF4FA9B192F10C600E576C1 /* Mantle.framework in Frameworks */,
-				0BC55F1C192F09C100E6AD98 /* bloodSheltie.framework in Frameworks */,
+				0B16FFC319417F5A008B5816 /* bloodSheltie.framework in Frameworks */,
 				0B488CC418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
 				0B488CC318C83C3A00631DA1 /* XCTest.framework in Frameworks */,
 			);
@@ -261,7 +260,7 @@
 			children = (
 				0B488CE118C83D1100631DA1 /* bloodSheltie.framework */,
 				0B488CE318C83D1100631DA1 /* bloodSheltieTests.xctest */,
-				0B488CE518C83D1100631DA1 /* bloodSheltie-cli */,
+				0B16FFBD19417B5D008B5816 /* bloodSheltie-example */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -294,7 +293,7 @@
 			buildPhases = (
 				F5996228F68046D695EFB36F /* Check Pods Manifest.lock */,
 				0B488C9C18C83C3A00631DA1 /* Sources */,
-				0B75BC35193BF59400EC973C /* CopyFiles */,
+				0B75BC35193BF59400EC973C /* Copy Files */,
 				0B488C9D18C83C3A00631DA1 /* Frameworks */,
 				0B488C9E18C83C3A00631DA1 /* Resources */,
 				92CCCFEC52934D19A7578882 /* Copy Pods Resources */,
@@ -367,6 +366,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		0B16FFBD19417B5D008B5816 /* bloodSheltie-example */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "bloodSheltie-example";
+			remoteRef = 0B16FFBC19417B5D008B5816 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		0B488CE118C83D1100631DA1 /* bloodSheltie.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -379,13 +385,6 @@
 			fileType = wrapper.cfbundle;
 			path = bloodSheltieTests.xctest;
 			remoteRef = 0B488CE218C83D1100631DA1 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0B488CE518C83D1100631DA1 /* bloodSheltie-cli */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = "bloodSheltie-cli";
-			remoteRef = 0B488CE418C83D1100631DA1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

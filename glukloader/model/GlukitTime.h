@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
-#import <Mantle/Mantle.h>
+#import <Mantle/MTLModel.h>
+#import <Mantle/MTLJSONAdapter.h>
 
 
 @interface GlukitTime : MTLModel <MTLJSONSerializing>
