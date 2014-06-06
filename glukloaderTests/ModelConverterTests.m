@@ -10,6 +10,7 @@
 #import <bloodSheltie/GlucoseRead.h>
 #import "ModelConverter.h"
 #import "JsonEncoder.h"
+#import <Mantle/MTLJSONAdapter.h>
 
 @interface ModelConverterTests : XCTestCase
 
@@ -37,7 +38,7 @@
                                                        timestamp:0]];
 
     NSArray *glukitGlucoseReads = [ModelConverter convertGlucoseReads:glucoseRecords];
-    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitGlucoseReads];
+    NSArray *dictionaries = [ModelConverter JSONArrayFromModels:glukitGlucoseReads];
     NSError *error;
     NSString *json = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
@@ -60,7 +61,7 @@
                                                         timestamp:0]];
 
     NSArray *glukitInjections = [ModelConverter convertInjections:injections];
-    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitInjections];
+    NSArray *dictionaries = [ModelConverter JSONArrayFromModels:glukitInjections];
     NSError *error;
     NSString *json = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
@@ -82,7 +83,7 @@
                                                    timestamp:0]];
 
     NSArray *glukitCalibrations = [ModelConverter convertCalibrationReads:calibrations];
-    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitCalibrations];
+    NSArray *dictionaries = [ModelConverter JSONArrayFromModels:glukitCalibrations];
     NSError *error;
     NSString *json = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
@@ -105,7 +106,7 @@
                                             timestamp:0]];
 
     NSArray *glukitMeals = [ModelConverter convertMeals:meals];
-    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitMeals];
+    NSArray *dictionaries = [ModelConverter JSONArrayFromModels:glukitMeals];
     NSError *error;
     NSString *json = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
@@ -128,7 +129,7 @@
                                                     timestamp:0]];
 
     NSArray *glukitExercises = [ModelConverter convertExercises:exercises];
-    NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:glukitExercises];
+    NSArray *dictionaries = [ModelConverter JSONArrayFromModels:glukitExercises];
     NSError *error;
     NSString *json = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 

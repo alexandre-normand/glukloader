@@ -136,5 +136,21 @@
     return nil;
 }
 
++ (NSArray *)JSONArrayFromModels:(NSArray *)models {
+	NSParameterAssert(models != nil);
+	NSParameterAssert([models isKindOfClass:NSArray.class]);
+    
+	NSMutableArray *JSONArray = [NSMutableArray arrayWithCapacity:models.count];
+	for (MTLModel<MTLJSONSerializing> *model in models) {
+		NSDictionary *JSONDictionary = [MTLJSONAdapter JSONDictionaryFromModel:model];
+		if (JSONDictionary == nil) return nil;
+        
+		[JSONArray addObject:JSONDictionary];
+	}
+    
+	return JSONArray;
+}
+
+
 
 @end

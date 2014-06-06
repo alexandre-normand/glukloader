@@ -12,6 +12,7 @@
 #import "GlukloaderIcon.h"
 #import "JsonEncoder.h"
 #import "ModelConverter.h"
+#import <Mantle/MTLJSONAdapter.h>
 #import <NSBundle+LoginItem.h>
 
 #define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
@@ -363,7 +364,7 @@ static NSImage *_connectedIcon = nil;
 
 - (BOOL)transmitData:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
     if ([records count] > 0) {
-        NSArray *dictionaries = [MTLJSONAdapter JSONArrayFromModels:records];
+        NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
         NSError *error;
         NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
