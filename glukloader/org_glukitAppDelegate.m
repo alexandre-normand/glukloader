@@ -8,11 +8,14 @@
 
 #import "org_glukitAppDelegate.h"
 #import <bloodSheltie/SyncManager.h>
-#import <NXOAuth2.h>
+#import <NXOAuth2Client/NXOAuth2.h>
+#import <NXOAuth2Client/NXOAuth2Request.h>
 #import "GlukloaderIcon.h"
 #import "JsonEncoder.h"
 #import "ModelConverter.h"
+#import <NXOAuth2Client/NXOAuth2AccountStore.h>
 #import <Mantle/MTLJSONAdapter.h>
+#import <ReactiveCocoa/ReactiveCocoa.h>
 #import <NSBundle+LoginItem.h>
 
 #define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
@@ -208,38 +211,6 @@ static NSImage *_connectedIcon = nil;
     }
 }
 
-- (BOOL)sendGlukitPayload:(NSString *)endpoint content:(NSData *)content {
-    NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
-    NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
-
-    NXOAuth2Request *request = [[NXOAuth2Request alloc] initWithResource:[NSURL URLWithString:endpoint]
-                                                                  method:@"POST"
-                                                              parameters:nil];
-    request.account = accounts[0];
-    NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
-    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setHTTPBody:content];
-    NSError *error = nil;
-    NSURLResponse *response;
-    NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&response error:&error];
-
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-    // Process the response
-    if ([httpResponse statusCode] == [@200 integerValue]) {
-        NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
-    }
-
-    if (error != nil) {
-        NSLog(@"Error accessing ressource, clearing account [%@]. Payload was [%s] and error was %@", accounts[0],
-                [[NSString stringWithUTF8String:[data bytes]] UTF8String],
-                error.localizedDescription);
-        [store removeAccount:accounts[0]];
-        return NO;
-    }
-
-    return YES;
-}
-
 - (NSString *)pathForDataFile {
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
@@ -354,15 +325,15 @@ static NSImage *_connectedIcon = nil;
     NSArray *exercises = [ModelConverter convertExercises:[syncData exerciseEvents]];
     NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];
 
-    BOOL status = [self transmitData:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
-    status = status && [self transmitData:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
-    status = status && [self transmitData:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
-    status = status && [self transmitData:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
-    status = status && [self transmitData:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
-    return status;
+    [self transmitData:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
+    [self transmitData:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
+    [self transmitData:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
+    [self transmitData:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
+    [self transmitData:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
+    return YES;
 }
 
-- (BOOL)transmitData:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
+- (void)transmitData:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
     if ([records count] > 0) {
         NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
         NSError *error;
@@ -373,11 +344,35 @@ static NSImage *_connectedIcon = nil;
         }
 
         NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
-        BOOL status = [self sendGlukitPayload:endpoint content:payload];
-        return status;
+        NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
+        NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
+
+        NXOAuth2Request *request = [[NXOAuth2Request alloc] initWithResource:[NSURL URLWithString:endpoint]
+                                                                      method:@"POST"
+                                                                  parameters:nil];
+        request.account = accounts[0];
+        NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
+        [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+        [urlRequest setHTTPBody:payload];
+
+        [NSURLConnection sendAsynchronousRequest:urlRequest
+                                           queue:[NSOperationQueue mainQueue]
+                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error1) {
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+            // Process the response
+            if ([httpResponse statusCode] == [@200 integerValue]) {
+                NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
+            }
+
+            if (error1 != nil) {
+                NSLog(@"Error accessing ressource, clearing account [%@]. Payload was [%s] and error was %@", accounts[0],
+                        [[NSString stringWithUTF8String:[data bytes]] UTF8String],
+                        error1.localizedDescription);
+                [store removeAccount:accounts[0]];
+            }
+        }];
     } else {
         NSLog(@"No [%s] records to transmit", [recordType UTF8String]);
-        return YES;
     }
 }
 
