@@ -10,6 +10,8 @@
 #import <WebKit/WebKit.h>
 #import <bloodSheltie/SyncEventObserver.h>
 
+typedef BOOL (^transmitFunction)(NSArray *, NSString *, NSString *);
+
 static NSString *const CODE_KEY = @"code";
 static NSString *const STATE_KEY = @"state";
 
