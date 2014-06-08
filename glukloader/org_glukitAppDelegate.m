@@ -16,6 +16,7 @@
 #import <NXOAuth2Client/NXOAuth2AccountStore.h>
 #import <Mantle/MTLJSONAdapter.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
+#import <ReactiveCocoa/RACSubscriber.h>
 #import <NSBundle+LoginItem.h>
 
 #define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
@@ -302,78 +303,35 @@ static NSImage *_connectedIcon = nil;
             event.syncData.insulinInjections.count,
             event.syncData.exerciseEvents.count,
             event.syncData.foodEvents.count);
-    BOOL status = [self transmitSyncedData:[event syncData]];
-
-    if (status) {
-        [self saveSyncTagToDisk:event.syncTag];
-    } else {
-        // TODO : Flag error with user action?
-
-        // This resets the manager and discards the synctag so we
-        // get to retry sending the data
-        [self stopSyncManagerIfEnabled];
-        //[self startSyncManagerIfAuthenticated];
-    }
-
-    [self.statusBar setImage:_connectedIcon];
+    [self transmitSyncedData:[event syncData] commitSyncTag:[event syncTag]];
 }
 
-- (BOOL)transmitSyncedData:(SyncData *)syncData {
+- (void)transmitSyncedData:(SyncData *)syncData commitSyncTag:(SyncTag *)syncTag {
     NSArray *glukitReads = [ModelConverter convertGlucoseReads:[syncData glucoseReads]];
     NSArray *calibrationReads = [ModelConverter convertCalibrationReads:[syncData calibrationReads]];
     NSArray *injections = [ModelConverter convertInjections:[syncData insulinInjections]];
     NSArray *exercises = [ModelConverter convertExercises:[syncData exerciseEvents]];
     NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];
 
-    [self transmitData:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
-    [self transmitData:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
-    [self transmitData:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
-    [self transmitData:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
-    [self transmitData:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
-    return YES;
-}
+    RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
+    RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
+    RACSignal *injectionTransmit = [self signalForDataTransmitOfRecords:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
+    RACSignal *exerciseTransmit = [self signalForDataTransmitOfRecords:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
+    RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
+    RACSignal *combined = [RACSignal merge:@[glucoseTransmit, calibrationTransmit, injectionTransmit, exerciseTransmit, mealsTransmit]];
 
-- (void)transmitData:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
-    if ([records count] > 0) {
-        NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
-        NSError *error;
-        NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+    [combined subscribeCompleted:^{
+        [self saveSyncTagToDisk:syncTag];
+        [self.statusBar setImage:_connectedIcon];
+    }];
+    [combined subscribeError:^(NSError *error) {
+        // TODO : Flag error with user action?
 
-        if (error == nil) {
-            NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
-        }
-
-        NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
-        NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
-        NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
-
-        NXOAuth2Request *request = [[NXOAuth2Request alloc] initWithResource:[NSURL URLWithString:endpoint]
-                                                                      method:@"POST"
-                                                                  parameters:nil];
-        request.account = accounts[0];
-        NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
-        [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-        [urlRequest setHTTPBody:payload];
-
-        [NSURLConnection sendAsynchronousRequest:urlRequest
-                                           queue:[NSOperationQueue mainQueue]
-                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error1) {
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-            // Process the response
-            if ([httpResponse statusCode] == [@200 integerValue]) {
-                NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
-            }
-
-            if (error1 != nil) {
-                NSLog(@"Error accessing ressource, clearing account [%@]. Payload was [%s] and error was %@", accounts[0],
-                        [[NSString stringWithUTF8String:[data bytes]] UTF8String],
-                        error1.localizedDescription);
-                [store removeAccount:accounts[0]];
-            }
-        }];
-    } else {
-        NSLog(@"No [%s] records to transmit", [recordType UTF8String]);
-    }
+        // This resets the manager and discards the synctag so we
+        // get to retry sending the data
+        [self stopSyncManagerIfEnabled];
+        [self.statusBar setImage:_connectedIcon];
+    }];
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
@@ -385,4 +343,55 @@ static NSImage *_connectedIcon = nil;
     [self.statusBar setImage:_unconnectedIcon];
 }
 
+- (RACSignal *)signalForDataTransmitOfRecords:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
+    return [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
+
+        if ([records count] > 0) {
+            NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
+            NSError *error;
+            NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+
+            if (error == nil) {
+                NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
+            }
+
+            NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
+            NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
+            NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
+
+            NXOAuth2Request *request = [[NXOAuth2Request alloc] initWithResource:[NSURL URLWithString:endpoint]
+                                                                          method:@"POST"
+                                                                      parameters:nil];
+            request.account = accounts[0];
+            NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
+            [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+            [urlRequest setHTTPBody:payload];
+
+            [NSURLConnection sendAsynchronousRequest:urlRequest
+                                               queue:[NSOperationQueue mainQueue]
+                                   completionHandler:^(NSURLResponse *response, NSData *data, NSError *responseError) {
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+                // Process the response
+                if ([httpResponse statusCode] == [@200 integerValue]) {
+                    NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
+                    [subscriber sendNext:nil];
+                    [subscriber sendCompleted];
+                }
+
+                if (responseError != nil) {
+                    NSLog(@"Error accessing ressource, clearing account [%@]. Payload was [%s] and error was %@", accounts[0],
+                            [[NSString stringWithUTF8String:[data bytes]] UTF8String],
+                            responseError.localizedDescription);
+                    [store removeAccount:accounts[0]];
+                    [subscriber sendError:responseError];
+                }
+            }];
+        } else {
+            NSLog(@"No [%s] records to transmit", [recordType UTF8String]);
+            [subscriber sendNext:nil];
+            [subscriber sendCompleted];
+        }
+        return nil;
+    }];
+}
 @end
