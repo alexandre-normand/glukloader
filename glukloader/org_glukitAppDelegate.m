@@ -46,11 +46,11 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (id)init {
-    glukitAuth = [org_glukitAppDelegate glukitAuth];    
+    glukitAuth = [org_glukitAppDelegate createAuth];
     return self;
 }
 
-+ (GTMOAuth2Authentication *)glukitAuth {
++ (GTMOAuth2Authentication *)createAuth {
     NSURL *tokenURL = [NSURL URLWithString:TOKEN_URL];
 
     // We'll make up an arbitrary redirectURI.  The controller will watch for
@@ -77,13 +77,18 @@ static NSImage *_connectedIcon = nil;
                                                             authentication:glukitAuth];
     if (didAuth) {
         [self.statusBar setImage:_unconnectedIcon];
-        [self.statusMenu removeItem:_authenticationMenuItem];
+        [self hideAuthentication];
     } else {
         [self.statusBar setImage:_unconnectedIcon];
     }
 
     [self initializeDefaultIfFirstRun];
     [self updateUIForAutoStart];
+}
+
+- (void)hideAuthentication {
+    [_authenticationMenuItem setEnabled:FALSE];
+    [self.authenticationWindow setIsVisible:FALSE];
 }
 
 - (void)windowController:(GTMOAuth2WindowController *)windowController
@@ -100,26 +105,10 @@ static NSImage *_connectedIcon = nil;
                 [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] UTF8String], error);
         [self stopSyncManagerIfEnabled];
     } else {
-        NSLog(@"Success! We have an access token.");
-        [self startSyncManagerIfAuthenticated];
-        // Authentication succeeded
-        //
-        // At this point, we either use the authentication object to explicitly
-        // authorize requests, like
-        //
-        //  [auth authorizeRequest:myNSURLMutableRequest
-        //       completionHandler:^(NSError *error) {
-        //         if (error == nil) {
-        //           // request here has been authorized
-        //         }
-        //       }];
-        //
-        // or store the authentication object into a fetcher or a Google API service
-        // object like
-        //
-        //   [fetcher setAuthorizer:auth];
+        NSLog(@"Success! We have an access token: [%@]", [glukitAuth accessToken]);
 
-        NSLog(@"Success");
+        [self hideAuthentication];
+        [self startSyncManagerIfAuthenticated];
     }
 }
 
@@ -179,8 +168,7 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (void)startSyncManagerIfAuthenticated {
-    BOOL didAuth = [GTMOAuth2WindowController authorizeFromKeychainForName:GLUKIT_KEYCHAIN_NAME
-                                                            authentication:glukitAuth];
+    BOOL didAuth = [glukitAuth canAuthorize];
 
     if (didAuth) {
         NSLog(@"Authentication found, starting sync manager...");
@@ -199,7 +187,7 @@ static NSImage *_connectedIcon = nil;
 - (void)stopSyncManagerIfEnabled {
 
     if (syncManager != nil) {
-        NSLog(@"Authentication found, starting sync manager...");
+        NSLog(@"Stopping sync manager...");
         // Get the SyncManager
         [syncManager stop];
         syncManager = nil;
@@ -321,7 +309,7 @@ static NSImage *_connectedIcon = nil;
             NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
             if (error == nil) {
-                NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
+                //NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
             }
 
             NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
@@ -332,12 +320,14 @@ static NSImage *_connectedIcon = nil;
             [request setHTTPBody:payload];
 
             GTMHTTPFetcher *fetcher = [self newFetcherForRequest:request];
-            [fetcher beginFetchWithCompletionHandler:^(NSData *data, NSError *error) {
-                if (error != nil && [error code] != 200) {
-                    NSLog(@"Error accessing ressource. Payload was [%s] and error was %@",
-                            [[NSString stringWithUTF8String:[data bytes]] UTF8String],
-                            error.localizedDescription);
-                    [subscriber sendError:error];
+            [fetcher setRetryEnabled:NO];
+            [fetcher beginFetchWithCompletionHandler:^(NSData *data, NSError *responseError) {
+                if (responseError != nil && [responseError code] != 200) {
+                    NSLog(@"Error accessing ressource, removing auth from keychain. "
+                            "Payload was [%@] for request [%@] and error [%li] was %@",
+                            data, [responseError userInfo], [responseError code], responseError.localizedDescription);
+                    [self clearAuthentication];
+                    [subscriber sendError:responseError];
                 } else {
                     NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
                     [subscriber sendNext:nil];
@@ -351,6 +341,11 @@ static NSImage *_connectedIcon = nil;
         }
         return nil;
     }];
+}
+
+- (void)clearAuthentication {
+    [self.authenticationWindow setIsVisible:YES];
+    [GTMOAuth2WindowController removeAuthFromKeychainForName:GLUKIT_KEYCHAIN_NAME];
 }
 
 - (GTMHTTPFetcher *)newFetcherForRequest:(NSMutableURLRequest *)request {
