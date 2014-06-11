@@ -8,20 +8,19 @@
 
 #import "org_glukitAppDelegate.h"
 #import <bloodSheltie/SyncManager.h>
-#import <NXOAuth2.h>
 #import "GlukloaderIcon.h"
 #import "JsonEncoder.h"
 #import "ModelConverter.h"
-#import <Mantle/MTLJSONAdapter.h>
+#import <gtm-oauth2/GTMOAuth2WindowController.h>
+#import <ReactiveCocoa/ReactiveCocoa.h>
 #import <NSBundle+LoginItem.h>
 
 #define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
 
 static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
-static NSString *const SUCCESS_URL = @"https://glukit.appspot.com/authorize";
 static NSString *const REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
-static NSString *const ACCOUNT_TYPE = @"glukloader";
+static NSString *const GLUKIT_KEYCHAIN_NAME = @"glukloader";
 static NSString *const CLIENT_SECRET = @"xEh2sZvNRvYnK9his1S_sdd2MlUc";
 static NSString *const CLIENT_ID = @"834681386231.mygluk.it";
 
@@ -29,8 +28,11 @@ static NSImage *_synchingIcon = nil;
 static NSImage *_unconnectedIcon = nil;
 static NSImage *_connectedIcon = nil;
 
+#define DEBUG 1
+
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
+    GTMOAuth2Authentication *glukitAuth;    
 }
 
 @synthesize statusMenu = _statusMenu;
@@ -44,8 +46,25 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (id)init {
-    [self setupOauth2AccountStore];
+    glukitAuth = [org_glukitAppDelegate createAuth];
     return self;
+}
+
++ (GTMOAuth2Authentication *)createAuth {
+    NSURL *tokenURL = [NSURL URLWithString:TOKEN_URL];
+
+    // We'll make up an arbitrary redirectURI.  The controller will watch for
+    // the server to redirect the web view to this URI, but this URI will not be
+    // loaded, so it need not be for any actual web page.
+    NSString *redirectURI = REDIRECT_URL;
+
+    GTMOAuth2Authentication *auth;
+    auth = [GTMOAuth2Authentication authenticationWithServiceProvider:GLUKIT_KEYCHAIN_NAME
+                                                             tokenURL:tokenURL
+                                                          redirectURI:redirectURI
+                                                             clientID:CLIENT_ID
+                                                         clientSecret:CLIENT_SECRET];
+    return auth;
 }
 
 - (void)awakeFromNib {
@@ -53,19 +72,44 @@ static NSImage *_connectedIcon = nil;
 
     self.statusBar.menu = self.statusMenu;
     self.statusBar.highlightMode = YES;
-    NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
-    NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
 
-    if ([accounts count] > 0) {
+    BOOL didAuth = [GTMOAuth2WindowController authorizeFromKeychainForName:GLUKIT_KEYCHAIN_NAME
+                                                            authentication:glukitAuth];
+    if (didAuth) {
         [self.statusBar setImage:_unconnectedIcon];
-        [self.statusMenu removeItem:_authenticationMenuItem];
+        [self hideAuthentication];
     } else {
         [self.statusBar setImage:_unconnectedIcon];
-        [self.authenticationWindow setIsVisible:TRUE];
     }
 
     [self initializeDefaultIfFirstRun];
     [self updateUIForAutoStart];
+}
+
+- (void)hideAuthentication {
+    [_authenticationMenuItem setEnabled:FALSE];
+    [self.authenticationWindow setIsVisible:FALSE];
+}
+
+- (void)windowController:(GTMOAuth2WindowController *)windowController
+        finishedWithAuth:(GTMOAuth2Authentication *)auth
+                   error:(NSError *)error {
+
+    if (error != nil) {
+        // Authentication failed (perhaps the user denied access, or closed the
+        // window before granting access)
+        NSString *errorStr = [error localizedDescription];
+
+        NSData *responseData = [[error userInfo] objectForKey:@"data"]; // kGTMHTTPFetcherStatusDataKey
+        NSLog(@"Error, access lost with response [%s]: %@",
+                [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] UTF8String], error);
+        [self stopSyncManagerIfEnabled];
+    } else {
+        NSLog(@"Success! We have an access token: [%@]", [glukitAuth accessToken]);
+
+        [self hideAuthentication];
+        [self startSyncManagerIfAuthenticated];
+    }
 }
 
 - (void)initializeDefaultIfFirstRun {
@@ -88,7 +132,18 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (IBAction)authenticate:(id)sender {
-    [self requestOAuth2Access];
+    [self.authenticationWindow setIsVisible:TRUE];
+    GTMOAuth2WindowController *windowController;
+    windowController = [[GTMOAuth2WindowController alloc] initWithAuthentication:glukitAuth
+                                                                authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
+                                                                keychainItemName:GLUKIT_KEYCHAIN_NAME
+                                                                  resourceBundle:nil];
+
+    [windowController signInSheetModalForWindow:[self authenticationWindow]
+                                       delegate:self
+                               finishedSelector:@selector(windowController:finishedWithAuth:error:)];
+
+    [self.authenticationWindow setWindowController:windowController];
 }
 
 - (IBAction)toggleAutoStart:(id)sender {
@@ -112,50 +167,10 @@ static NSImage *_connectedIcon = nil;
     [self.autoStartMenuItem setState:state];
 }
 
-#pragma mark - OAuth2 Logic
-
-- (void)setupOauth2AccountStore {
-    [[NXOAuth2AccountStore sharedStore] setClientID:CLIENT_ID
-                                             secret:CLIENT_SECRET
-                                   authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
-                                           tokenURL:[NSURL URLWithString:TOKEN_URL]
-                                        redirectURL:[NSURL URLWithString:REDIRECT_URL]
-                                     forAccountType:ACCOUNT_TYPE];
-
-    [[NSNotificationCenter defaultCenter] addObserverForName:NXOAuth2AccountStoreAccountsDidChangeNotification
-                                                      object:[NXOAuth2AccountStore sharedStore]
-                                                       queue:nil
-                                                  usingBlock:^(NSNotification *aNotification) {
-
-        if (aNotification.userInfo) {
-            //account added, we have access
-            //we can now request protected data
-            NSLog(@"Success! We have an access token.");
-            [self startSyncManagerIfAuthenticated];
-        } else {
-            //account removed, we lost access
-            NSLog(@"Account removed");
-            [self stopSyncManagerIfEnabled];
-        }
-    }];
-
-    [[NSNotificationCenter defaultCenter] addObserverForName:NXOAuth2AccountStoreDidFailToRequestAccessNotification
-                                                      object:[NXOAuth2AccountStore sharedStore]
-                                                       queue:nil
-                                                  usingBlock:^(NSNotification *aNotification) {
-
-        NSError *error = [aNotification.userInfo objectForKey:NXOAuth2AccountStoreErrorKey];
-        NSLog(@"Error!! %@", error.localizedDescription);
-
-    }];
-}
-
 - (void)startSyncManagerIfAuthenticated {
+    BOOL didAuth = [glukitAuth canAuthorize];
 
-    NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
-    NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
-
-    if ([accounts count] > 0) {
+    if (didAuth) {
         NSLog(@"Authentication found, starting sync manager...");
         // Get the SyncManager
         syncManager = [[SyncManager alloc] init];
@@ -172,73 +187,14 @@ static NSImage *_connectedIcon = nil;
 - (void)stopSyncManagerIfEnabled {
 
     if (syncManager != nil) {
-        NSLog(@"Authentication found, starting sync manager...");
+        NSLog(@"Stopping sync manager...");
         // Get the SyncManager
         [syncManager stop];
         syncManager = nil;
     }
 }
 
-- (void)requestOAuth2Access {
-//    [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:@"glukloader"];
-    [[NXOAuth2AccountStore sharedStore] requestAccessToAccountWithType:ACCOUNT_TYPE
-                                   withPreparedAuthorizationURLHandler:^(NSURL *preparedURL) {
-        [[_loginWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:preparedURL]];
-    }];
-}
-
-- (void)handleOAuth2AccessResult:(NSDictionary *)responseData {
-    //parse the page title for success or failure
-    NSString *code = [responseData objectForKey:CODE_KEY];
-    BOOL success = code != nil;
-    NSLog(@"Oauth2 success? %d", success);
-
-    //if success, complete the OAuth2 flow by handling the redirect URL and obtaining a token
-    if (success) {
-        //append the arguments found in the page title to the redirect URL assigned by Glukit
-        NSString *redirectURL = [NSString stringWithFormat:@"%@?state=%@&code=%@", REDIRECT_URL, [responseData objectForKey:STATE_KEY], [responseData objectForKey:CODE_KEY]];
-
-        NSLog(@"Complete auth access by redirecting to %@", redirectURL);
-
-        //finally, complete the flow by calling handleRedirectURL
-        [[NXOAuth2AccountStore sharedStore] handleRedirectURL:[NSURL URLWithString:redirectURL]];
-    } else {
-        //start over
-        [self requestOAuth2Access];
-    }
-}
-
-- (BOOL)sendGlukitPayload:(NSString *)endpoint content:(NSData *)content {
-    NXOAuth2AccountStore *store = [NXOAuth2AccountStore sharedStore];
-    NSArray *accounts = [store accountsWithAccountType:ACCOUNT_TYPE];
-
-    NXOAuth2Request *request = [[NXOAuth2Request alloc] initWithResource:[NSURL URLWithString:endpoint]
-                                                                  method:@"POST"
-                                                              parameters:nil];
-    request.account = accounts[0];
-    NSMutableURLRequest *urlRequest = [[request signedURLRequest] mutableCopy];
-    [urlRequest setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [urlRequest setHTTPBody:content];
-    NSError *error = nil;
-    NSURLResponse *response;
-    NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&response error:&error];
-
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-    // Process the response
-    if ([httpResponse statusCode] == [@200 integerValue]) {
-        NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
-    }
-
-    if (error != nil) {
-        NSLog(@"Error accessing ressource, clearing account [%@]. Payload was [%s] and error was %@", accounts[0],
-                [[NSString stringWithUTF8String:[data bytes]] UTF8String],
-                error.localizedDescription);
-        [store removeAccount:accounts[0]];
-        return NO;
-    }
-
-    return YES;
-}
+#pragma mark - SyncTag persistence handling methods
 
 - (NSString *)pathForDataFile {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -281,33 +237,6 @@ static NSImage *_connectedIcon = nil;
 
 #pragma mark - UIWebViewDelegate methods
 
-- (void)webView:(WebView *)webView didFinishLoadForFrame:(WebFrame *)frame {
-    NSLog(@"Finished loading frame with %@", frame.dataSource.request.URL.absoluteString);
-    //if the UIWebView is showing our authorization URL, show the UIWebView control
-    if ([frame.dataSource.request.URL.absoluteString rangeOfString:SUCCESS_URL options:NSCaseInsensitiveSearch].location == NSNotFound) {
-        NSLog(@"Not hiding web view since looking at %@", frame.dataSource.request.URL.absoluteString);
-        self.loginWebView.hidden = NO;
-    } else {
-        NSLog(@"Hiding web view since looking at %@", frame.dataSource.request.URL.absoluteString);
-        // TODO: hide the window
-
-        //otherwise hide the UIWebView, we've left the authorization flow
-        self.loginWebView.hidden = YES;
-
-        NSLog(@"Page is\n%s\n", [[NSString stringWithUTF8String:[frame.dataSource.data bytes]] UTF8String]);
-        // Read the json response
-        NSError *error = nil;
-        NSDictionary *responseData = [NSJSONSerialization JSONObjectWithData:frame.dataSource.data options:kNilOptions error:&error];
-
-        if (error) {
-            NSLog(@"Could not read authorization response: [%s]", [[NSString stringWithUTF8String:[frame.dataSource.data bytes]] UTF8String]);
-            return;
-        }
-
-        [self handleOAuth2AccessResult:responseData];
-    }
-}
-
 - (void)syncStarted:(SyncEvent *)event {
     NSLog(@"Sync started at %@", [NSDate date]);
     [self.statusBar setImage:_synchingIcon];
@@ -331,54 +260,35 @@ static NSImage *_connectedIcon = nil;
             event.syncData.insulinInjections.count,
             event.syncData.exerciseEvents.count,
             event.syncData.foodEvents.count);
-    BOOL status = [self transmitSyncedData:[event syncData]];
-
-    if (status) {
-        [self saveSyncTagToDisk:event.syncTag];
-    } else {
-        // TODO : Flag error with user action?
-
-        // This resets the manager and discards the synctag so we
-        // get to retry sending the data
-        [self stopSyncManagerIfEnabled];
-        //[self startSyncManagerIfAuthenticated];
-    }
-
-    [self.statusBar setImage:_connectedIcon];
+    [self transmitSyncedData:[event syncData] commitSyncTag:[event syncTag]];
 }
 
-- (BOOL)transmitSyncedData:(SyncData *)syncData {
+- (void)transmitSyncedData:(SyncData *)syncData commitSyncTag:(SyncTag *)syncTag {
     NSArray *glukitReads = [ModelConverter convertGlucoseReads:[syncData glucoseReads]];
     NSArray *calibrationReads = [ModelConverter convertCalibrationReads:[syncData calibrationReads]];
     NSArray *injections = [ModelConverter convertInjections:[syncData insulinInjections]];
     NSArray *exercises = [ModelConverter convertExercises:[syncData exerciseEvents]];
     NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];
 
-    BOOL status = [self transmitData:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
-    status = status && [self transmitData:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
-    status = status && [self transmitData:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
-    status = status && [self transmitData:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
-    status = status && [self transmitData:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
-    return status;
-}
+    RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
+    RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
+    RACSignal *injectionTransmit = [self signalForDataTransmitOfRecords:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
+    RACSignal *exerciseTransmit = [self signalForDataTransmitOfRecords:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
+    RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
+    RACSignal *combined = [RACSignal merge:@[glucoseTransmit, calibrationTransmit, injectionTransmit, exerciseTransmit, mealsTransmit]];
 
-- (BOOL)transmitData:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
-    if ([records count] > 0) {
-        NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
-        NSError *error;
-        NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+    [combined subscribeCompleted:^{
+        [self saveSyncTagToDisk:syncTag];
+        [self.statusBar setImage:_connectedIcon];
+    }];
+    [combined subscribeError:^(NSError *error) {
+        // TODO : Flag error with user action?
 
-        if (error == nil) {
-            NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
-        }
-
-        NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
-        BOOL status = [self sendGlukitPayload:endpoint content:payload];
-        return status;
-    } else {
-        NSLog(@"No [%s] records to transmit", [recordType UTF8String]);
-        return YES;
-    }
+        // This resets the manager and discards the synctag so we
+        // get to retry sending the data
+        [self stopSyncManagerIfEnabled];
+        [self.statusBar setImage:_connectedIcon];
+    }];
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
@@ -390,4 +300,57 @@ static NSImage *_connectedIcon = nil;
     [self.statusBar setImage:_unconnectedIcon];
 }
 
+- (RACSignal *)signalForDataTransmitOfRecords:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
+    return [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
+
+        if ([records count] > 0) {
+            NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
+            NSError *error;
+            NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+
+            if (error == nil) {
+                //NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
+            }
+
+            NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
+
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:endpoint]];
+            [request setHTTPMethod:@"POST"];
+            [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+            [request setHTTPBody:payload];
+
+            GTMHTTPFetcher *fetcher = [self newFetcherForRequest:request];
+            [fetcher setRetryEnabled:NO];
+            [fetcher beginFetchWithCompletionHandler:^(NSData *data, NSError *responseError) {
+                if (responseError != nil && [responseError code] != 200) {
+                    NSLog(@"Error accessing ressource, removing auth from keychain. "
+                            "Payload was [%@] for request [%@] and error [%li] was %@",
+                            data, [responseError userInfo], [responseError code], responseError.localizedDescription);
+                    [self clearAuthentication];
+                    [subscriber sendError:responseError];
+                } else {
+                    NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
+                    [subscriber sendNext:nil];
+                    [subscriber sendCompleted];
+                }
+            }];
+        } else {
+            NSLog(@"No [%s] records to transmit", [recordType UTF8String]);
+            [subscriber sendNext:nil];
+            [subscriber sendCompleted];
+        }
+        return nil;
+    }];
+}
+
+- (void)clearAuthentication {
+    [self.authenticationWindow setIsVisible:YES];
+    [GTMOAuth2WindowController removeAuthFromKeychainForName:GLUKIT_KEYCHAIN_NAME];
+}
+
+- (GTMHTTPFetcher *)newFetcherForRequest:(NSMutableURLRequest *)request {
+    GTMHTTPFetcher *fetcher = [[GTMHTTPFetcher alloc] initWithRequest:request];
+    [fetcher setAuthorizer:glukitAuth];
+    return fetcher;
+}
 @end

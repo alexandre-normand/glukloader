@@ -100,7 +100,7 @@
                               carbs:[foodEvent carbohydrates]
                            proteins:[foodEvent proteins]
                                 fat:[foodEvent fat]
-                       saturatedFat:0.f];
+                       saturatedFat:-1];
 }
 
 + (NSArray *)convertExercises:(NSArray *)exercises {
