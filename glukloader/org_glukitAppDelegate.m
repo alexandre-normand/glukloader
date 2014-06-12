@@ -128,6 +128,7 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (IBAction)quit:(id)sender {
+    [self stopSyncManagerIfEnabled];
     [NSApp performSelector:@selector(terminate:) withObject:nil afterDelay:0.0];
 }
 
