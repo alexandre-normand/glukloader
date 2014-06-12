@@ -277,16 +277,14 @@ static NSImage *_connectedIcon = nil;
     RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
     RACSignal *combined = [RACSignal merge:@[glucoseTransmit, calibrationTransmit, injectionTransmit, exerciseTransmit, mealsTransmit]];
 
-    [combined subscribeCompleted:^{
-        [self saveSyncTagToDisk:syncTag];
-        [self.statusBar setImage:_connectedIcon];
-    }];
     [combined subscribeError:^(NSError *error) {
         // TODO : Flag error with user action?
-
         // This resets the manager and discards the synctag so we
         // get to retry sending the data
         [self stopSyncManagerIfEnabled];
+        [self.statusBar setImage:_connectedIcon];
+    } completed:^{
+        [self saveSyncTagToDisk:syncTag];
         [self.statusBar setImage:_connectedIcon];
     }];
 }
