@@ -32,7 +32,8 @@ static NSImage *_connectedIcon = nil;
 
 @implementation org_glukitAppDelegate {
     SyncManager *syncManager;
-    GTMOAuth2Authentication *glukitAuth;    
+    GTMOAuth2Authentication *glukitAuth;
+    NSString *lastRefreshToken;
 }
 
 @synthesize statusMenu = _statusMenu;
@@ -47,10 +48,13 @@ static NSImage *_connectedIcon = nil;
 
 - (id)init {
     glukitAuth = [org_glukitAppDelegate createAuth];
+    NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
+    lastRefreshToken = [glukitAuth refreshToken];
     return self;
 }
 
 + (GTMOAuth2Authentication *)createAuth {
+
     NSURL *tokenURL = [NSURL URLWithString:TOKEN_URL];
 
     // We'll make up an arbitrary redirectURI.  The controller will watch for
@@ -105,10 +109,18 @@ static NSImage *_connectedIcon = nil;
                 [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] UTF8String], error);
         [self stopSyncManagerIfEnabled];
     } else {
-        NSLog(@"Success! We have an access token: [%@]", [glukitAuth accessToken]);
+        NSLog(@"Success! We have an access token: [%@]", glukitAuth);
 
         [self hideAuthentication];
         [self startSyncManagerIfAuthenticated];
+    }
+}
+
+- (void)updateRefreshTokenInKeychainIfRequired {
+    if (glukitAuth.refreshToken != lastRefreshToken) {
+        NSLog(@"Updating keychain with refresh token [%s]", [[glukitAuth refreshToken] UTF8String]);
+        [GTMOAuth2WindowController saveAuthToKeychainForName:GLUKIT_KEYCHAIN_NAME authentication:glukitAuth];
+        lastRefreshToken = [glukitAuth refreshToken];
     }
 }
 
@@ -129,7 +141,7 @@ static NSImage *_connectedIcon = nil;
 
 - (IBAction)quit:(id)sender {
     [self stopSyncManagerIfEnabled];
-    [NSApp performSelector:@selector(terminate:) withObject:nil afterDelay:0.0];
+    [NSApp terminate:self];
 }
 
 - (IBAction)authenticate:(id)sender {
@@ -284,7 +296,7 @@ static NSImage *_connectedIcon = nil;
         // get to retry sending the data
         [self stopSyncManagerIfEnabled];
         [self.statusBar setImage:_connectedIcon];
-    } completed:^{
+    }              completed:^{
         [self saveSyncTagToDisk:syncTag];
         [self.statusBar setImage:_connectedIcon];
     }];
@@ -329,6 +341,7 @@ static NSImage *_connectedIcon = nil;
                     [subscriber sendError:responseError];
                 } else {
                     NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
+                    [self updateRefreshTokenInKeychainIfRequired];
                     [subscriber sendNext:nil];
                     [subscriber sendCompleted];
                 }
