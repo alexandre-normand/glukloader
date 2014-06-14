@@ -1,0 +1,3 @@
+#!/bin/sh
+
+CREATE_DMG=glukloader XCTOOL_OPTIONS="--configuration 'Release'" ./script/cibuild

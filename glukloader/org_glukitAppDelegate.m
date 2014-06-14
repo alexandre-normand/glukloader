@@ -100,10 +100,6 @@ static NSImage *_connectedIcon = nil;
                    error:(NSError *)error {
 
     if (error != nil) {
-        // Authentication failed (perhaps the user denied access, or closed the
-        // window before granting access)
-        NSString *errorStr = [error localizedDescription];
-
         NSData *responseData = [[error userInfo] objectForKey:@"data"]; // kGTMHTTPFetcherStatusDataKey
         NSLog(@"Error, access lost with response [%s]: %@",
                 [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] UTF8String], error);
