@@ -46,6 +46,7 @@ config ()
     export BOOTSTRAP
     export XCTOOL_OPTIONS
     export SCHEMES
+    export CREATE_DMG
 }
 
 ##
@@ -65,22 +66,43 @@ main ()
     echo "*** The following schemes will be built:"
     echo "$SCHEMES" | xargs -n 1 echo "  "
     echo
-
+    
     echo "$SCHEMES" | xargs -n 1 | (
         local status=0
 
         while read scheme
-        do
+        do 
             build_scheme "$scheme" || status=1
-        done
+	done
 
         exit $status
     )
+ 
+    OUTPUT_DIR=$(find_build_path)
+   
+    if [ -n "$CREATE_DMG" ]
+    then 
+        create_dmg $OUTPUT_DIR
+    fi
 }
 
 find_pattern ()
 {
     ls -d $1 2>/dev/null | head -n 1
+}
+
+find_build_path () 
+{
+    if [ -n "$XCWORKSPACE" ]
+    then
+        xcodebuild -workspace "$XCWORKSPACE" -scheme "$CREATE_DMG" -showBuildSettings | grep -e TARGET_BUILD_DIR | awk -F"= " '{print $2}' 2>&1
+    elif [ -n "$XCODEPROJ" ]
+    then
+        xcodebuild -project "$XCODEPROJ" $XCTOOL_OPTIONS "$CREATE_DMG" -showBuildSettings | grep -e TARGET_BUILD_DIR | awk -F"= " '{print $2}' 2>&1
+    else
+        echo "*** No workspace or project file found."
+        exit 1
+    fi
 }
 
 run_xctool ()
@@ -135,8 +157,15 @@ build_scheme ()
     run_xctool $sdkflag -scheme "$scheme" $action
 }
 
+create_dmg() { 
+   if [ -n "$1" ]; then
+	echo "Creating dmg in $1..."
+	dropdmg --config-name=Glukloader --append-version-number --custom-icon $1/glukloader.app
+   fi 
+}
 export -f build_scheme
 export -f run_xctool
 export -f parse_build
+export -f create_dmg 
 
 main
