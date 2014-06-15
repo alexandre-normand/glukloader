@@ -84,6 +84,7 @@ static NSImage *_connectedIcon = nil;
         [self hideAuthentication];
     } else {
         [self.statusBar setImage:_unconnectedIcon];
+        [self startOauthFlow];
     }
 
     [self initializeDefaultIfFirstRun];
@@ -91,8 +92,16 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (void)hideAuthentication {
-    [_authenticationMenuItem setEnabled:FALSE];
     [self.authenticationWindow setIsVisible:FALSE];
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
+    if ([menuItem action] == @selector(authenticate:)) {
+        return !(glukitAuth != nil && [glukitAuth canAuthorize]);
+    }
+    else {
+        return YES;
+    }
 }
 
 - (void)windowController:(GTMOAuth2WindowController *)windowController
@@ -141,6 +150,11 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (IBAction)authenticate:(id)sender {
+    [self startOauthFlow];
+
+}
+
+- (void)startOauthFlow {
     [self.authenticationWindow setIsVisible:TRUE];
     GTMOAuth2WindowController *windowController;
     windowController = [[GTMOAuth2WindowController alloc] initWithAuthentication:glukitAuth
@@ -153,6 +167,8 @@ static NSImage *_connectedIcon = nil;
                                finishedSelector:@selector(windowController:finishedWithAuth:error:)];
 
     [self.authenticationWindow setWindowController:windowController];
+    [self.authenticationWindow setLevel:NSFloatingWindowLevel];
+    [windowController showWindow:self.authenticationWindow];
 }
 
 - (IBAction)toggleAutoStart:(id)sender {
