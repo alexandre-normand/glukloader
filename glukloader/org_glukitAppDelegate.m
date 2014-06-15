@@ -34,6 +34,7 @@ static NSImage *_connectedIcon = nil;
     SyncManager *syncManager;
     GTMOAuth2Authentication *glukitAuth;
     NSString *lastRefreshToken;
+    NSDateFormatter *filenameDateFormatter;
 }
 
 @synthesize statusMenu = _statusMenu;
@@ -50,6 +51,8 @@ static NSImage *_connectedIcon = nil;
     glukitAuth = [org_glukitAppDelegate createAuth];
     NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
     lastRefreshToken = [glukitAuth refreshToken];
+    filenameDateFormatter = [[NSDateFormatter alloc] init];
+    [filenameDateFormatter setDateFormat:@"dd-MMM-yyyy'T'hh:mm:ssZ"];
     return self;
 }
 
@@ -221,7 +224,7 @@ static NSImage *_connectedIcon = nil;
 
 #pragma mark - SyncTag persistence handling methods
 
-- (NSString *)pathForDataFile {
+- (NSString *)pathForFilename:(NSString *)filename {
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
     NSString *folder = @"~/Library/Application Support/Glukloader/";
@@ -235,12 +238,11 @@ static NSImage *_connectedIcon = nil;
 
     }
 
-    NSString *fileName = @"Glukloader.state";
-    return [folder stringByAppendingPathComponent:fileName];
+    return [folder stringByAppendingPathComponent:filename];
 }
 
 - (void)saveSyncTagToDisk:(SyncTag *)tag {
-    NSString *path = [self pathForDataFile];
+    NSString *path = [self pathForStateFile];
 
     NSMutableDictionary *rootObject;
     rootObject = [NSMutableDictionary dictionary];
@@ -250,8 +252,12 @@ static NSImage *_connectedIcon = nil;
     NSLog(@"Saved tag [%@] to disk", tag);
 }
 
+- (NSString *)pathForStateFile {
+    return [self pathForFilename:@"Glukloader.state"];
+}
+
 - (SyncTag *)loadDataFromDisk {
-    NSString *path = [self pathForDataFile];
+    NSString *path = [self pathForStateFile];
     NSDictionary *rootObject;
 
     rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
@@ -293,13 +299,13 @@ static NSImage *_connectedIcon = nil;
     NSArray *calibrationReads = [ModelConverter convertCalibrationReads:[syncData calibrationReads]];
     NSArray *injections = [ModelConverter convertInjections:[syncData insulinInjections]];
     NSArray *exercises = [ModelConverter convertExercises:[syncData exerciseEvents]];
-    NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];
+    NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];    
 
-    RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:@"GlucoseReads"];
-    RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:@"CalibrationReads"];
-    RACSignal *injectionTransmit = [self signalForDataTransmitOfRecords:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:@"Injections"];
-    RACSignal *exerciseTransmit = [self signalForDataTransmitOfRecords:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:@"Exercises"];
-    RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:@"Meals"];
+    RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:GLUCOSE_READ_TYPE];
+    RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:CALIBRATION_READ_TYPE];
+    RACSignal *injectionTransmit = [self signalForDataTransmitOfRecords:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:INJECTION_TYPE];
+    RACSignal *exerciseTransmit = [self signalForDataTransmitOfRecords:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:EXERCISE_TYPE];
+    RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:MEALS_TYPE];
     RACSignal *combined = [RACSignal merge:@[glucoseTransmit, calibrationTransmit, injectionTransmit, exerciseTransmit, mealsTransmit]];
 
     [combined subscribeError:^(NSError *error) {
@@ -309,9 +315,64 @@ static NSImage *_connectedIcon = nil;
         [self stopSyncManagerIfEnabled];
         [self.statusBar setImage:_connectedIcon];
     }              completed:^{
-        [self saveSyncTagToDisk:syncTag];
+        // Commit the data sync by saving the sync tag and writing a log of the
+        // uploaded data on local disk
+        BOOL writeSuccess = [self writeDataLogToDisk:glukitReads calibrationReads:calibrationReads injections:injections exercises:exercises meals:meals];
+        if (writeSuccess) {
+            [self saveSyncTagToDisk:syncTag];
+        }
+
         [self.statusBar setImage:_connectedIcon];
     }];
+}
+
+- (BOOL)writeDataLogToDisk:(NSArray *)glukitReads calibrationReads:(NSArray *)calibrationReads injections:(NSArray *)injections exercises:(NSArray *)exercises meals:(NSArray *)meals {
+    BOOL success = [self writeDataLogForRecordType:glukitReads recordType:GLUCOSE_READ_TYPE];
+    success = success && [self writeDataLogForRecordType:calibrationReads recordType:CALIBRATION_READ_TYPE];
+    success = success && [self writeDataLogForRecordType:injections recordType:INJECTION_TYPE];
+    success = success && [self writeDataLogForRecordType:exercises recordType:EXERCISE_TYPE];
+    success = success && [self writeDataLogForRecordType:meals recordType:MEALS_TYPE];
+    
+    return success;
+}
+
+- (BOOL)writeDataLogForRecordType:(NSArray *)records recordType:(NSString *const)recordType {
+    if ([records count] == 0) {
+        NSLog(@"Skipping write log since we have no records for [%s]", [recordType UTF8String]);
+        return YES;
+    }
+
+    NSString *recordTypeFilename = [self fileNameForRecordType:recordType];
+    NSString *fullPath = [self pathForFilename:recordTypeFilename];
+    NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
+    NSError *error;
+    NSString *dataLog = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
+
+    if (error == nil) {
+        BOOL result = [dataLog writeToFile:fullPath
+                                atomically:NO
+                                  encoding:NSStringEncodingConversionAllowLossy
+                                     error:&error];
+        if (!result) {
+            NSLog(@"Failed to write log of records to [%s]: %@", [fullPath UTF8String], error);
+            return NO;
+        } else {
+            NSLog(@"Wrote [%lu] records of [%s] to [%s]",
+                    [records count],
+                    [recordType UTF8String],
+                    [fullPath UTF8String]);
+        }
+        
+        return YES;
+    } else {
+        NSLog(@"Failed to encode records as json: %@", error);
+        return NO;
+    }
+}
+
+- (NSString *)fileNameForRecordType:(NSString *const)recordType {
+    return [NSString stringWithFormat:@"%s-%s.json", [recordType UTF8String],
+                                      [[filenameDateFormatter stringFromDate:[NSDate date]] UTF8String]];
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
