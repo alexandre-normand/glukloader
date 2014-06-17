@@ -124,6 +124,10 @@ static NSImage *_connectedIcon = nil;
     }
 }
 
+- (BOOL)webViewIsResizable:(WebView *)sender {
+    return NO;
+}
+
 - (void)updateRefreshTokenInKeychainIfRequired {
     if (glukitAuth.refreshToken != lastRefreshToken) {
         NSLog(@"Updating keychain with refresh token [%s]", [[glukitAuth refreshToken] UTF8String]);
