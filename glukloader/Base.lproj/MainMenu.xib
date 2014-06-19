@@ -37,6 +37,19 @@
                         <action selector="toggleAutoStart:" target="494" id="WZp-bT-SHb"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Advanced" id="vsW-sv-Rkf">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Advanced" id="aAi-q7-cMM">
+                        <items>
+                            <menuItem title="Resend all data to glukit" id="E91-6o-ab5">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="resendDataToGlukit:" target="494" id="6tH-O1-3xe"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Quit" id="6zH-ov-WNm">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>

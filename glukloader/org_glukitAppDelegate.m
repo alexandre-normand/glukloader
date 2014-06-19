@@ -161,6 +161,20 @@ static NSImage *_connectedIcon = nil;
 
 }
 
+- (IBAction)resendDataToGlukit:(id)sender {
+    NSError *error;
+    NSString *glukitRoot = [self glukitRoot];
+    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:glukitRoot error:&error];
+    
+    if (error != nil) {
+        NSLog(@"Error listing files in glukit root [%@]: %@", glukitRoot, error);
+        return;
+    }
+
+    NSArray *glucoseReadsFiles =
+            [dirFiles filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self ENDSWITH '.json' AND self STARTSWITH %s", GLUCOSE_READ_TYPE]];
+}
+
 - (void)startOauthFlow {
     [self.authenticationWindow setIsVisible:TRUE];
     GTMOAuth2WindowController *windowController;
@@ -231,8 +245,7 @@ static NSImage *_connectedIcon = nil;
 - (NSString *)pathForFilename:(NSString *)filename {
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
-    NSString *folder = @"~/Library/Application Support/Glukloader/";
-    folder = [folder stringByExpandingTildeInPath];
+    NSString *folder = [self glukitRoot];
 
     if (![fileManager fileExistsAtPath:folder]) {
         NSError *error = nil;
@@ -243,6 +256,12 @@ static NSImage *_connectedIcon = nil;
     }
 
     return [folder stringByAppendingPathComponent:filename];
+}
+
+- (NSString *)glukitRoot {
+    NSString *folder = @"~/Library/Application Support/Glukloader/";
+    folder = [folder stringByExpandingTildeInPath];
+    return folder;
 }
 
 - (void)saveSyncTagToDisk:(SyncTag *)tag {
