@@ -171,8 +171,25 @@ static NSImage *_connectedIcon = nil;
         return;
     }
 
+    NSPredicate *recordFileFormat = [NSPredicate predicateWithFormat:@"(self ENDSWITH '.json') AND (self BEGINSWITH $type)"];
     NSArray *glucoseReadsFiles =
-            [dirFiles filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self ENDSWITH '.json' AND self STARTSWITH %s", GLUCOSE_READ_TYPE]];
+            [dirFiles filteredArrayUsingPredicate:[recordFileFormat predicateWithSubstitutionVariables:@{@"type": GLUCOSE_READ_TYPE}]];
+    NSArray *sortedArray = [NSArray arrayWithArray:[glucoseReadsFiles sortedArrayUsingComparator:^(NSString* filenameA, NSString* filenameB) {
+        NSString *dateAString = [self dateStringFromFilename:filenameA];
+        NSLog(@"Date as string %@", dateAString);
+        NSDate *dateA = [filenameDateFormatter dateFromString:dateAString];
+        NSString *dateBString = [self dateStringFromFilename:filenameB];
+        NSDate *dateB = [filenameDateFormatter dateFromString:dateBString];
+        return [dateA compare:dateB];
+    }]];
+
+    NSLog(@"Replaying glucose read files: %@", sortedArray);
+}
+
+- (NSString *)dateStringFromFilename:(NSString *)filename {
+    NSRange startOfDate = [filename rangeOfString:@"-"];
+    NSRange endOfDate = [filename rangeOfString:@"."];
+    return [filename substringWithRange:NSMakeRange(startOfDate.location + 1, endOfDate.location - startOfDate.location - 1)];
 }
 
 - (void)startOauthFlow {
