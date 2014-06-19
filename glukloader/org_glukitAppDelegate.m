@@ -52,7 +52,7 @@ static NSImage *_connectedIcon = nil;
     NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
     lastRefreshToken = [glukitAuth refreshToken];
     filenameDateFormatter = [[NSDateFormatter alloc] init];
-    [filenameDateFormatter setDateFormat:@"dd-MMM-yyyy'T'hh:mm:ssZ"];
+    [filenameDateFormatter setDateFormat:@"dd-MM-yyyy'T'hh:mm:ssZ"];
     return self;
 }
 
@@ -303,7 +303,7 @@ static NSImage *_connectedIcon = nil;
     NSArray *calibrationReads = [ModelConverter convertCalibrationReads:[syncData calibrationReads]];
     NSArray *injections = [ModelConverter convertInjections:[syncData insulinInjections]];
     NSArray *exercises = [ModelConverter convertExercises:[syncData exerciseEvents]];
-    NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];    
+    NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];
 
     RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:GLUCOSE_READ_TYPE];
     RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:CALIBRATION_READ_TYPE];
@@ -336,7 +336,7 @@ static NSImage *_connectedIcon = nil;
     success = success && [self writeDataLogForRecordType:injections recordType:INJECTION_TYPE];
     success = success && [self writeDataLogForRecordType:exercises recordType:EXERCISE_TYPE];
     success = success && [self writeDataLogForRecordType:meals recordType:MEALS_TYPE];
-    
+
     return success;
 }
 
@@ -346,7 +346,22 @@ static NSImage *_connectedIcon = nil;
         return YES;
     }
 
-    NSString *recordTypeFilename = [self fileNameForRecordType:recordType];
+    NSObject *firstRecord = [records objectAtIndex:0];
+    GlukitTime *glukitTime = nil;
+    if (recordType == GLUCOSE_READ_TYPE) {
+        glukitTime = [(GlukitGlucoseRead *) firstRecord time];
+    } else if (recordType == CALIBRATION_READ_TYPE) {
+        glukitTime = [(GlukitCalibrationRead *) firstRecord time];
+    } else if (recordType == EXERCISE_TYPE) {
+        glukitTime = [(GlukitExercise *) firstRecord time];
+    } else if (recordType == INJECTION_TYPE) {
+        glukitTime = [(GlukitInjection *) firstRecord time];
+    } else if (recordType == MEALS_TYPE) {
+        glukitTime = [(GlukitMeal *) firstRecord time];
+    }
+
+    NSDate *firstRecordTime = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval) [[glukitTime timestamp] longLongValue] / 1000];
+    NSString *recordTypeFilename = [self fileNameForRecordType:recordType firstRecordDate:firstRecordTime];
     NSString *fullPath = [self pathForFilename:recordTypeFilename];
     NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
     NSError *error;
@@ -366,7 +381,7 @@ static NSImage *_connectedIcon = nil;
                     [recordType UTF8String],
                     [fullPath UTF8String]);
         }
-        
+
         return YES;
     } else {
         NSLog(@"Failed to encode records as json: %@", error);
@@ -374,9 +389,9 @@ static NSImage *_connectedIcon = nil;
     }
 }
 
-- (NSString *)fileNameForRecordType:(NSString *const)recordType {
+- (NSString *)fileNameForRecordType:(NSString *const)recordType firstRecordDate:(NSDate *)firstRecordTime {
     return [NSString stringWithFormat:@"%s-%s.json", [recordType UTF8String],
-                                      [[filenameDateFormatter stringFromDate:[NSDate date]] UTF8String]];
+                                      [[filenameDateFormatter stringFromDate:firstRecordTime] UTF8String]];
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {

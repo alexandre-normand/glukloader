@@ -17,15 +17,15 @@ static NSString *const STATE_KEY = @"state";
 
 static NSString *const SYNC_TAG_KEY = @"syncTag";
 
-static NSString *const GLUCOSE_READ_TYPE = @"GlucoseReads";
+static NSString *const GLUCOSE_READ_TYPE = @"glucoseReads";
 
-static NSString *const CALIBRATION_READ_TYPE = @"CalibrationReads";
+static NSString *const CALIBRATION_READ_TYPE = @"calibrationReads";
 
-static NSString *const INJECTION_TYPE = @"Injections";
+static NSString *const INJECTION_TYPE = @"injections";
 
-static NSString *const EXERCISE_TYPE = @"Exercises";
+static NSString *const EXERCISE_TYPE = @"exercises";
 
-static NSString *const MEALS_TYPE = @"Meals";
+static NSString *const MEALS_TYPE = @"meals";
 
 @interface org_glukitAppDelegate : NSObject <NSApplicationDelegate, SyncEventObserver>
 
