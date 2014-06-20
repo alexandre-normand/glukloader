@@ -27,6 +27,16 @@ static NSString *const EXERCISE_TYPE = @"exercises";
 
 static NSString *const MEALS_TYPE = @"meals";
 
+static NSString *const GLUCOSE_READ_ENDPOINT = @"https://glukit.appspot.com/v1/glucosereads";
+
+static NSString *const CALIBRATIONS_ENDPOINT = @"https://glukit.appspot.com/v1/calibrations";
+
+static NSString *const INJECTIONS_ENDPOINT = @"https://glukit.appspot.com/v1/injections";
+
+static NSString *const EXERCISES_ENDPOINT = @"https://glukit.appspot.com/v1/exercises";
+
+static NSString *const MEALS_ENDPOINT = @"https://glukit.appspot.com/v1/meals";
+
 @interface org_glukitAppDelegate : NSObject <NSApplicationDelegate, SyncEventObserver>
 
 @property (strong, nonatomic) NSStatusItem *statusBar;

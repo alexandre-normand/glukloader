@@ -164,26 +164,90 @@ static NSImage *_connectedIcon = nil;
 - (IBAction)resendDataToGlukit:(id)sender {
     NSError *error;
     NSString *glukitRoot = [self glukitRoot];
-    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:glukitRoot error:&error];
-    
-    if (error != nil) {
-        NSLog(@"Error listing files in glukit root [%@]: %@", glukitRoot, error);
-        return;
+
+
+    NSArray *glucoseReadSignals = [self prepareTransmissionTasks:glukitRoot recordType:GLUCOSE_READ_TYPE modelClass:[GlukitGlucoseRead class] endpoint:GLUCOSE_READ_ENDPOINT error:&error];
+    NSArray *exerciseSignals = [self prepareTransmissionTasks:glukitRoot recordType:EXERCISE_TYPE modelClass:[GlukitExercise class] endpoint:EXERCISES_ENDPOINT error:&error];
+    NSArray *injectionSignals = [self prepareTransmissionTasks:glukitRoot recordType:INJECTION_TYPE modelClass:[GlukitInjection class] endpoint:INJECTIONS_ENDPOINT error:&error];
+    NSArray *calibrationSignals = [self prepareTransmissionTasks:glukitRoot recordType:CALIBRATION_READ_TYPE modelClass:[GlukitCalibrationRead class] endpoint:CALIBRATIONS_ENDPOINT error:&error];
+    NSArray *mealSignals = [self prepareTransmissionTasks:glukitRoot recordType:MEALS_TYPE modelClass:[GlukitMeal class] endpoint:MEALS_ENDPOINT error:&error];
+    NSMutableArray *allTransmits = [[NSMutableArray alloc] init];
+    [allTransmits addObjectsFromArray:glucoseReadSignals];
+    [allTransmits addObjectsFromArray:exerciseSignals];
+    [allTransmits addObjectsFromArray:injectionSignals];
+    [allTransmits addObjectsFromArray:calibrationSignals];
+    [allTransmits addObjectsFromArray:mealSignals];
+
+    RACSignal *combined = [RACSignal concat:allTransmits];
+
+    [combined subscribeNext:^(id x) {
+        NSLog(@"Increment progress bar");
     }
+            error:^(NSError *err) {
+        // TODO : Flag error with user action?
+        // This resets the manager and discards the synctag so we
+        // get to retry sending the data
+        [self stopSyncManagerIfEnabled];
+        [self.statusBar setImage:_connectedIcon];
+    }
+            completed:^{
+        [self.statusBar setImage:_connectedIcon];
+    }];
+}
 
-    NSPredicate *recordFileFormat = [NSPredicate predicateWithFormat:@"(self ENDSWITH '.json') AND (self BEGINSWITH $type)"];
-    NSArray *glucoseReadsFiles =
-            [dirFiles filteredArrayUsingPredicate:[recordFileFormat predicateWithSubstitutionVariables:@{@"type": GLUCOSE_READ_TYPE}]];
-    NSArray *sortedArray = [NSArray arrayWithArray:[glucoseReadsFiles sortedArrayUsingComparator:^(NSString* filenameA, NSString* filenameB) {
-        NSString *dateAString = [self dateStringFromFilename:filenameA];
-        NSLog(@"Date as string %@", dateAString);
-        NSDate *dateA = [filenameDateFormatter dateFromString:dateAString];
-        NSString *dateBString = [self dateStringFromFilename:filenameB];
-        NSDate *dateB = [filenameDateFormatter dateFromString:dateBString];
-        return [dateA compare:dateB];
-    }]];
+- (NSArray *)prepareTransmissionTasks:(NSString *)glukitRoot recordType:(NSString *const)recordType modelClass:(Class)modelClass endpoint:(NSString *const)endpoint error:(NSError **)error {
+    NSError *err;
+    NSMutableArray *glucoseReadTransmitTasks = [[NSMutableArray alloc] init];
+    NSArray *files = [self getFilesOfType:glukitRoot recordType:recordType error:error];
 
-    NSLog(@"Replaying glucose read files: %@", sortedArray);
+    NSLog(@"Found files for %@: %@", recordType, files);
+
+    for (id filename in files) {
+        NSData *data = [NSData dataWithContentsOfFile:[self pathForFilename:filename] options:NSDataReadingMappedIfSafe error:&err];
+        if (err != nil) {
+            *error = err;
+            return nil;
+        }
+        NSArray *array = [JsonEncoder decodeArrayToJSON:data error:&err];
+        if (err != nil) {
+            *error = err;
+            return nil;
+        }
+        
+        NSArray *records = [ModelConverter modelsOfClass:modelClass fromJSONArray:array error:&err];
+        if (err != nil) {
+            *error = err;
+            return nil;
+        }
+
+        [glucoseReadTransmitTasks addObject:[self signalForDataTransmitOfRecords:records endpoint:endpoint recordType:recordType]];
+    }
+    
+    return glucoseReadTransmitTasks;
+}
+
+- (NSArray *)getFilesOfType:(NSString *)glukitRoot recordType:(NSString *const)recordType error:(NSError **)error {
+    NSError *err;
+    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:glukitRoot error:&err];
+    if (err != nil) {
+        NSLog(@"Error listing files in glukit root [%@]: %@", glukitRoot, (*error));
+        *error = err;
+        return nil;
+    } else {
+        NSPredicate *recordFileFormat = [NSPredicate predicateWithFormat:@"(self ENDSWITH '.json') AND (self BEGINSWITH $type)"];
+        NSArray *recordFiles =
+                [dirFiles filteredArrayUsingPredicate:[recordFileFormat predicateWithSubstitutionVariables:@{@"type" : recordType}]];
+        NSArray *sortedArray = [NSArray arrayWithArray:[recordFiles sortedArrayUsingComparator:^(NSString *filenameA, NSString *filenameB) {
+            NSString *dateAString = [self dateStringFromFilename:filenameA];
+            NSLog(@"Date as string %@", dateAString);
+            NSDate *dateA = [filenameDateFormatter dateFromString:dateAString];
+            NSString *dateBString = [self dateStringFromFilename:filenameB];
+            NSDate *dateB = [filenameDateFormatter dateFromString:dateBString];
+            return [dateA compare:dateB];
+        }]];
+        
+        return sortedArray;
+    }
 }
 
 - (NSString *)dateStringFromFilename:(NSString *)filename {
@@ -341,11 +405,11 @@ static NSImage *_connectedIcon = nil;
     NSArray *exercises = [ModelConverter convertExercises:[syncData exerciseEvents]];
     NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];
 
-    RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:GLUCOSE_READ_TYPE];
-    RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:CALIBRATION_READ_TYPE];
-    RACSignal *injectionTransmit = [self signalForDataTransmitOfRecords:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:INJECTION_TYPE];
-    RACSignal *exerciseTransmit = [self signalForDataTransmitOfRecords:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:EXERCISE_TYPE];
-    RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:MEALS_TYPE];
+    RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:GLUCOSE_READ_ENDPOINT recordType:GLUCOSE_READ_TYPE];
+    RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:CALIBRATIONS_ENDPOINT recordType:CALIBRATION_READ_TYPE];
+    RACSignal *injectionTransmit = [self signalForDataTransmitOfRecords:injections endpoint:INJECTIONS_ENDPOINT recordType:INJECTION_TYPE];
+    RACSignal *exerciseTransmit = [self signalForDataTransmitOfRecords:exercises endpoint:EXERCISES_ENDPOINT recordType:EXERCISE_TYPE];
+    RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:MEALS_ENDPOINT recordType:MEALS_TYPE];
     RACSignal *combined = [RACSignal merge:@[glucoseTransmit, calibrationTransmit, injectionTransmit, exerciseTransmit, mealsTransmit]];
 
     [combined subscribeError:^(NSError *error) {
