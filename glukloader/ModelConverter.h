@@ -28,4 +28,6 @@
 
 
 + (NSArray *)JSONArrayFromModels:(NSArray *)models;
+
++ (NSArray *)modelsOfClass:(Class)modelClass fromJSONArray:(NSArray *)JSONArray error:(NSError **)error;
 @end
