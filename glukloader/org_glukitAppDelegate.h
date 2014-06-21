@@ -45,6 +45,8 @@ static NSString *const MEALS_ENDPOINT = @"https://glukit.appspot.com/v1/meals";
 @property (assign) IBOutlet NSMenuItem *authenticationMenuItem;
 @property (assign) IBOutlet NSMenuItem *autoStartMenuItem;
 @property (strong, nonatomic) IBOutlet NSWindow *authenticationWindow;
+@property (strong, nonatomic) IBOutlet NSWindow *progressWindow;
+@property (strong, nonatomic) IBOutlet NSProgressIndicator *progressIndicator;
 @property (strong, nonatomic) IBOutlet WebView *loginWebView;
 
 
