@@ -35,6 +35,7 @@ static NSImage *_connectedIcon = nil;
     GTMOAuth2Authentication *glukitAuth;
     NSString *lastRefreshToken;
     NSDateFormatter *filenameDateFormatter;
+    GTMOAuth2WindowController *_windowController;
 }
 
 @synthesize statusMenu = _statusMenu;
@@ -50,11 +51,18 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (id)init {
-    glukitAuth = [org_glukitAppDelegate createAuth];
-    NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
-    lastRefreshToken = [glukitAuth refreshToken];
-    filenameDateFormatter = [[NSDateFormatter alloc] init];
-    [filenameDateFormatter setDateFormat:@"dd-MM-yyyy'T'hh:mm:ssZ"];
+    if((self = [super init])) {
+        glukitAuth = [org_glukitAppDelegate createAuth];
+        _windowController = [[GTMOAuth2WindowController alloc] initWithAuthentication:glukitAuth
+                                                                     authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
+                                                                     keychainItemName:GLUKIT_KEYCHAIN_NAME
+                                                                       resourceBundle:nil];
+
+        NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
+        lastRefreshToken = [glukitAuth refreshToken];
+        filenameDateFormatter = [[NSDateFormatter alloc] init];
+        [filenameDateFormatter setDateFormat:@"dd-MM-yyyy'T'hh:mm:ssZ"];
+    }
     return self;
 }
 
@@ -281,19 +289,14 @@ static NSImage *_connectedIcon = nil;
 
 - (void)startOauthFlow {
     [self.authenticationWindow setIsVisible:TRUE];
-    GTMOAuth2WindowController *windowController;
-    windowController = [[GTMOAuth2WindowController alloc] initWithAuthentication:glukitAuth
-                                                                authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
-                                                                keychainItemName:GLUKIT_KEYCHAIN_NAME
-                                                                  resourceBundle:nil];
 
-    [windowController signInSheetModalForWindow:[self authenticationWindow]
-                                       delegate:self
-                               finishedSelector:@selector(windowController:finishedWithAuth:error:)];
+    [_windowController signInSheetModalForWindow:[self authenticationWindow]
+                                        delegate:self
+                                finishedSelector:@selector(windowController:finishedWithAuth:error:)];
 
-    [self.authenticationWindow setWindowController:windowController];
+    [self.authenticationWindow setWindowController:_windowController];
     [self.authenticationWindow setLevel:NSFloatingWindowLevel];
-    [windowController showWindow:self.authenticationWindow];
+    [_windowController showWindow:self.authenticationWindow];
 }
 
 - (IBAction)toggleAutoStart:(id)sender {
