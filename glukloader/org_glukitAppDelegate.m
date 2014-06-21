@@ -40,6 +40,8 @@ static NSImage *_connectedIcon = nil;
 @synthesize statusMenu = _statusMenu;
 @synthesize statusBar = _statusBar;
 @synthesize autoStartMenuItem = _autoStartMenuItem;
+@synthesize progressIndicator = _progressIndicator;
+@synthesize progressWindow = _progressWindow;
 
 + (void)initialize {
     _synchingIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:true];
@@ -101,6 +103,9 @@ static NSImage *_connectedIcon = nil;
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
     if ([menuItem action] == @selector(authenticate:)) {
         return !(glukitAuth != nil && [glukitAuth canAuthorize]);
+    }
+    else if ([menuItem action] == @selector(resendDataToGlukit:)) {
+        return (glukitAuth != nil && [glukitAuth canAuthorize]);
     }
     else {
         return YES;
@@ -178,10 +183,14 @@ static NSImage *_connectedIcon = nil;
     [allTransmits addObjectsFromArray:calibrationSignals];
     [allTransmits addObjectsFromArray:mealSignals];
 
+    int numberOfSteps = [allTransmits count];
+    [self initializeProgressWindow:numberOfSteps];
+
     RACSignal *combined = [RACSignal concat:allTransmits];
 
     [combined subscribeNext:^(id x) {
         NSLog(@"Increment progress bar");
+        [_progressIndicator incrementBy:1.];
     }
             error:^(NSError *err) {
         // TODO : Flag error with user action?
@@ -193,6 +202,20 @@ static NSImage *_connectedIcon = nil;
             completed:^{
         [self.statusBar setImage:_connectedIcon];
     }];
+
+    [self hideProgressWindow];
+}
+
+- (void)hideProgressWindow {
+    [_progressWindow setIsVisible:NO];
+    [_progressIndicator setMaxValue:0];
+}
+
+- (void)initializeProgressWindow:(int)numberOfSteps {
+    [_progressIndicator setMaxValue:numberOfSteps];
+    [_progressIndicator setDoubleValue:0.];
+    [_progressIndicator setUsesThreadedAnimation:YES];
+    [_progressWindow setIsVisible:YES];
 }
 
 - (NSArray *)prepareTransmissionTasks:(NSString *)glukitRoot recordType:(NSString *const)recordType modelClass:(Class)modelClass endpoint:(NSString *const)endpoint error:(NSError **)error {

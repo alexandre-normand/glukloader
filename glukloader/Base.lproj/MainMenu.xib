@@ -19,6 +19,8 @@
                 <outlet property="authenticationWindow" destination="1ph-36-yvM" id="fJZ-Av-mEV"/>
                 <outlet property="autoStartMenuItem" destination="VTt-wS-l3L" id="EoR-gf-ETD"/>
                 <outlet property="loginWebView" destination="MMx-6s-SoS" id="rKn-rh-O00"/>
+                <outlet property="progressIndicator" destination="dg6-8f-KSu" id="I39-ma-Ibk"/>
+                <outlet property="progressWindow" destination="ASq-u2-hm8" id="RPZ-T4-SrP"/>
                 <outlet property="statusMenu" destination="Nk2-hP-WyJ" id="Bur-RQ-1Gh"/>
             </connections>
         </customObject>
@@ -59,7 +61,7 @@
             </items>
         </menu>
         <window title="glukloader" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="1ph-36-yvM" userLabel="authenticationWindow">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="717" y="608" width="516" height="420"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
@@ -80,6 +82,24 @@
                             <outlet property="resourceLoadDelegate" destination="494" id="AcZ-sq-tUn"/>
                         </connections>
                     </webView>
+                </subviews>
+            </view>
+        </window>
+        <window identifier="progressWindow" title="Uploading data to glukit..." allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="ASq-u2-hm8">
+            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="895" y="968" width="469" height="40"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
+            <value key="minSize" type="size" width="489" height="60"/>
+            <value key="maxSize" type="size" width="489" height="60"/>
+            <view key="contentView" id="8r1-UM-J9h">
+                <rect key="frame" x="0.0" y="0.0" width="469" height="40"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <progressIndicator fixedFrame="YES" maxValue="100" indeterminate="YES" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="dg6-8f-KSu">
+                        <rect key="frame" x="20" y="10" width="429" height="20"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    </progressIndicator>
                 </subviews>
             </view>
         </window>
