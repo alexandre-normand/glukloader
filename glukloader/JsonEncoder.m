@@ -17,4 +17,16 @@
     }
 }
 
++ (NSArray *)decodeArrayToJSON:(NSData *)data error:(NSError **)error {
+    NSError *e = nil;
+    NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&e];
+
+    if (!jsonArray) {
+        *error = e;
+        return nil;
+    }
+
+    return jsonArray;
+}
+
 @end

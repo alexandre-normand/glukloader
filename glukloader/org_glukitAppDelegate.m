@@ -35,11 +35,16 @@ static NSImage *_connectedIcon = nil;
     GTMOAuth2Authentication *glukitAuth;
     NSString *lastRefreshToken;
     NSDateFormatter *filenameDateFormatter;
+    GTMOAuth2WindowController *_windowController;
+    BOOL receiverPluggedIn;
+    BOOL syncInProgress;
 }
 
 @synthesize statusMenu = _statusMenu;
 @synthesize statusBar = _statusBar;
 @synthesize autoStartMenuItem = _autoStartMenuItem;
+@synthesize progressIndicator = _progressIndicator;
+@synthesize progressWindow = _progressWindow;
 
 + (void)initialize {
     _synchingIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:true];
@@ -48,11 +53,20 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (id)init {
-    glukitAuth = [org_glukitAppDelegate createAuth];
-    NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
-    lastRefreshToken = [glukitAuth refreshToken];
-    filenameDateFormatter = [[NSDateFormatter alloc] init];
-    [filenameDateFormatter setDateFormat:@"dd-MMM-yyyy'T'hh:mm:ssZ"];
+    if ((self = [super init])) {
+        glukitAuth = [org_glukitAppDelegate createAuth];
+        _windowController = [[GTMOAuth2WindowController alloc] initWithAuthentication:glukitAuth
+                                                                     authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
+                                                                     keychainItemName:GLUKIT_KEYCHAIN_NAME
+                                                                       resourceBundle:nil];
+
+        NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
+        lastRefreshToken = [glukitAuth refreshToken];
+        filenameDateFormatter = [[NSDateFormatter alloc] init];
+        receiverPluggedIn = NO;
+        syncInProgress = NO;
+        [filenameDateFormatter setDateFormat:@"dd-MM-yyyy'T'hh:mm:ssZ"];
+    }
     return self;
 }
 
@@ -82,14 +96,13 @@ static NSImage *_connectedIcon = nil;
 
     BOOL didAuth = [GTMOAuth2WindowController authorizeFromKeychainForName:GLUKIT_KEYCHAIN_NAME
                                                             authentication:glukitAuth];
-    if (didAuth) {
-        [self.statusBar setImage:_unconnectedIcon];
+    if (didAuth) {        
         [self hideAuthentication];
-    } else {
-        [self.statusBar setImage:_unconnectedIcon];
+    } else {        
         [self startOauthFlow];
     }
 
+    [self updateGlukloaderIcon];
     [self initializeDefaultIfFirstRun];
     [self updateUIForAutoStart];
 }
@@ -101,6 +114,9 @@ static NSImage *_connectedIcon = nil;
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem {
     if ([menuItem action] == @selector(authenticate:)) {
         return !(glukitAuth != nil && [glukitAuth canAuthorize]);
+    }
+    else if ([menuItem action] == @selector(resendDataToGlukit:)) {
+        return (glukitAuth != nil && [glukitAuth canAuthorize]);
     }
     else {
         return YES;
@@ -122,6 +138,20 @@ static NSImage *_connectedIcon = nil;
         [self hideAuthentication];
         [self startSyncManagerIfAuthenticated];
     }
+}
+
+- (void)updateGlukloaderIcon {    
+    if (glukitAuth == nil || ![glukitAuth canAuthorize]) {
+        [self.statusBar setImage:_unconnectedIcon];
+    } else if (receiverPluggedIn) {
+        if (syncInProgress) {
+            [self.statusBar setImage:_synchingIcon];
+        } else {
+            [self.statusBar setImage:_connectedIcon];
+        }
+    } else {
+        [self.statusBar setImage:_unconnectedIcon];
+    } 
 }
 
 - (BOOL)webViewIsResizable:(WebView *)sender {
@@ -161,21 +191,133 @@ static NSImage *_connectedIcon = nil;
 
 }
 
+- (IBAction)resendDataToGlukit:(id)sender {
+    NSError *error;
+    NSString *glukitRoot = [self glukitRoot];
+
+
+    NSArray *glucoseReadSignals = [self prepareTransmissionTasks:glukitRoot recordType:GLUCOSE_READ_TYPE modelClass:[GlukitGlucoseRead class] endpoint:GLUCOSE_READ_ENDPOINT error:&error];
+    NSArray *exerciseSignals = [self prepareTransmissionTasks:glukitRoot recordType:EXERCISE_TYPE modelClass:[GlukitExercise class] endpoint:EXERCISES_ENDPOINT error:&error];
+    NSArray *injectionSignals = [self prepareTransmissionTasks:glukitRoot recordType:INJECTION_TYPE modelClass:[GlukitInjection class] endpoint:INJECTIONS_ENDPOINT error:&error];
+    NSArray *calibrationSignals = [self prepareTransmissionTasks:glukitRoot recordType:CALIBRATION_READ_TYPE modelClass:[GlukitCalibrationRead class] endpoint:CALIBRATIONS_ENDPOINT error:&error];
+    NSArray *mealSignals = [self prepareTransmissionTasks:glukitRoot recordType:MEALS_TYPE modelClass:[GlukitMeal class] endpoint:MEALS_ENDPOINT error:&error];
+    NSMutableArray *allTransmits = [[NSMutableArray alloc] init];
+    [allTransmits addObjectsFromArray:glucoseReadSignals];
+    [allTransmits addObjectsFromArray:exerciseSignals];
+    [allTransmits addObjectsFromArray:injectionSignals];
+    [allTransmits addObjectsFromArray:calibrationSignals];
+    [allTransmits addObjectsFromArray:mealSignals];
+
+    int numberOfSteps = [allTransmits count];
+    [self initializeProgressWindow:numberOfSteps];
+
+    RACSignal *combined = [RACSignal concat:allTransmits];
+
+    [combined subscribeNext:^(id x) {
+        NSLog(@"Increment progress bar");
+        [_progressIndicator incrementBy:1.];
+    }
+                      error:^(NSError *err) {
+        // TODO : Flag error with user action?
+        // This resets the manager and discards the synctag so we
+        // get to retry sending the data
+        [self stopSyncManagerIfEnabled];
+        [self updateGlukloaderIcon];
+    }
+                  completed:^{
+        NSLog(@"Completed resend of all data.");
+        [self updateGlukloaderIcon];
+        [self hideProgressWindow];
+    }];
+}
+
+- (void)hideProgressWindow {
+    [_progressWindow setIsVisible:NO];
+    [_progressIndicator setMaxValue:0];
+}
+
+- (void)initializeProgressWindow:(int)numberOfSteps {
+    [_progressIndicator setMaxValue:numberOfSteps];
+    [_progressIndicator setDoubleValue:0.];
+    [_progressIndicator setUsesThreadedAnimation:YES];
+    [_progressIndicator startAnimation:self];
+    [_progressIndicator setIndeterminate:NO];
+    [_progressWindow setIsVisible:YES];
+    [_progressWindow setLevel:NSFloatingWindowLevel];
+    [_progressWindow makeKeyAndOrderFront:self];
+}
+
+- (NSArray *)prepareTransmissionTasks:(NSString *)glukitRoot recordType:(NSString *const)recordType modelClass:(Class)modelClass endpoint:(NSString *const)endpoint error:(NSError **)error {
+    NSError *err;
+    NSMutableArray *glucoseReadTransmitTasks = [[NSMutableArray alloc] init];
+    NSArray *files = [self getFilesOfType:glukitRoot recordType:recordType error:error];
+
+    NSLog(@"Found files for %@: %@", recordType, files);
+
+    for (id filename in files) {
+        NSData *data = [NSData dataWithContentsOfFile:[self pathForFilename:filename] options:NSDataReadingMappedIfSafe error:&err];
+        if (err != nil) {
+            *error = err;
+            return nil;
+        }
+        NSArray *array = [JsonEncoder decodeArrayToJSON:data error:&err];
+        if (err != nil) {
+            *error = err;
+            return nil;
+        }
+
+        NSArray *records = [ModelConverter modelsOfClass:modelClass fromJSONArray:array error:&err];
+        if (err != nil) {
+            *error = err;
+            return nil;
+        }
+
+        [glucoseReadTransmitTasks addObject:[self signalForDataTransmitOfRecords:records endpoint:endpoint recordType:recordType]];
+    }
+
+    return glucoseReadTransmitTasks;
+}
+
+- (NSArray *)getFilesOfType:(NSString *)glukitRoot recordType:(NSString *const)recordType error:(NSError **)error {
+    NSError *err;
+    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:glukitRoot error:&err];
+    if (err != nil) {
+        NSLog(@"Error listing files in glukit root [%@]: %@", glukitRoot, (*error));
+        *error = err;
+        return nil;
+    } else {
+        NSPredicate *recordFileFormat = [NSPredicate predicateWithFormat:@"(self ENDSWITH '.json') AND (self BEGINSWITH $type)"];
+        NSArray *recordFiles =
+                [dirFiles filteredArrayUsingPredicate:[recordFileFormat predicateWithSubstitutionVariables:@{@"type" : recordType}]];
+        NSArray *sortedArray = [NSArray arrayWithArray:[recordFiles sortedArrayUsingComparator:^(NSString *filenameA, NSString *filenameB) {
+            NSString *dateAString = [self dateStringFromFilename:filenameA];
+            NSLog(@"Date as string %@", dateAString);
+            NSDate *dateA = [filenameDateFormatter dateFromString:dateAString];
+            NSString *dateBString = [self dateStringFromFilename:filenameB];
+            NSDate *dateB = [filenameDateFormatter dateFromString:dateBString];
+            return [dateA compare:dateB];
+        }]];
+
+        return sortedArray;
+    }
+}
+
+- (NSString *)dateStringFromFilename:(NSString *)filename {
+    NSRange startOfDate = [filename rangeOfString:@"-"];
+    NSRange endOfDate = [filename rangeOfString:@"."];
+    return [filename substringWithRange:NSMakeRange(startOfDate.location + 1, endOfDate.location - startOfDate.location - 1)];
+}
+
 - (void)startOauthFlow {
     [self.authenticationWindow setIsVisible:TRUE];
-    GTMOAuth2WindowController *windowController;
-    windowController = [[GTMOAuth2WindowController alloc] initWithAuthentication:glukitAuth
-                                                                authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
-                                                                keychainItemName:GLUKIT_KEYCHAIN_NAME
-                                                                  resourceBundle:nil];
 
-    [windowController signInSheetModalForWindow:[self authenticationWindow]
-                                       delegate:self
-                               finishedSelector:@selector(windowController:finishedWithAuth:error:)];
+    [_windowController signInSheetModalForWindow:[self authenticationWindow]
+                                        delegate:self
+                                finishedSelector:@selector(windowController:finishedWithAuth:error:)];
 
-    [self.authenticationWindow setWindowController:windowController];
+    [self.authenticationWindow setWindowController:_windowController];
     [self.authenticationWindow setLevel:NSFloatingWindowLevel];
-    [windowController showWindow:self.authenticationWindow];
+    [_windowController showWindow:self.authenticationWindow];
 }
 
 - (IBAction)toggleAutoStart:(id)sender {
@@ -231,8 +373,7 @@ static NSImage *_connectedIcon = nil;
 - (NSString *)pathForFilename:(NSString *)filename {
     NSFileManager *fileManager = [NSFileManager defaultManager];
 
-    NSString *folder = @"~/Library/Application Support/Glukloader/";
-    folder = [folder stringByExpandingTildeInPath];
+    NSString *folder = [self glukitRoot];
 
     if (![fileManager fileExistsAtPath:folder]) {
         NSError *error = nil;
@@ -243,6 +384,12 @@ static NSImage *_connectedIcon = nil;
     }
 
     return [folder stringByAppendingPathComponent:filename];
+}
+
+- (NSString *)glukitRoot {
+    NSString *folder = @"~/Library/Application Support/Glukloader/";
+    folder = [folder stringByExpandingTildeInPath];
+    return folder;
 }
 
 - (void)saveSyncTagToDisk:(SyncTag *)tag {
@@ -274,16 +421,19 @@ static NSImage *_connectedIcon = nil;
 
 - (void)syncStarted:(SyncEvent *)event {
     NSLog(@"Sync started at %@", [NSDate date]);
-    [self.statusBar setImage:_synchingIcon];
+    syncInProgress = YES;
+    [self updateGlukloaderIcon];
 }
 
 - (void)errorReadingReceiver:(SyncEvent *)event {
     NSLog(@"Error received");
+    syncInProgress = NO;
     // TODO Change icon to warning about failure?
 }
 
 - (void)syncProgress:(SyncProgressEvent *)event {
     NSLog(@"Sync progressing");
+    syncInProgress = YES;
     // TODO: Animate icon
 }
 
@@ -303,13 +453,13 @@ static NSImage *_connectedIcon = nil;
     NSArray *calibrationReads = [ModelConverter convertCalibrationReads:[syncData calibrationReads]];
     NSArray *injections = [ModelConverter convertInjections:[syncData insulinInjections]];
     NSArray *exercises = [ModelConverter convertExercises:[syncData exerciseEvents]];
-    NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];    
+    NSArray *meals = [ModelConverter convertMeals:[syncData foodEvents]];
 
-    RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:@"https://glukit.appspot.com/v1/glucosereads" recordType:GLUCOSE_READ_TYPE];
-    RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:@"https://glukit.appspot.com/v1/calibrations" recordType:CALIBRATION_READ_TYPE];
-    RACSignal *injectionTransmit = [self signalForDataTransmitOfRecords:injections endpoint:@"https://glukit.appspot.com/v1/injections" recordType:INJECTION_TYPE];
-    RACSignal *exerciseTransmit = [self signalForDataTransmitOfRecords:exercises endpoint:@"https://glukit.appspot.com/v1/exercises" recordType:EXERCISE_TYPE];
-    RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:@"https://glukit.appspot.com/v1/meals" recordType:MEALS_TYPE];
+    RACSignal *glucoseTransmit = [self signalForDataTransmitOfRecords:glukitReads endpoint:GLUCOSE_READ_ENDPOINT recordType:GLUCOSE_READ_TYPE];
+    RACSignal *calibrationTransmit = [self signalForDataTransmitOfRecords:calibrationReads endpoint:CALIBRATIONS_ENDPOINT recordType:CALIBRATION_READ_TYPE];
+    RACSignal *injectionTransmit = [self signalForDataTransmitOfRecords:injections endpoint:INJECTIONS_ENDPOINT recordType:INJECTION_TYPE];
+    RACSignal *exerciseTransmit = [self signalForDataTransmitOfRecords:exercises endpoint:EXERCISES_ENDPOINT recordType:EXERCISE_TYPE];
+    RACSignal *mealsTransmit = [self signalForDataTransmitOfRecords:meals endpoint:MEALS_ENDPOINT recordType:MEALS_TYPE];
     RACSignal *combined = [RACSignal merge:@[glucoseTransmit, calibrationTransmit, injectionTransmit, exerciseTransmit, mealsTransmit]];
 
     [combined subscribeError:^(NSError *error) {
@@ -317,7 +467,8 @@ static NSImage *_connectedIcon = nil;
         // This resets the manager and discards the synctag so we
         // get to retry sending the data
         [self stopSyncManagerIfEnabled];
-        [self.statusBar setImage:_connectedIcon];
+        syncInProgress = YES;
+        [self updateGlukloaderIcon];
     }              completed:^{
         // Commit the data sync by saving the sync tag and writing a log of the
         // uploaded data on local disk
@@ -326,7 +477,8 @@ static NSImage *_connectedIcon = nil;
             [self saveSyncTagToDisk:syncTag];
         }
 
-        [self.statusBar setImage:_connectedIcon];
+        syncInProgress = YES;
+        [self updateGlukloaderIcon];
     }];
 }
 
@@ -336,7 +488,7 @@ static NSImage *_connectedIcon = nil;
     success = success && [self writeDataLogForRecordType:injections recordType:INJECTION_TYPE];
     success = success && [self writeDataLogForRecordType:exercises recordType:EXERCISE_TYPE];
     success = success && [self writeDataLogForRecordType:meals recordType:MEALS_TYPE];
-    
+
     return success;
 }
 
@@ -346,7 +498,22 @@ static NSImage *_connectedIcon = nil;
         return YES;
     }
 
-    NSString *recordTypeFilename = [self fileNameForRecordType:recordType];
+    NSObject *firstRecord = [records objectAtIndex:0];
+    GlukitTime *glukitTime = nil;
+    if (recordType == GLUCOSE_READ_TYPE) {
+        glukitTime = [(GlukitGlucoseRead *) firstRecord time];
+    } else if (recordType == CALIBRATION_READ_TYPE) {
+        glukitTime = [(GlukitCalibrationRead *) firstRecord time];
+    } else if (recordType == EXERCISE_TYPE) {
+        glukitTime = [(GlukitExercise *) firstRecord time];
+    } else if (recordType == INJECTION_TYPE) {
+        glukitTime = [(GlukitInjection *) firstRecord time];
+    } else if (recordType == MEALS_TYPE) {
+        glukitTime = [(GlukitMeal *) firstRecord time];
+    }
+
+    NSDate *firstRecordTime = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval) [[glukitTime timestamp] longLongValue] / 1000];
+    NSString *recordTypeFilename = [self fileNameForRecordType:recordType firstRecordDate:firstRecordTime];
     NSString *fullPath = [self pathForFilename:recordTypeFilename];
     NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
     NSError *error;
@@ -366,7 +533,7 @@ static NSImage *_connectedIcon = nil;
                     [recordType UTF8String],
                     [fullPath UTF8String]);
         }
-        
+
         return YES;
     } else {
         NSLog(@"Failed to encode records as json: %@", error);
@@ -374,18 +541,20 @@ static NSImage *_connectedIcon = nil;
     }
 }
 
-- (NSString *)fileNameForRecordType:(NSString *const)recordType {
+- (NSString *)fileNameForRecordType:(NSString *const)recordType firstRecordDate:(NSDate *)firstRecordTime {
     return [NSString stringWithFormat:@"%s-%s.json", [recordType UTF8String],
-                                      [[filenameDateFormatter stringFromDate:[NSDate date]] UTF8String]];
+                                      [[filenameDateFormatter stringFromDate:firstRecordTime] UTF8String]];
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
     NSLog(@"Received plugged in");
-    [self.statusBar setImage:_connectedIcon];
+    receiverPluggedIn = YES; 
+    [self updateGlukloaderIcon];
 }
 
 - (void)receiverUnplugged:(ReceiverEvent *)event {
-    [self.statusBar setImage:_unconnectedIcon];
+    NSLog(@"Received unplugged");
+    receiverPluggedIn = NO;    
 }
 
 - (RACSignal *)signalForDataTransmitOfRecords:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
