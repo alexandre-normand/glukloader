@@ -36,6 +36,8 @@ static NSImage *_connectedIcon = nil;
     NSString *lastRefreshToken;
     NSDateFormatter *filenameDateFormatter;
     GTMOAuth2WindowController *_windowController;
+    BOOL receiverPluggedIn;
+    BOOL syncInProgress;
 }
 
 @synthesize statusMenu = _statusMenu;
@@ -51,7 +53,7 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (id)init {
-    if((self = [super init])) {
+    if ((self = [super init])) {
         glukitAuth = [org_glukitAppDelegate createAuth];
         _windowController = [[GTMOAuth2WindowController alloc] initWithAuthentication:glukitAuth
                                                                      authorizationURL:[NSURL URLWithString:AUTHORIZATION_URL]
@@ -61,6 +63,8 @@ static NSImage *_connectedIcon = nil;
         NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
         lastRefreshToken = [glukitAuth refreshToken];
         filenameDateFormatter = [[NSDateFormatter alloc] init];
+        receiverPluggedIn = NO;
+        syncInProgress = NO;
         [filenameDateFormatter setDateFormat:@"dd-MM-yyyy'T'hh:mm:ssZ"];
     }
     return self;
@@ -92,14 +96,13 @@ static NSImage *_connectedIcon = nil;
 
     BOOL didAuth = [GTMOAuth2WindowController authorizeFromKeychainForName:GLUKIT_KEYCHAIN_NAME
                                                             authentication:glukitAuth];
-    if (didAuth) {
-        [self.statusBar setImage:_unconnectedIcon];
+    if (didAuth) {        
         [self hideAuthentication];
-    } else {
-        [self.statusBar setImage:_unconnectedIcon];
+    } else {        
         [self startOauthFlow];
     }
 
+    [self updateGlukloaderIcon];
     [self initializeDefaultIfFirstRun];
     [self updateUIForAutoStart];
 }
@@ -135,6 +138,20 @@ static NSImage *_connectedIcon = nil;
         [self hideAuthentication];
         [self startSyncManagerIfAuthenticated];
     }
+}
+
+- (void)updateGlukloaderIcon {    
+    if (glukitAuth == nil || ![glukitAuth canAuthorize]) {
+        [self.statusBar setImage:_unconnectedIcon];
+    } else if (receiverPluggedIn) {
+        if (syncInProgress) {
+            [self.statusBar setImage:_synchingIcon];
+        } else {
+            [self.statusBar setImage:_connectedIcon];
+        }
+    } else {
+        [self.statusBar setImage:_unconnectedIcon];
+    } 
 }
 
 - (BOOL)webViewIsResizable:(WebView *)sender {
@@ -200,18 +217,18 @@ static NSImage *_connectedIcon = nil;
         NSLog(@"Increment progress bar");
         [_progressIndicator incrementBy:1.];
     }
-            error:^(NSError *err) {
+                      error:^(NSError *err) {
         // TODO : Flag error with user action?
         // This resets the manager and discards the synctag so we
         // get to retry sending the data
         [self stopSyncManagerIfEnabled];
-        [self.statusBar setImage:_connectedIcon];
+        [self updateGlukloaderIcon];
     }
-            completed:^{
-        [self.statusBar setImage:_connectedIcon];
+                  completed:^{
+        NSLog(@"Completed resend of all data.");
+        [self updateGlukloaderIcon];
+        [self hideProgressWindow];
     }];
-
-    [self hideProgressWindow];
 }
 
 - (void)hideProgressWindow {
@@ -223,7 +240,11 @@ static NSImage *_connectedIcon = nil;
     [_progressIndicator setMaxValue:numberOfSteps];
     [_progressIndicator setDoubleValue:0.];
     [_progressIndicator setUsesThreadedAnimation:YES];
+    [_progressIndicator startAnimation:self];
+    [_progressIndicator setIndeterminate:NO];
     [_progressWindow setIsVisible:YES];
+    [_progressWindow setLevel:NSFloatingWindowLevel];
+    [_progressWindow makeKeyAndOrderFront:self];
 }
 
 - (NSArray *)prepareTransmissionTasks:(NSString *)glukitRoot recordType:(NSString *const)recordType modelClass:(Class)modelClass endpoint:(NSString *const)endpoint error:(NSError **)error {
@@ -244,7 +265,7 @@ static NSImage *_connectedIcon = nil;
             *error = err;
             return nil;
         }
-        
+
         NSArray *records = [ModelConverter modelsOfClass:modelClass fromJSONArray:array error:&err];
         if (err != nil) {
             *error = err;
@@ -253,7 +274,7 @@ static NSImage *_connectedIcon = nil;
 
         [glucoseReadTransmitTasks addObject:[self signalForDataTransmitOfRecords:records endpoint:endpoint recordType:recordType]];
     }
-    
+
     return glucoseReadTransmitTasks;
 }
 
@@ -276,7 +297,7 @@ static NSImage *_connectedIcon = nil;
             NSDate *dateB = [filenameDateFormatter dateFromString:dateBString];
             return [dateA compare:dateB];
         }]];
-        
+
         return sortedArray;
     }
 }
@@ -400,16 +421,19 @@ static NSImage *_connectedIcon = nil;
 
 - (void)syncStarted:(SyncEvent *)event {
     NSLog(@"Sync started at %@", [NSDate date]);
-    [self.statusBar setImage:_synchingIcon];
+    syncInProgress = YES;
+    [self updateGlukloaderIcon];
 }
 
 - (void)errorReadingReceiver:(SyncEvent *)event {
     NSLog(@"Error received");
+    syncInProgress = NO;
     // TODO Change icon to warning about failure?
 }
 
 - (void)syncProgress:(SyncProgressEvent *)event {
     NSLog(@"Sync progressing");
+    syncInProgress = YES;
     // TODO: Animate icon
 }
 
@@ -443,7 +467,8 @@ static NSImage *_connectedIcon = nil;
         // This resets the manager and discards the synctag so we
         // get to retry sending the data
         [self stopSyncManagerIfEnabled];
-        [self.statusBar setImage:_connectedIcon];
+        syncInProgress = YES;
+        [self updateGlukloaderIcon];
     }              completed:^{
         // Commit the data sync by saving the sync tag and writing a log of the
         // uploaded data on local disk
@@ -452,7 +477,8 @@ static NSImage *_connectedIcon = nil;
             [self saveSyncTagToDisk:syncTag];
         }
 
-        [self.statusBar setImage:_connectedIcon];
+        syncInProgress = YES;
+        [self updateGlukloaderIcon];
     }];
 }
 
@@ -522,11 +548,13 @@ static NSImage *_connectedIcon = nil;
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
     NSLog(@"Received plugged in");
-    [self.statusBar setImage:_connectedIcon];
+    receiverPluggedIn = YES; 
+    [self updateGlukloaderIcon];
 }
 
 - (void)receiverUnplugged:(ReceiverEvent *)event {
-    [self.statusBar setImage:_unconnectedIcon];
+    NSLog(@"Received unplugged");
+    receiverPluggedIn = NO;    
 }
 
 - (RACSignal *)signalForDataTransmitOfRecords:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
