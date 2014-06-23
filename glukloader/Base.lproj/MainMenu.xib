@@ -85,8 +85,8 @@
                 </subviews>
             </view>
         </window>
-        <window identifier="progressWindow" title="Uploading data to glukit..." allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="ASq-u2-hm8">
-            <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES"/>
+        <window identifier="progressWindow" title="Uploading data to glukit..." allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="ASq-u2-hm8" userLabel="progressWindow">
+            <windowStyleMask key="styleMask" titled="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="895" y="968" width="469" height="40"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
