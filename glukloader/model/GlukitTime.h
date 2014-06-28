@@ -5,12 +5,12 @@
 
 @interface GlukitTime : MTLModel <MTLJSONSerializing>
 @property(readonly) NSNumber *timestamp;
-@property(readonly) NSTimeZone *timezone;
+@property(readonly) NSString *timezone;
 
-- (instancetype)initWithTimezone:(NSTimeZone *)timezone timestamp:(NSNumber *)timestamp;
+- (instancetype)initWithTimezone:(NSString *)timezone timestamp:(NSNumber *)timestamp;
 
 - (NSString *)description;
 
-+ (instancetype)timeWithTimezone:(NSTimeZone *)timezone timestamp:(NSNumber *)timestamp;
++ (instancetype)timeWithTimezone:(NSString *)timezone timestamp:(NSNumber *)timestamp;
 
 @end
