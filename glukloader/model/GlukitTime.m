@@ -1,10 +1,9 @@
 #import "GlukitTime.h"
-#import <Mantle/MTLValueTransformer.h>
 
 @implementation GlukitTime {
 
 }
-- (instancetype)initWithTimezone:(NSTimeZone *)timezone timestamp:(NSNumber *)timestamp {
+- (instancetype)initWithTimezone:(NSString *)timezone timestamp:(NSNumber *)timestamp {
     self = [super init];
     if (self) {
         _timezone = timezone;
@@ -32,16 +31,8 @@
     }
 }
 
-+ (instancetype)timeWithTimezone:(NSTimeZone *)timezone timestamp:(NSNumber *)timestamp {
++ (instancetype)timeWithTimezone:(NSString *)timezone timestamp:(NSNumber *)timestamp {
     return [[self alloc] initWithTimezone:timezone timestamp:timestamp];
-}
-
-+ (NSValueTransformer *)timezoneJSONTransformer {
-    return [MTLValueTransformer reversibleTransformerWithForwardBlock:^(NSString *name) {
-        return [NSTimeZone timeZoneWithName:name];
-    }                                                    reverseBlock:^(NSTimeZone *timezone) {
-        return [[timezone name] substringFromIndex:3];
-    }];
 }
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey {

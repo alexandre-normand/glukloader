@@ -96,9 +96,9 @@ static NSImage *_connectedIcon = nil;
 
     BOOL didAuth = [GTMOAuth2WindowController authorizeFromKeychainForName:GLUKIT_KEYCHAIN_NAME
                                                             authentication:glukitAuth];
-    if (didAuth) {        
+    if (didAuth) {
         [self hideAuthentication];
-    } else {        
+    } else {
         [self startOauthFlow];
     }
 
@@ -140,7 +140,7 @@ static NSImage *_connectedIcon = nil;
     }
 }
 
-- (void)updateGlukloaderIcon {    
+- (void)updateGlukloaderIcon {
     if (glukitAuth == nil || ![glukitAuth canAuthorize]) {
         [self.statusBar setImage:_unconnectedIcon];
     } else if (receiverPluggedIn) {
@@ -151,7 +151,7 @@ static NSImage *_connectedIcon = nil;
         }
     } else {
         [self.statusBar setImage:_unconnectedIcon];
-    } 
+    }
 }
 
 - (BOOL)webViewIsResizable:(WebView *)sender {
@@ -271,7 +271,7 @@ static NSImage *_connectedIcon = nil;
             *error = err;
             return nil;
         }
-
+        NSLog(@"Prepared transmission of [%lu] records from file [%@]: %@", [records count], filename, records);
         [glucoseReadTransmitTasks addObject:[self signalForDataTransmitOfRecords:records endpoint:endpoint recordType:recordType]];
     }
 
@@ -548,13 +548,14 @@ static NSImage *_connectedIcon = nil;
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
     NSLog(@"Received plugged in");
-    receiverPluggedIn = YES; 
+    receiverPluggedIn = YES;
     [self updateGlukloaderIcon];
 }
 
 - (void)receiverUnplugged:(ReceiverEvent *)event {
     NSLog(@"Received unplugged");
-    receiverPluggedIn = NO;    
+    receiverPluggedIn = NO;
+    [self updateGlukloaderIcon];
 }
 
 - (RACSignal *)signalForDataTransmitOfRecords:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
