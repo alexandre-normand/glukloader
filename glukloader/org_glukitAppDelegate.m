@@ -271,7 +271,7 @@ static NSImage *_connectedIcon = nil;
             *error = err;
             return nil;
         }
-        NSLog(@"Prepared transmission of [%lu] records from file [%@]", [records count], filename);
+        NSLog(@"Prepared transmission of [%lu] records from file [%@]: %@", [records count], filename, records);
         [glucoseReadTransmitTasks addObject:[self signalForDataTransmitOfRecords:records endpoint:endpoint recordType:recordType]];
     }
 
