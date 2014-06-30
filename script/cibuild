@@ -160,6 +160,9 @@ build_scheme ()
 create_dmg() { 
    if [ -n "$1" ]; then
 	echo "Creating dmg in $1..."
+	glukameleonPath=`which glukameleon`
+	echo "Copying glukamelon from $glukameleonPath to $1/glukloader.app/Contents/MacOS/..."
+	cp "$glukameleonPath" "$1/glukloader.app/Contents/MacOS/"
 	dropdmg --config-name=Glukloader --append-version-number --custom-icon $1/glukloader.app
    fi 
 }
