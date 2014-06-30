@@ -11,7 +11,7 @@ config ()
     # A whitespace-separated list of executables that must be present and locatable.
     : ${REQUIRED_TOOLS="xctool"}
     
-    export REQUIRED_TOOLS="dropdmg"
+    export REQUIRED_TOOLS="dropdmg glukameleon"
 }
 
 ##
