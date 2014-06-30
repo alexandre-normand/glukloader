@@ -182,8 +182,11 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (IBAction)quit:(id)sender {
-    [self stopSyncManagerIfEnabled];
     [NSApp terminate:self];
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    [self stopSyncManagerIfEnabled];
 }
 
 - (IBAction)authenticate:(id)sender {
