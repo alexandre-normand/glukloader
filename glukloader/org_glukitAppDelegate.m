@@ -475,7 +475,7 @@ static NSImage *_connectedIcon = nil;
         // This resets the manager and discards the synctag so we
         // get to retry sending the data
         [self stopSyncManagerIfEnabled];
-        syncInProgress = YES;
+        syncInProgress = NO;
         [self updateGlukloaderIcon];
     }              completed:^{
         // Commit the data sync by saving the sync tag and writing a log of the
@@ -485,7 +485,7 @@ static NSImage *_connectedIcon = nil;
             [self saveSyncTagToDisk:syncTag];
         }
 
-        syncInProgress = YES;
+        syncInProgress = NO;
         [self updateGlukloaderIcon];
     }];
 }
