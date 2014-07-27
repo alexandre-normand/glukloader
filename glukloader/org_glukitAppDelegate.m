@@ -198,7 +198,6 @@ static NSImage *_connectedIcon = nil;
     NSError *error;
     NSString *glukitRoot = [self glukitRoot];
 
-
     NSArray *glucoseReadSignals = [self prepareTransmissionTasks:glukitRoot recordType:GLUCOSE_READ_TYPE modelClass:[GlukitGlucoseRead class] endpoint:GLUCOSE_READ_ENDPOINT error:&error];
     NSArray *exerciseSignals = [self prepareTransmissionTasks:glukitRoot recordType:EXERCISE_TYPE modelClass:[GlukitExercise class] endpoint:EXERCISES_ENDPOINT error:&error];
     NSArray *injectionSignals = [self prepareTransmissionTasks:glukitRoot recordType:INJECTION_TYPE modelClass:[GlukitInjection class] endpoint:INJECTIONS_ENDPOINT error:&error];
@@ -252,38 +251,25 @@ static NSImage *_connectedIcon = nil;
 
 - (NSArray *)prepareTransmissionTasks:(NSString *)glukitRoot recordType:(NSString *const)recordType modelClass:(Class)modelClass endpoint:(NSString *const)endpoint error:(NSError **)error {
     NSError *err;
-    NSMutableArray *glucoseReadTransmitTasks = [[NSMutableArray alloc] init];
-    NSArray *files = [self getFilesOfType:glukitRoot recordType:recordType error:error];
+    NSMutableArray *transmitTasks = [[NSMutableArray alloc] init];
+    NSArray *files = [self getFilesOfType:glukitRoot recordType:recordType error:&err];
+
+    if (err != nil) {
+        *error = err;
+        return nil;
+    }
 
     NSLog(@"Found files for %@: %@", recordType, files);
 
     for (id filename in files) {
-        NSData *data = [NSData dataWithContentsOfFile:[self pathForFilename:filename] options:NSDataReadingMappedIfSafe error:&err];
-        if (err != nil) {
-            *error = err;
-            return nil;
-        }
-        NSArray *array = [JsonEncoder decodeArrayToJSON:data error:&err];
-        if (err != nil) {
-            *error = err;
-            return nil;
-        }
-
-        NSArray *records = [ModelConverter modelsOfClass:modelClass fromJSONArray:array error:&err];
-        if (err != nil) {
-            *error = err;
-            return nil;
-        }
-
-        if ([records count] > 0) {
-            NSLog(@"Prepared transmission of [%lu] records from file [%@]: %@", [records count], filename, records);
-            [glucoseReadTransmitTasks addObject:[self signalForDataTransmitOfRecords:records endpoint:endpoint recordType:recordType]];
-        } else {
-            NSLog(@"Skipped transmission of file [%@] without records", filename);
-        }
+        NSLog(@"Prepared transmission of [%@] records from file [%@].", recordType, filename);
+        [transmitTasks addObject:[self signalForDataTransmitOfRecordsFromFile:filename
+                                                                     endpoint:endpoint
+                                                                   recordType:recordType
+                                                                   modelClass:modelClass]];
     }
 
-    return glucoseReadTransmitTasks;
+    return transmitTasks;
 }
 
 - (NSArray *)getFilesOfType:(NSString *)glukitRoot recordType:(NSString *const)recordType error:(NSError **)error {
@@ -299,7 +285,6 @@ static NSImage *_connectedIcon = nil;
                 [dirFiles filteredArrayUsingPredicate:[recordFileFormat predicateWithSubstitutionVariables:@{@"type" : recordType}]];
         NSArray *sortedArray = [NSArray arrayWithArray:[recordFiles sortedArrayUsingComparator:^(NSString *filenameA, NSString *filenameB) {
             NSString *dateAString = [self dateStringFromFilename:filenameA];
-            NSLog(@"Date as string %@", dateAString);
             NSDate *dateA = [filenameDateFormatter dateFromString:dateAString];
             NSString *dateBString = [self dateStringFromFilename:filenameB];
             NSDate *dateB = [filenameDateFormatter dateFromString:dateBString];
@@ -566,10 +551,42 @@ static NSImage *_connectedIcon = nil;
     [self updateGlukloaderIcon];
 }
 
+- (RACSignal *)signalForDataTransmitOfRecordsFromFile:(NSString *)file endpoint:(NSString *)endpoint recordType:(NSString *)recordType modelClass:(Class)modelClass {
+    return [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
+        NSError *err;
+
+        NSData *data = [NSData dataWithContentsOfFile:[self pathForFilename:file] options:NSDataReadingMappedIfSafe error:&err];
+        if (err != nil) {
+            [subscriber sendError:err];
+            return nil;
+        }
+        NSArray *array = [JsonEncoder decodeArrayToJSON:data error:&err];
+        if (err != nil) {
+            [subscriber sendError:err];
+            return nil;
+        }
+
+        NSArray *records = [ModelConverter modelsOfClass:modelClass fromJSONArray:array error:&err];
+        if (err != nil) {
+            [subscriber sendError:err];
+            return nil;
+        }
+
+        [self transmitRecords:records endpoint:endpoint recordType:recordType subscriber:subscriber];
+        return nil;
+    }];
+}
+
 - (RACSignal *)signalForDataTransmitOfRecords:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType {
     return [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
 
-        if ([records count] > 0) {
+        [self transmitRecords:records endpoint:endpoint recordType:recordType subscriber:subscriber];
+        return nil;
+    }];
+}
+
+- (void)transmitRecords:(NSArray *)records endpoint:(NSString *)endpoint recordType:(NSString *)recordType subscriber:(id <RACSubscriber>)subscriber {
+    if ([records count] > 0) {
             NSArray *dictionaries = [ModelConverter JSONArrayFromModels:records];
             NSError *error;
             NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
@@ -606,8 +623,6 @@ static NSImage *_connectedIcon = nil;
             [subscriber sendNext:nil];
             [subscriber sendCompleted];
         }
-        return nil;
-    }];
 }
 
 - (void)clearAuthentication {
