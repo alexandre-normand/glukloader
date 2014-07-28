@@ -47,9 +47,9 @@ static NSImage *_connectedIcon = nil;
 @synthesize progressWindow = _progressWindow;
 
 + (void)initialize {
-    _synchingIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:true];
-    _unconnectedIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:false isSyncInProgress:false];
-    _connectedIcon = [GlukloaderIcon imageOfIconWithSize:16.f isConnected:true isSyncInProgress:false];
+    _synchingIcon = [GlukloaderIcon imageOfIconWithIsConnected:true isSyncInProgress:true];
+    _unconnectedIcon = [GlukloaderIcon imageOfIconWithIsConnected:false isSyncInProgress:false];
+    _connectedIcon = [GlukloaderIcon imageOfIconWithIsConnected:true isSyncInProgress:false];
 }
 
 - (id)init {
