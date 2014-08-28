@@ -31,7 +31,7 @@
 + (GlukitGlucoseRead *)convertGlucoseRead:(GlucoseRead *)glucoseRead {
     GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[glucoseRead timezone]
                                                                                   atTimestamp:[glucoseRead timestamp]]
-                                          timestamp:[NSNumber numberWithLongLong:[glucoseRead timestamp]]];
+                                          timestamp:@([glucoseRead timestamp])];
     return [GlukitGlucoseRead readWithTime:time
                                      value:[glucoseRead glucoseValue]
                                       unit:[self getUnit:[glucoseRead glucoseMeasurementUnit]]];
@@ -49,7 +49,7 @@
 + (GlukitCalibrationRead *)convertCalibrationRead:(MeterRead *)calibrationRead {
     GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[calibrationRead timezone]
                                                                                   atTimestamp:[calibrationRead timestamp]]
-                                          timestamp:[NSNumber numberWithLongLong:[calibrationRead timestamp]]];
+                                          timestamp:@([calibrationRead timestamp])];
     return [GlukitCalibrationRead calibrationReadWithTime:time
                                                     value:[calibrationRead meterRead]
                                                      unit:[self getUnit:[calibrationRead glucoseMeasurementUnit]]];
@@ -67,7 +67,7 @@
 + (GlukitInjection *)convertInjection:(InsulinInjection *)injection {
     GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[injection timezone]
                                                                                   atTimestamp:[injection timestamp]]
-                                          timestamp:[NSNumber numberWithLongLong:[injection timestamp]]];
+                                          timestamp:@([injection timestamp])];
     return [GlukitInjection injectionWithTime:time
                                         units:[injection unitValue]
                                   insulinName:[injection insulinName]
@@ -119,7 +119,7 @@
 + (GlukitExercise *)convertExercise:(ExerciseEvent *)exercise {
     GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[exercise timezone]
                                                                                   atTimestamp:[exercise timestamp]]
-                                          timestamp:[NSNumber numberWithLongLong:[exercise timestamp]]];
+                                          timestamp:@([exercise timestamp])];
     return [GlukitExercise exerciseWithTime:time
                           durationInMinutes:(int) ([exercise duration] / 60.f)
                                   intensity:[self getIntensity:[exercise intensity]]
