@@ -592,7 +592,7 @@ static NSImage *_connectedIcon = nil;
             NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
             if (error == nil) {
-                //NSLog(@"Will be posting [%s] records as this\n%s", [recordType UTF8String], [requestBody UTF8String]);
+                NSLog(@"Posting [%s] records as payload\n%s", [recordType UTF8String], [requestBody UTF8String]);
             }
 
             NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
