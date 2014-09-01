@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0B015AA819AEDAD800EB6ED4 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B16FFC319417F5A008B5816 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
+		0B2B2D4D19B04C58001BCC61 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CA318C83C3A00631DA1 /* Cocoa.framework */; };
 		0B488CAE18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CAC18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B488CB018C83C3A00631DA1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CAF18C83C3A00631DA1 /* main.m */; };
@@ -137,7 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */,
-				0B015AA819AEDAD800EB6ED4 /* bloodSheltie.framework in Frameworks */,
+				0B2B2D4D19B04C58001BCC61 /* bloodSheltie.framework in Frameworks */,
 				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
 				0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
 			);
