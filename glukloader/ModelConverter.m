@@ -29,8 +29,7 @@
 }
 
 + (GlukitGlucoseRead *)convertGlucoseRead:(GlucoseRead *)glucoseRead {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[glucoseRead timezone]
-                                                                                  atTimestamp:[glucoseRead timestamp]]
+    GlukitTime *time = [GlukitTime timeWithTimezone:[[glucoseRead timezone] name]
                                           timestamp:@([glucoseRead timestamp])];
     return [GlukitGlucoseRead readWithTime:time
                                      value:[glucoseRead glucoseValue]
@@ -47,8 +46,7 @@
 }
 
 + (GlukitCalibrationRead *)convertCalibrationRead:(MeterRead *)calibrationRead {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[calibrationRead timezone]
-                                                                                  atTimestamp:[calibrationRead timestamp]]
+    GlukitTime *time = [GlukitTime timeWithTimezone:[[calibrationRead timezone] name]
                                           timestamp:@([calibrationRead timestamp])];
     return [GlukitCalibrationRead calibrationReadWithTime:time
                                                     value:[calibrationRead meterRead]
@@ -65,8 +63,7 @@
 }
 
 + (GlukitInjection *)convertInjection:(InsulinInjection *)injection {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[injection timezone]
-                                                                                  atTimestamp:[injection timestamp]]
+    GlukitTime *time = [GlukitTime timeWithTimezone:[[injection timezone] name]
                                           timestamp:@([injection timestamp])];
     return [GlukitInjection injectionWithTime:time
                                         units:[injection unitValue]
@@ -97,9 +94,8 @@
 }
 
 + (GlukitMeal *)convertMeal:(FoodEvent *)foodEvent {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[foodEvent timezone]
-                                                                                  atTimestamp:[foodEvent timestamp]]
-                                          timestamp:[NSNumber numberWithLongLong:[foodEvent timestamp]]];
+    GlukitTime *time = [GlukitTime timeWithTimezone:[[foodEvent timezone] name]
+                                          timestamp:@([foodEvent timestamp])];
     return [GlukitMeal mealWithTime:time
                               carbs:[foodEvent carbohydrates]
                            proteins:[foodEvent proteins]
@@ -117,21 +113,12 @@
 }
 
 + (GlukitExercise *)convertExercise:(ExerciseEvent *)exercise {
-    GlukitTime *time = [GlukitTime timeWithTimezone:[ModelConverter getTimezoneIdFromTimezone:[exercise timezone]
-                                                                                  atTimestamp:[exercise timestamp]]
+    GlukitTime *time = [GlukitTime timeWithTimezone:[[exercise timezone] name]
                                           timestamp:@([exercise timestamp])];
     return [GlukitExercise exerciseWithTime:time
                           durationInMinutes:(int) ([exercise duration] / 60.f)
                                   intensity:[self getIntensity:[exercise intensity]]
                         exerciseDescription:[exercise details]];
-}
-
-+ (NSString *)getTimezoneIdFromTimezone:(NSTimeZone *)timezone atTimestamp:(long long int)timestamp {
-    NSDate *time = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval) (timestamp / 1000.f)];
-    NSInteger secondsFromGMT = [timezone secondsFromGMTForDate:time];
-    NSInteger hoursOffset = secondsFromGMT / 3600;
-    NSInteger minutesOffset = (secondsFromGMT - hoursOffset * 3600) / 60;
-    return [NSString stringWithFormat:@"%+.2d%.2d", (int) hoursOffset, (int) minutesOffset];
 }
 
 + (NSString *)getIntensity:(Intensity)intensity {
