@@ -10,6 +10,8 @@
 #import <WebKit/WebKit.h>
 #import <bloodSheltie/SyncEventObserver.h>
 
+@class GrowlDelegate;
+
 typedef BOOL (^transmitFunction)(NSArray *, NSString *, NSString *);
 
 static NSString *const CODE_KEY = @"code";

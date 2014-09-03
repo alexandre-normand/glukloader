@@ -11,9 +11,11 @@
 #import "GlukloaderIcon.h"
 #import "JsonEncoder.h"
 #import "ModelConverter.h"
+#import "GrowlDelegate.h"
 #import <gtm-oauth2/GTMOAuth2WindowController.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import <NSBundle+LoginItem.h>
+#import <Growl/Growl.h>
 
 #define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
 
@@ -36,6 +38,7 @@ static NSImage *_connectedIcon = nil;
     NSString *lastRefreshToken;
     NSDateFormatter *filenameDateFormatter;
     GTMOAuth2WindowController *_windowController;
+    GrowlDelegate *growlDelegate;
     BOOL receiverPluggedIn;
     BOOL syncInProgress;
 }
@@ -66,6 +69,7 @@ static NSImage *_connectedIcon = nil;
         receiverPluggedIn = NO;
         syncInProgress = NO;
         [filenameDateFormatter setDateFormat:@"dd-MM-yyyy'T'hh:mm:ssZ"];
+        growlDelegate = [GrowlDelegate instance];
     }
     return self;
 }
@@ -415,12 +419,26 @@ static NSImage *_connectedIcon = nil;
 - (void)syncStarted:(SyncEvent *)event {
     NSLog(@"Sync started at %@", [NSDate date]);
     syncInProgress = YES;
+    [GrowlApplicationBridge notifyWithTitle:@"Sync Started"
+      description:@"Sync started."
+      notificationName:SYNC_STARTED_NOTIFICATION
+      iconData:nil
+      priority:-2
+      isSticky:NO
+     clickContext:nil];
     [self updateGlukloaderIcon];
 }
 
 - (void)errorReadingReceiver:(SyncEvent *)event {
     NSLog(@"Error received");
     syncInProgress = NO;
+    [GrowlApplicationBridge notifyWithTitle:@"Sync Error"
+                                description:@"Error synching data from dexcom. Please email alexandre.normand@mygluk.it."
+                           notificationName:SYNC_ERROR
+                                   iconData:nil
+                                   priority:-2
+                                   isSticky:NO
+                               clickContext:nil];
     // TODO Change icon to warning about failure?
 }
 
@@ -438,6 +456,18 @@ static NSImage *_connectedIcon = nil;
             event.syncData.insulinInjections.count,
             event.syncData.exerciseEvents.count,
             event.syncData.foodEvents.count);
+    [GrowlApplicationBridge notifyWithTitle:@"Upload Started."
+                                description:[NSString stringWithFormat:@"Uploading %lu reads, %lu calibrations, %lu injections, %lu exercises, %lu meals to Glukit.",
+                                                event.syncData.glucoseReads.count,
+                                                event.syncData.calibrationReads.count,
+                                                event.syncData.insulinInjections.count,
+                                                event.syncData.exerciseEvents.count,
+                                                event.syncData.foodEvents.count]
+                           notificationName:UPLOAD_STARTED
+                                   iconData:nil
+                                   priority:-2
+                                   isSticky:NO
+                               clickContext:nil];
     [self transmitSyncedData:[event syncData] commitSyncTag:[event syncTag]];
 }
 
@@ -470,6 +500,18 @@ static NSImage *_connectedIcon = nil;
             [self saveSyncTagToDisk:syncTag];
         }
 
+        [GrowlApplicationBridge notifyWithTitle:@"Sync Completed"
+                                    description:[NSString stringWithFormat:@"Uploaded %lu reads, %lu calibrations, %lu injections, %lu exercises, %lu meals.",
+                                                    glukitReads.count,
+                                                    calibrationReads.count,
+                                                    injections.count,
+                                                    exercises.count,
+                                                    meals.count]
+                               notificationName:SYNC_COMPLETED_SUCCESSFULLY
+                                       iconData:nil
+                                       priority:-2
+                                       isSticky:NO
+                                   clickContext:nil];
         syncInProgress = NO;
         [self updateGlukloaderIcon];
     }];
@@ -592,7 +634,7 @@ static NSImage *_connectedIcon = nil;
             NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
             if (error == nil) {
-                NSLog(@"Posting [%s] records as payload\n%s", [recordType UTF8String], [requestBody UTF8String]);
+                //NSLog(@"Posting [%s] records as payload\n%s", [recordType UTF8String], [requestBody UTF8String]);
             }
 
             NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];

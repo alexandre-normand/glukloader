@@ -22,11 +22,14 @@
 		0B61B669193C3911009331CD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CB818C83C3A00631DA1 /* MainMenu.xib */; };
 		0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */; };
+		0B7F150B19B6D07200F3284D /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B7F150A19B6D07200F3284D /* Growl.framework */; };
+		0B7F150C19B6D52E00F3284D /* Growl.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 0B7F150A19B6D07200F3284D /* Growl.framework */; };
 		0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8AD1A818F0989500E223C8 /* WebKit.framework */; };
 		0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */; };
 		7DCB91C198397AB64583582D /* ModelConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */; };
 		7DCB91D42680CBEE5EDFA6A7 /* GlukitMeal.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9A00668082B49942E79C /* GlukitMeal.m */; };
 		7DCB91E62C34EE1FB3ECF4A0 /* GlukitTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9372CE43FEB3EB60D8F5 /* GlukitTime.m */; };
+		7DCB9243FAE604DEF8743028 /* GrowlDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB95AB3B94E0E0A4BA5016 /* GrowlDelegate.m */; };
 		7DCB958326C7D23B089846AF /* JsonEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */; };
 		7DCB99F20ABC96CF22336134 /* GlukitInjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB95F5024C0C1B0F86387B /* GlukitInjection.m */; };
 		7DCB9A3A244A661C4A22C582 /* GlukitGlucoseRead.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */; };
@@ -73,6 +76,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				0B7F150C19B6D52E00F3284D /* Growl.framework in Copy Files */,
 				0B75BC4D193BFC2300EC973C /* bloodSheltie.framework in Copy Files */,
 			);
 			name = "Copy Files";
@@ -107,6 +111,7 @@
 		0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		0B7629E3191C8D950040BC5A /* GlukloaderIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukloaderIcon.h; sourceTree = "<group>"; };
 		0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukloaderIcon.m; sourceTree = "<group>"; };
+		0B7F150A19B6D07200F3284D /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
 		0B8AD1A818F0989500E223C8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		0B92B12F190A1DE200CEF4DD /* OauthMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OauthMenuItem.h; sourceTree = "<group>"; };
 		0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OauthMenuItem.m; sourceTree = "<group>"; };
@@ -118,9 +123,11 @@
 		7DCB925B9F670C898282DD02 /* GlukitExercise.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitExercise.m; sourceTree = "<group>"; };
 		7DCB9372CE43FEB3EB60D8F5 /* GlukitTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitTime.m; sourceTree = "<group>"; };
 		7DCB94EAF3291CAFE946A34B /* GlukitCalibrationRead.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitCalibrationRead.m; sourceTree = "<group>"; };
+		7DCB95AB3B94E0E0A4BA5016 /* GrowlDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrowlDelegate.m; sourceTree = "<group>"; };
 		7DCB95F5024C0C1B0F86387B /* GlukitInjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitInjection.m; sourceTree = "<group>"; };
 		7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitGlucoseRead.m; sourceTree = "<group>"; };
 		7DCB975FB58355B8CE96B24D /* ModelConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelConverter.h; sourceTree = "<group>"; };
+		7DCB976DDAA8E2964CF90646 /* GrowlDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrowlDelegate.h; sourceTree = "<group>"; };
 		7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelConverter.m; sourceTree = "<group>"; };
 		7DCB99F5734D391B54394DEB /* GlukitMeal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukitMeal.h; sourceTree = "<group>"; };
 		7DCB9A00668082B49942E79C /* GlukitMeal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitMeal.m; sourceTree = "<group>"; };
@@ -140,6 +147,7 @@
 				0B2B2D4D19B04C58001BCC61 /* bloodSheltie.framework in Frameworks */,
 				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
 				0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */,
+				0B7F150B19B6D07200F3284D /* Growl.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +188,7 @@
 		0B488CA218C83C3A00631DA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0B7F150A19B6D07200F3284D /* Growl.framework */,
 				0B32A2C6193C2CD7003EF27B /* libPods-IYLoginItem.a */,
 				0B32A2C1193C2CD2003EF27B /* libPods-NXOAuth2Client.a */,
 				0BF4FA95192F100000E576C1 /* Mantle.framework */,
@@ -221,6 +230,8 @@
 				7DCB9D1DAA531CC02B71473D /* model */,
 				7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */,
 				7DCB9C871BAAFC152EE69CA7 /* JsonEncoder.h */,
+				7DCB95AB3B94E0E0A4BA5016 /* GrowlDelegate.m */,
+				7DCB976DDAA8E2964CF90646 /* GrowlDelegate.h */,
 			);
 			path = glukloader;
 			sourceTree = "<group>";
@@ -461,6 +472,7 @@
 				7DCB9F0023DDF3D95E8CD05E /* GlukitCalibrationRead.m in Sources */,
 				7DCB91D42680CBEE5EDFA6A7 /* GlukitMeal.m in Sources */,
 				7DCB9DE57DCBB87AD8DFF762 /* GlukitExercise.m in Sources */,
+				7DCB9243FAE604DEF8743028 /* GrowlDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,6 +623,7 @@
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-dhqncdfvrfzylsffhpcnykglsgxe/Build/Products/Debug",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
@@ -635,6 +648,7 @@
 					"$(inherited)",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-dhqncdfvrfzylsffhpcnykglsgxe/Build/Products/Debug",
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "glukloader/glukloader-Prefix.pch";
