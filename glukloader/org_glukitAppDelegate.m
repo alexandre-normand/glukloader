@@ -8,16 +8,20 @@
 
 #import "org_glukitAppDelegate.h"
 #import <bloodSheltie/SyncManager.h>
+#import <Mailgun.h>
 #import "GlukloaderIcon.h"
 #import "JsonEncoder.h"
 #import "ModelConverter.h"
 #import "GrowlDelegate.h"
+#import "Mailgun.h"
 #import <gtm-oauth2/GTMOAuth2WindowController.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import <NSBundle+LoginItem.h>
-#import <Growl/Growl.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
 
 #define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
+
+static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
 static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
@@ -63,7 +67,7 @@ static NSImage *_connectedIcon = nil;
                                                                      keychainItemName:GLUKIT_KEYCHAIN_NAME
                                                                        resourceBundle:nil];
 
-        NSLog(@"Loaded Oauth From Keychain [%@]", glukitAuth);
+        DDLogInfo(@"Loaded Oauth From Keychain [%@]", glukitAuth);
         lastRefreshToken = [glukitAuth refreshToken];
         filenameDateFormatter = [[NSDateFormatter alloc] init];
         receiverPluggedIn = NO;
@@ -132,12 +136,12 @@ static NSImage *_connectedIcon = nil;
                    error:(NSError *)error {
 
     if (error != nil) {
-        NSData *responseData = [[error userInfo] objectForKey:@"data"]; // kGTMHTTPFetcherStatusDataKey
-        NSLog(@"Error, access lost with response [%s]: %@",
+        NSData *responseData = [error userInfo][@"data"]; // kGTMHTTPFetcherStatusDataKey
+        DDLogInfo(@"Error, access lost with response [%s]: %@",
                 [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] UTF8String], error);
         [self stopSyncManagerIfEnabled];
     } else {
-        NSLog(@"Success! We have an access token: [%@]", glukitAuth);
+        DDLogInfo(@"Success! We have an access token: [%@]", glukitAuth);
 
         [self hideAuthentication];
         [self startSyncManagerIfAuthenticated];
@@ -164,7 +168,7 @@ static NSImage *_connectedIcon = nil;
 
 - (void)updateRefreshTokenInKeychainIfRequired {
     if (glukitAuth.refreshToken != lastRefreshToken) {
-        NSLog(@"Updating keychain with refresh token [%s]", [[glukitAuth refreshToken] UTF8String]);
+        DDLogInfo(@"Updating keychain with refresh token [%s]", [[glukitAuth refreshToken] UTF8String]);
         [GTMOAuth2WindowController saveAuthToKeychainForName:GLUKIT_KEYCHAIN_NAME authentication:glukitAuth];
         lastRefreshToken = [glukitAuth refreshToken];
     }
@@ -173,7 +177,7 @@ static NSImage *_connectedIcon = nil;
 - (void)initializeDefaultIfFirstRun {
     if (![[NSUserDefaults standardUserDefaults] boolForKey:kAlreadyBeenLaunched]) {
         // Setting userDefaults for next time
-        [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:YES] forKey:kAlreadyBeenLaunched];
+        [[NSUserDefaults standardUserDefaults] setValue:@YES forKey:kAlreadyBeenLaunched];
 
         // Set auto-start to ON by default
         [[NSBundle mainBundle] addToLoginItems];
@@ -181,8 +185,16 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    // Insert code here to initialize your application
     [self startSyncManagerIfAuthenticated];
+    [DDLog addLogger:[DDASLLogger sharedInstance]];
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    DDLogFileManagerDefault *logFileManager = [[DDLogFileManagerDefault alloc] initWithLogsDirectory:[self pathForFilename:@"Logs"]];
+    DDFileLogger *fileLogger = [[DDFileLogger alloc] initWithLogFileManager:logFileManager];
+    fileLogger.rollingFrequency = 60 * 60 * 24;
+    fileLogger.maximumFileSize = 3000000;
+    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;
+
+    [DDLog addLogger:fileLogger withLogLevel:LOG_LEVEL_ALL];
 }
 
 - (IBAction)quit:(id)sender {
@@ -220,7 +232,7 @@ static NSImage *_connectedIcon = nil;
     RACSignal *combined = [RACSignal concat:allTransmits];
 
     [combined subscribeNext:^(id x) {
-        NSLog(@"Increment progress bar");
+        DDLogInfo(@"Increment progress bar");
         [_progressIndicator incrementBy:1.];
     }
                       error:^(NSError *err) {
@@ -231,9 +243,46 @@ static NSImage *_connectedIcon = nil;
         [self updateGlukloaderIcon];
     }
                   completed:^{
-        NSLog(@"Completed resend of all data.");
+        DDLogInfo(@"Completed resend of all data.");
         [self updateGlukloaderIcon];
         [self hideProgressWindow];
+    }];
+}
+
+- (IBAction)emailLogs:(id)sender {
+    Mailgun *mailgun = [Mailgun clientWithDomain:@"mg.mygluk.it" apiKey:@"key-75877df4fad134b6b984494424f4cae1"];
+    MGMessage *message = [MGMessage messageFrom:@"Glukloader <alexandre.normand@mygluk.it>"
+                                             to:@"Alexandre Normand <alexandre.normand@mygluk.it>"
+                                        subject:@"Glukloader logs for you to look at!"
+                                           body:@"Here are logs."];
+
+    NSError *error;
+    NSArray *files = [self getLogFilesError:&error];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    for (id filename in files) {
+        NSString *fullPath = [self pathForFilename:[NSString stringWithFormat:@"Logs/%s", [filename UTF8String]]];
+        NSData *data = [fileManager contentsAtPath:fullPath];
+        [message addAttachment:data withName:filename type:@"text/x-log"];
+    }
+    
+
+    [mailgun sendMessage:message success:^(NSString *messageId) {
+        [GrowlApplicationBridge notifyWithTitle:@"Logs sent"
+                                    description:@"Logs emailed to alexandre.normand@mygluk.it."
+                               notificationName:LOGS_EMAILED
+                                       iconData:nil
+                                       priority:0
+                                       isSticky:NO
+                                   clickContext:nil];
+    } failure:^(NSError *error) {
+        [GrowlApplicationBridge notifyWithTitle:@"Error sending logs"
+                                    description:[NSString stringWithFormat:@"Error sending message. The error was: %@", [error userInfo]]
+                               notificationName:EMAIL_LOGS_ERROR
+                                       iconData:nil
+                                       priority:0
+                                       isSticky:NO
+                                   clickContext:nil];
     }];
 }
 
@@ -263,10 +312,10 @@ static NSImage *_connectedIcon = nil;
         return nil;
     }
 
-    NSLog(@"Found files for %@: %@", recordType, files);
+    DDLogInfo(@"Found files for %@: %@", recordType, files);
 
     for (id filename in files) {
-        NSLog(@"Prepared transmission of [%@] records from file [%@].", recordType, filename);
+        DDLogInfo(@"Prepared transmission of [%@] records from file [%@].", recordType, filename);
         [transmitTasks addObject:[self signalForDataTransmitOfRecordsFromFile:filename
                                                                      endpoint:endpoint
                                                                    recordType:recordType
@@ -280,7 +329,7 @@ static NSImage *_connectedIcon = nil;
     NSError *err;
     NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:glukitRoot error:&err];
     if (err != nil) {
-        NSLog(@"Error listing files in glukit root [%@]: %@", glukitRoot, (*error));
+        DDLogInfo(@"Error listing files in glukit root [%@]: %@", glukitRoot, (*error));
         *error = err;
         return nil;
     } else {
@@ -296,6 +345,23 @@ static NSImage *_connectedIcon = nil;
         }]];
 
         return sortedArray;
+    }
+}
+
+- (NSArray *)getLogFilesError:(NSError **)error {
+    NSError *err;
+    NSString *logDir = [self pathForFilename:@"Logs"];
+    NSArray *dirFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:logDir error:&err];
+    if (err != nil) {
+        DDLogInfo(@"Error listing logs files in glukit root [%@]: %@", logDir, (*error));
+        *error = err;
+        return nil;
+    } else {
+        NSPredicate *logFilesPredicate = [NSPredicate predicateWithFormat:@"(self ENDSWITH '.log')"];
+        NSArray *logFiles =
+                [dirFiles filteredArrayUsingPredicate:logFilesPredicate];
+        
+        return logFiles;
     }
 }
 
@@ -342,7 +408,7 @@ static NSImage *_connectedIcon = nil;
     BOOL didAuth = [glukitAuth canAuthorize];
 
     if (didAuth) {
-        NSLog(@"Authentication found, starting sync manager...");
+        DDLogInfo(@"Authentication found, starting sync manager...");
         // Get the SyncManager
         syncManager = [[SyncManager alloc] init];
         [syncManager registerEventListener:self];
@@ -358,7 +424,7 @@ static NSImage *_connectedIcon = nil;
 - (void)stopSyncManagerIfEnabled {
 
     if (syncManager != nil) {
-        NSLog(@"Stopping sync manager...");
+        DDLogInfo(@"Stopping sync manager...");
         // Get the SyncManager
         [syncManager stop];
         syncManager = nil;
@@ -375,9 +441,8 @@ static NSImage *_connectedIcon = nil;
     if (![fileManager fileExistsAtPath:folder]) {
         NSError *error = nil;
         if (![fileManager createDirectoryAtPath:folder withIntermediateDirectories:YES attributes:nil error:&error]) {
-            NSLog(@"Error creating directory to hold configuration: %@", error);
+            DDLogInfo(@"Error creating directory to hold configuration: %@", error);
         };
-
     }
 
     return [folder stringByAppendingPathComponent:filename];
@@ -397,7 +462,7 @@ static NSImage *_connectedIcon = nil;
 
     [rootObject setValue:tag forKey:SYNC_TAG_KEY];
     [NSKeyedArchiver archiveRootObject:rootObject toFile:path];
-    NSLog(@"Saved tag [%@] to disk", tag);
+    DDLogInfo(@"Saved tag [%@] to disk", tag);
 }
 
 - (NSString *)pathForStateFile {
@@ -410,14 +475,14 @@ static NSImage *_connectedIcon = nil;
 
     rootObject = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
     SyncTag *tag = [rootObject valueForKey:SYNC_TAG_KEY];
-    NSLog(@"Loaded tag [%@] from disk", tag);
+    DDLogInfo(@"Loaded tag [%@] from disk", tag);
     return tag;
 }
 
 #pragma mark - UIWebViewDelegate methods
 
 - (void)syncStarted:(SyncEvent *)event {
-    NSLog(@"Sync started at %@", [NSDate date]);
+    DDLogInfo(@"Sync started at %@", [NSDate date]);
     syncInProgress = YES;
     [GrowlApplicationBridge notifyWithTitle:@"Sync Started"
       description:@"Sync started."
@@ -430,7 +495,7 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (void)errorReadingReceiver:(SyncEvent *)event {
-    NSLog(@"Error received");
+    DDLogInfo(@"Error received");
     syncInProgress = NO;
     [GrowlApplicationBridge notifyWithTitle:@"Sync Error"
                                 description:@"Error synching data from dexcom. Please email alexandre.normand@mygluk.it."
@@ -443,13 +508,13 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (void)syncProgress:(SyncProgressEvent *)event {
-    NSLog(@"Sync progressing");
+    DDLogInfo(@"Sync progressing");
     syncInProgress = YES;
     // TODO: Animate icon
 }
 
 - (void)syncComplete:(SyncCompletionEvent *)event {
-    NSLog(@"Sync complete at %@ with %lu reads, %lu calibrations, %lu injections, %lu exercises, %lu meals",
+    DDLogInfo(@"Sync complete at %@ with %lu reads, %lu calibrations, %lu injections, %lu exercises, %lu meals",
             [NSDate date],
             event.syncData.glucoseReads.count,
             event.syncData.calibrationReads.count,
@@ -529,7 +594,7 @@ static NSImage *_connectedIcon = nil;
 
 - (BOOL)writeDataLogForRecordType:(NSArray *)records recordType:(NSString *const)recordType {
     if ([records count] == 0) {
-        NSLog(@"Skipping write log since we have no records for [%s]", [recordType UTF8String]);
+        DDLogInfo(@"Skipping write log since we have no records for [%s]", [recordType UTF8String]);
         return YES;
     }
 
@@ -560,10 +625,10 @@ static NSImage *_connectedIcon = nil;
                                   encoding:NSStringEncodingConversionAllowLossy
                                      error:&error];
         if (!result) {
-            NSLog(@"Failed to write log of records to [%s]: %@", [fullPath UTF8String], error);
+            DDLogInfo(@"Failed to write log of records to [%s]: %@", [fullPath UTF8String], error);
             return NO;
         } else {
-            NSLog(@"Wrote [%lu] records of [%s] to [%s]",
+            DDLogInfo(@"Wrote [%lu] records of [%s] to [%s]",
                     [records count],
                     [recordType UTF8String],
                     [fullPath UTF8String]);
@@ -571,7 +636,7 @@ static NSImage *_connectedIcon = nil;
 
         return YES;
     } else {
-        NSLog(@"Failed to encode records as json: %@", error);
+        DDLogInfo(@"Failed to encode records as json: %@", error);
         return NO;
     }
 }
@@ -582,13 +647,13 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (void)receiverPlugged:(ReceiverEvent *)event {
-    NSLog(@"Received plugged in");
+    DDLogInfo(@"Received plugged in");
     receiverPluggedIn = YES;
     [self updateGlukloaderIcon];
 }
 
 - (void)receiverUnplugged:(ReceiverEvent *)event {
-    NSLog(@"Received unplugged");
+    DDLogInfo(@"Received unplugged");
     receiverPluggedIn = NO;
     [self updateGlukloaderIcon];
 }
@@ -634,7 +699,7 @@ static NSImage *_connectedIcon = nil;
             NSString *requestBody = [JsonEncoder encodeDictionaryArrayToJSON:dictionaries error:&error];
 
             if (error == nil) {
-                //NSLog(@"Posting [%s] records as payload\n%s", [recordType UTF8String], [requestBody UTF8String]);
+                //DDLogInfo(@"Posting [%s] records as payload\n%s", [recordType UTF8String], [requestBody UTF8String]);
             }
 
             NSData *payload = [requestBody dataUsingEncoding:NSUTF8StringEncoding];
@@ -648,20 +713,20 @@ static NSImage *_connectedIcon = nil;
             [fetcher setRetryEnabled:NO];
             [fetcher beginFetchWithCompletionHandler:^(NSData *data, NSError *responseError) {
                 if (responseError != nil && [responseError code] != 200) {
-                    NSLog(@"Error accessing ressource, removing auth from keychain. "
+                    DDLogInfo(@"Error accessing ressource, removing auth from keychain. "
                             "Payload was [%@] for request [%@] and error [%li] was %@",
                             data, [responseError userInfo], [responseError code], responseError.localizedDescription);
                     [self clearAuthentication];
                     [subscriber sendError:responseError];
                 } else {
-                    NSLog(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
+                    DDLogInfo(@"Success, got response [%s]", [[NSString stringWithUTF8String:[data bytes]] UTF8String]);
                     [self updateRefreshTokenInKeychainIfRequired];
                     [subscriber sendNext:nil];
                     [subscriber sendCompleted];
                 }
             }];
         } else {
-            NSLog(@"No [%s] records to transmit", [recordType UTF8String]);
+            DDLogInfo(@"No [%s] records to transmit", [recordType UTF8String]);
             [subscriber sendNext:nil];
             [subscriber sendCompleted];
         }

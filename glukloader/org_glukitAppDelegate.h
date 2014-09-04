@@ -52,4 +52,5 @@ static NSString *const MEALS_ENDPOINT = @"https://glukit.appspot.com/v1/meals";
 @property (strong, nonatomic) IBOutlet WebView *loginWebView;
 
 
+- (IBAction)emailLogs:(id)sender;
 @end
