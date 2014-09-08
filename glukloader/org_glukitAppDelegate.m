@@ -16,6 +16,7 @@
 #import <gtm-oauth2/GTMOAuth2WindowController.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import <NSBundle+LoginItem.h>
+#import "ASLogger.h"
 
 #define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
 
@@ -237,32 +238,36 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (IBAction)emailLogs:(id)sender {
-    Mailgun *mailgun = [Mailgun clientWithDomain:@"mg.mygluk.it" apiKey:@"key-75877df4fad134b6b984494424f4cae1"];
-    MGMessage *message = [MGMessage messageFrom:@"Glukloader <alexandre.normand@mygluk.it>"
-                                             to:@"Alexandre Normand <alexandre.normand@mygluk.it>"
-                                        subject:@"Glukloader logs for you to look at!"
-                                           body:@"Here are logs."];
-
-    NSError *error;
-    NSArray *files = [self getLogFilesError:&error];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    for (id filename in files) {
-        NSString *fullPath = [self pathForFilename:[NSString stringWithFormat:@"Logs/%s", [filename UTF8String]]];
-        NSData *data = [fileManager contentsAtPath:fullPath];
-        [message addAttachment:data withName:filename type:@"text/x-log"];
-    }
-    
-
-    [mailgun sendMessage:message success:^(NSString *messageId) {
-        [GrowlApplicationBridge notifyWithTitle:@"Logs sent"
-                                    description:@"Logs emailed to alexandre.normand@mygluk.it."
-                               notificationName:LOGS_EMAILED
+    RACSignal *emailSending = [RACSignal createSignal:^RACDisposable *(id <RACSubscriber> subscriber) {
+        Mailgun *mailgun = [Mailgun clientWithDomain:@"mg.mygluk.it" apiKey:@"key-75877df4fad134b6b984494424f4cae1"];
+        MGMessage *message = [MGMessage messageFrom:@"Glukloader <alexandre.normand@mygluk.it>"
+                                                 to:@"Alexandre Normand <alexandre.normand@mygluk.it>"
+                                            subject:@"Glukloader logs for you to look at!"
+                                               body:@"Here are logs."];
+        [GrowlApplicationBridge notifyWithTitle:@"Preparing logs."
+                                    description:[NSString stringWithFormat:@"Preparing all logs..."]
+                               notificationName:PREPARING_LOGS
                                        iconData:nil
                                        priority:0
                                        isSticky:NO
                                    clickContext:nil];
-    } failure:^(NSError *error) {
+
+        // Find Glukloader logs
+        NSData *logData = [self getLoggingData];
+
+        [message addAttachment:logData withName:@"glukloader.log" type:@"text/x-gzip"];
+
+        [mailgun sendMessage:message success:^(NSString *messageId) {
+            [subscriber sendCompleted];
+        } failure:^(NSError *error) {
+            [subscriber sendError:error];
+            
+        }];
+        
+        return nil;
+    }];
+
+    [emailSending subscribeError:^(NSError *error) {
         [GrowlApplicationBridge notifyWithTitle:@"Error sending logs"
                                     description:[NSString stringWithFormat:@"Error sending message. The error was: %@", [error userInfo]]
                                notificationName:EMAIL_LOGS_ERROR
@@ -270,7 +275,31 @@ static NSImage *_connectedIcon = nil;
                                        priority:0
                                        isSticky:NO
                                    clickContext:nil];
+    } completed:^{
+        [GrowlApplicationBridge notifyWithTitle:@"Logs sent"
+                                    description:@"Logs emailed to alexandre.normand@mygluk.it."
+                               notificationName:LOGS_EMAILED
+                                       iconData:nil
+                                       priority:0
+                                       isSticky:NO
+                                   clickContext:nil];
     }];
+}
+
+- (NSData *)getLoggingData {
+    ASLogger *asLogger = [ASLogger defaultLogger];
+    ASLQuery *query = [[ASLQuery alloc] init];
+    [query setValue:@"glukloader" forKey:[NSString stringWithUTF8String:ASL_KEY_SENDER] withOperation:ASL_QUERY_OP_EQUAL];
+    ASLResponse *response = [asLogger search:query];
+    ASLMessage *aslMessage = [response next];
+    NSMutableData *logData = [[NSMutableData alloc] init];
+    while (aslMessage != nil) {
+        [logData appendData:[[NSString stringWithFormat:@"%@ %@: %@\n", aslMessage.time, aslMessage.sender, aslMessage.message] dataUsingEncoding:NSUTF8StringEncoding]];
+        aslMessage = [response next];
+    }
+
+//    TDTZCompressor *compressor = [[TDTZCompressor alloc] initWithCompressionFormat:TDTCompressionFormatGzip level:6];
+    return logData;
 }
 
 - (void)hideProgressWindow {

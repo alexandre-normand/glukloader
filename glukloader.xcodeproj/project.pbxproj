@@ -24,8 +24,17 @@
 		0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */; };
 		0B7F150B19B6D07200F3284D /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B7F150A19B6D07200F3284D /* Growl.framework */; };
 		0B7F150C19B6D52E00F3284D /* Growl.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 0B7F150A19B6D07200F3284D /* Growl.framework */; };
+		0B8568F319BD68F20023264E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8568F219BD68F20023264E /* libz.dylib */; };
 		0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8AD1A818F0989500E223C8 /* WebKit.framework */; };
 		0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */; };
+		0BD82BE619BD5B2D00E9C1FD /* ASLMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BDF19BD5B2D00E9C1FD /* ASLMessage.m */; };
+		0BD82BE719BD5B2D00E9C1FD /* ASLQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BE119BD5B2D00E9C1FD /* ASLQuery.m */; };
+		0BD82BE819BD5B2D00E9C1FD /* ASLResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BE319BD5B2D00E9C1FD /* ASLResponse.m */; };
+		0BD82BE919BD5B2D00E9C1FD /* ASLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BE519BD5B2D00E9C1FD /* ASLogger.m */; };
+		0BD82BEF19BD5F6E00E9C1FD /* NSObject+Properties.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BEE19BD5F6E00E9C1FD /* NSObject+Properties.m */; };
+		0BD82BF219BD5F9300E9C1FD /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BF119BD5F9300E9C1FD /* NSData+Base64.m */; };
+		0BD82BF519BD5FB600E9C1FD /* b64.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BF419BD5FB600E9C1FD /* b64.m */; };
+		0BD82BF819BD601400E9C1FD /* NSString+PropertyKVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BF719BD601400E9C1FD /* NSString+PropertyKVC.m */; };
 		7DCB91C198397AB64583582D /* ModelConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */; };
 		7DCB91D42680CBEE5EDFA6A7 /* GlukitMeal.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9A00668082B49942E79C /* GlukitMeal.m */; };
 		7DCB91E62C34EE1FB3ECF4A0 /* GlukitTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9372CE43FEB3EB60D8F5 /* GlukitTime.m */; };
@@ -112,9 +121,28 @@
 		0B7629E3191C8D950040BC5A /* GlukloaderIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukloaderIcon.h; sourceTree = "<group>"; };
 		0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukloaderIcon.m; sourceTree = "<group>"; };
 		0B7F150A19B6D07200F3284D /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
+		0B8568ED19BD68D10023264E /* libPods-CocoaZ.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-CocoaZ.a"; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/libPods-CocoaZ.a"; sourceTree = "<group>"; };
+		0B8568F219BD68F20023264E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		0B8568F519BD692D0023264E /* libz.1.2.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.2.5.dylib; path = usr/lib/libz.1.2.5.dylib; sourceTree = SDKROOT; };
 		0B8AD1A818F0989500E223C8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		0B92B12F190A1DE200CEF4DD /* OauthMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OauthMenuItem.h; sourceTree = "<group>"; };
 		0B92B130190A1DE200CEF4DD /* OauthMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OauthMenuItem.m; sourceTree = "<group>"; };
+		0BD82BDE19BD5B2D00E9C1FD /* ASLMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASLMessage.h; sourceTree = "<group>"; };
+		0BD82BDF19BD5B2D00E9C1FD /* ASLMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASLMessage.m; sourceTree = "<group>"; };
+		0BD82BE019BD5B2D00E9C1FD /* ASLQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASLQuery.h; sourceTree = "<group>"; };
+		0BD82BE119BD5B2D00E9C1FD /* ASLQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASLQuery.m; sourceTree = "<group>"; };
+		0BD82BE219BD5B2D00E9C1FD /* ASLResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASLResponse.h; sourceTree = "<group>"; };
+		0BD82BE319BD5B2D00E9C1FD /* ASLResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASLResponse.m; sourceTree = "<group>"; };
+		0BD82BE419BD5B2D00E9C1FD /* ASLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASLogger.h; sourceTree = "<group>"; };
+		0BD82BE519BD5B2D00E9C1FD /* ASLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASLogger.m; sourceTree = "<group>"; };
+		0BD82BED19BD5F6E00E9C1FD /* NSObject+Properties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Properties.h"; sourceTree = "<group>"; };
+		0BD82BEE19BD5F6E00E9C1FD /* NSObject+Properties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Properties.m"; sourceTree = "<group>"; };
+		0BD82BF019BD5F9300E9C1FD /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
+		0BD82BF119BD5F9300E9C1FD /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
+		0BD82BF319BD5FB600E9C1FD /* b64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b64.h; sourceTree = "<group>"; };
+		0BD82BF419BD5FB600E9C1FD /* b64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = b64.m; sourceTree = "<group>"; };
+		0BD82BF619BD601400E9C1FD /* NSString+PropertyKVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+PropertyKVC.h"; sourceTree = "<group>"; };
+		0BD82BF719BD601400E9C1FD /* NSString+PropertyKVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+PropertyKVC.m"; sourceTree = "<group>"; };
 		0BF4FA95192F100000E576C1 /* Mantle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mantle.framework; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/Mantle.framework"; sourceTree = "<group>"; };
 		4DC192142C3E48BA9493BAD0 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B81981D524D474690A6E907 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
@@ -143,6 +171,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B8568F319BD68F20023264E /* libz.dylib in Frameworks */,
 				7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */,
 				0B28DCA619B96B0800F32B80 /* bloodSheltie.framework in Frameworks */,
 				0B8AD1A918F0989500E223C8 /* WebKit.framework in Frameworks */,
@@ -167,6 +196,7 @@
 		0B488C9718C83C3A00631DA1 = {
 			isa = PBXGroup;
 			children = (
+				0BD82BDD19BD5B2D00E9C1FD /* ASLogger */,
 				0B488CA918C83C3A00631DA1 /* glukloader */,
 				0B488CC718C83C3A00631DA1 /* glukloaderTests */,
 				0B488CA218C83C3A00631DA1 /* Frameworks */,
@@ -188,6 +218,9 @@
 		0B488CA218C83C3A00631DA1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0B8568F519BD692D0023264E /* libz.1.2.5.dylib */,
+				0B8568F219BD68F20023264E /* libz.dylib */,
+				0B8568ED19BD68D10023264E /* libPods-CocoaZ.a */,
 				0B7F150A19B6D07200F3284D /* Growl.framework */,
 				0B32A2C6193C2CD7003EF27B /* libPods-IYLoginItem.a */,
 				0B32A2C1193C2CD2003EF27B /* libPods-NXOAuth2Client.a */,
@@ -274,6 +307,29 @@
 				0B16FFBD19417B5D008B5816 /* bloodSheltie-example */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		0BD82BDD19BD5B2D00E9C1FD /* ASLogger */ = {
+			isa = PBXGroup;
+			children = (
+				0BD82BF619BD601400E9C1FD /* NSString+PropertyKVC.h */,
+				0BD82BF719BD601400E9C1FD /* NSString+PropertyKVC.m */,
+				0BD82BF319BD5FB600E9C1FD /* b64.h */,
+				0BD82BF419BD5FB600E9C1FD /* b64.m */,
+				0BD82BED19BD5F6E00E9C1FD /* NSObject+Properties.h */,
+				0BD82BEE19BD5F6E00E9C1FD /* NSObject+Properties.m */,
+				0BD82BF019BD5F9300E9C1FD /* NSData+Base64.h */,
+				0BD82BF119BD5F9300E9C1FD /* NSData+Base64.m */,
+				0BD82BDE19BD5B2D00E9C1FD /* ASLMessage.h */,
+				0BD82BDF19BD5B2D00E9C1FD /* ASLMessage.m */,
+				0BD82BE019BD5B2D00E9C1FD /* ASLQuery.h */,
+				0BD82BE119BD5B2D00E9C1FD /* ASLQuery.m */,
+				0BD82BE219BD5B2D00E9C1FD /* ASLResponse.h */,
+				0BD82BE319BD5B2D00E9C1FD /* ASLResponse.m */,
+				0BD82BE419BD5B2D00E9C1FD /* ASLogger.h */,
+				0BD82BE519BD5B2D00E9C1FD /* ASLogger.m */,
+			);
+			path = ASLogger;
 			sourceTree = "<group>";
 		};
 		7DCB9D1DAA531CC02B71473D /* model */ = {
@@ -460,16 +516,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0BD82BF219BD5F9300E9C1FD /* NSData+Base64.m in Sources */,
 				0B488CB018C83C3A00631DA1 /* main.m in Sources */,
 				0B488CB718C83C3A00631DA1 /* org_glukitAppDelegate.m in Sources */,
 				0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */,
 				0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */,
+				0BD82BF819BD601400E9C1FD /* NSString+PropertyKVC.m in Sources */,
 				7DCB91C198397AB64583582D /* ModelConverter.m in Sources */,
+				0BD82BE919BD5B2D00E9C1FD /* ASLogger.m in Sources */,
 				7DCB9A3A244A661C4A22C582 /* GlukitGlucoseRead.m in Sources */,
+				0BD82BE619BD5B2D00E9C1FD /* ASLMessage.m in Sources */,
+				0BD82BE819BD5B2D00E9C1FD /* ASLResponse.m in Sources */,
 				7DCB958326C7D23B089846AF /* JsonEncoder.m in Sources */,
 				7DCB91E62C34EE1FB3ECF4A0 /* GlukitTime.m in Sources */,
+				0BD82BF519BD5FB600E9C1FD /* b64.m in Sources */,
+				0BD82BE719BD5B2D00E9C1FD /* ASLQuery.m in Sources */,
 				7DCB99F20ABC96CF22336134 /* GlukitInjection.m in Sources */,
 				7DCB9F0023DDF3D95E8CD05E /* GlukitCalibrationRead.m in Sources */,
+				0BD82BEF19BD5F6E00E9C1FD /* NSObject+Properties.m in Sources */,
 				7DCB91D42680CBEE5EDFA6A7 /* GlukitMeal.m in Sources */,
 				7DCB9DE57DCBB87AD8DFF762 /* GlukitExercise.m in Sources */,
 				7DCB9243FAE604DEF8743028 /* GrowlDelegate.m in Sources */,
@@ -569,7 +633,10 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lz",
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -608,7 +675,10 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lz",
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -634,6 +704,7 @@
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -659,6 +730,7 @@
 					"$(USER_LIBRARY_DIR)/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
