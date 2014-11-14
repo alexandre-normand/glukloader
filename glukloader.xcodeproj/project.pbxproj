@@ -10,6 +10,7 @@
 		0B16FFC319417F5A008B5816 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B28DCA619B96B0800F32B80 /* bloodSheltie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
 		0B28DCA719B9795600F32B80 /* bloodSheltie.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 0B488CE118C83D1100631DA1 /* bloodSheltie.framework */; };
+		0B2A87D41A15BECC0076A130 /* GlukloaderYosemite.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B2A87D31A15BECC0076A130 /* GlukloaderYosemite.m */; };
 		0B488CA418C83C3A00631DA1 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B488CA318C83C3A00631DA1 /* Cocoa.framework */; };
 		0B488CAE18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CAC18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B488CB018C83C3A00631DA1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B488CAF18C83C3A00631DA1 /* main.m */; };
@@ -21,7 +22,6 @@
 		0B488CCC18C83C3A00631DA1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CCA18C83C3A00631DA1 /* InfoPlist.strings */; };
 		0B5E6992192EFCEF008FD7A5 /* ModelConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */; };
 		0B61B669193C3911009331CD /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B488CB818C83C3A00631DA1 /* MainMenu.xib */; };
-		0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */; };
 		0B7F150B19B6D07200F3284D /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B7F150A19B6D07200F3284D /* Growl.framework */; };
 		0B7F150C19B6D52E00F3284D /* Growl.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 0B7F150A19B6D07200F3284D /* Growl.framework */; };
 		0B8568F319BD68F20023264E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B8568F219BD68F20023264E /* libz.dylib */; };
@@ -94,6 +94,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B2A87D21A15BECC0076A130 /* GlukloaderYosemite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukloaderYosemite.h; sourceTree = "<group>"; };
+		0B2A87D31A15BECC0076A130 /* GlukloaderYosemite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukloaderYosemite.m; sourceTree = "<group>"; };
 		0B32A2C1193C2CD2003EF27B /* libPods-NXOAuth2Client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-NXOAuth2Client.a"; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/libPods-NXOAuth2Client.a"; sourceTree = "<group>"; };
 		0B32A2C6193C2CD7003EF27B /* libPods-IYLoginItem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-IYLoginItem.a"; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/libPods-IYLoginItem.a"; sourceTree = "<group>"; };
 		0B488CA018C83C3A00631DA1 /* glukloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = glukloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,8 +120,6 @@
 		0B5E6991192EFCEF008FD7A5 /* ModelConverterTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelConverterTests.m; sourceTree = "<group>"; };
 		0B6EF68618CAE7D70076DAEE /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		0B6EF68818CAE7EA0076DAEE /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		0B7629E3191C8D950040BC5A /* GlukloaderIcon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlukloaderIcon.h; sourceTree = "<group>"; };
-		0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukloaderIcon.m; sourceTree = "<group>"; };
 		0B7F150A19B6D07200F3284D /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
 		0B8568ED19BD68D10023264E /* libPods-CocoaZ.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-CocoaZ.a"; path = "../../../../Users/skippyjon/Library/Developer/Xcode/DerivedData/glukloader-bcgqwmclaenyccdotfcewqtvnblr/Build/Products/Debug/libPods-CocoaZ.a"; sourceTree = "<group>"; };
 		0B8568F219BD68F20023264E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -249,8 +249,8 @@
 		0B488CA918C83C3A00631DA1 /* glukloader */ = {
 			isa = PBXGroup;
 			children = (
-				0B7629E3191C8D950040BC5A /* GlukloaderIcon.h */,
-				0B7629E4191C8D950040BC5A /* GlukloaderIcon.m */,
+				0B2A87D21A15BECC0076A130 /* GlukloaderYosemite.h */,
+				0B2A87D31A15BECC0076A130 /* GlukloaderYosemite.m */,
 				0B488CB518C83C3A00631DA1 /* org_glukitAppDelegate.h */,
 				0B488CB618C83C3A00631DA1 /* org_glukitAppDelegate.m */,
 				0B488CB818C83C3A00631DA1 /* MainMenu.xib */,
@@ -520,8 +520,8 @@
 				0B488CB018C83C3A00631DA1 /* main.m in Sources */,
 				0B488CB718C83C3A00631DA1 /* org_glukitAppDelegate.m in Sources */,
 				0B92B131190A1DE200CEF4DD /* OauthMenuItem.m in Sources */,
-				0B7629E5191C8D950040BC5A /* GlukloaderIcon.m in Sources */,
 				0BD82BF819BD601400E9C1FD /* NSString+PropertyKVC.m in Sources */,
+				0B2A87D41A15BECC0076A130 /* GlukloaderYosemite.m in Sources */,
 				7DCB91C198397AB64583582D /* ModelConverter.m in Sources */,
 				0BD82BE919BD5B2D00E9C1FD /* ASLogger.m in Sources */,
 				7DCB9A3A244A661C4A22C582 /* GlukitGlucoseRead.m in Sources */,

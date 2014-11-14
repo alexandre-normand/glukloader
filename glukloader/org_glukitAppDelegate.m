@@ -9,7 +9,7 @@
 #import "org_glukitAppDelegate.h"
 #import <bloodSheltie/SyncManager.h>
 #import <Mailgun.h>
-#import "GlukloaderIcon.h"
+#import "GlukloaderYosemite.h"
 #import "JsonEncoder.h"
 #import "ModelConverter.h"
 #import "GrowlDelegate.h"
@@ -27,9 +27,7 @@ static NSString *const GLUKIT_KEYCHAIN_NAME = @"glukloader";
 static NSString *const CLIENT_SECRET = @"***REMOVED***";
 static NSString *const CLIENT_ID = @"***REMOVED***";
 
-static NSImage *_synchingIcon = nil;
-static NSImage *_unconnectedIcon = nil;
-static NSImage *_connectedIcon = nil;
+static NSImage *_menuBarIcon = nil;
 
 #define DEBUG 1
 
@@ -51,9 +49,7 @@ static NSImage *_connectedIcon = nil;
 @synthesize progressWindow = _progressWindow;
 
 + (void)initialize {
-    _synchingIcon = [GlukloaderIcon imageOfIconWithIsConnected:true isSyncInProgress:true];
-    _unconnectedIcon = [GlukloaderIcon imageOfIconWithIsConnected:false isSyncInProgress:false];
-    _connectedIcon = [GlukloaderIcon imageOfIconWithIsConnected:true isSyncInProgress:false];
+    _menuBarIcon = [GlukloaderYosemite imageOfGlukitIcon];
 }
 
 - (id)init {
@@ -107,6 +103,7 @@ static NSImage *_connectedIcon = nil;
         [self startOauthFlow];
     }
 
+    [self.statusBar setImage:_menuBarIcon];
     [self updateGlukloaderIcon];
     [self initializeDefaultIfFirstRun];
     [self updateUIForAutoStart];
@@ -146,17 +143,7 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (void)updateGlukloaderIcon {
-    if (glukitAuth == nil || ![glukitAuth canAuthorize]) {
-        [self.statusBar setImage:_unconnectedIcon];
-    } else if (receiverPluggedIn) {
-        if (syncInProgress) {
-            [self.statusBar setImage:_synchingIcon];
-        } else {
-            [self.statusBar setImage:_connectedIcon];
-        }
-    } else {
-        [self.statusBar setImage:_unconnectedIcon];
-    }
+    // Placeholder for maybe having different icons for each state
 }
 
 - (BOOL)webViewIsResizable:(WebView *)sender {
@@ -511,16 +498,21 @@ static NSImage *_connectedIcon = nil;
 }
 
 - (void)errorReadingReceiver:(SyncEvent *)event {
-    NSLog(@"Error received");
+    NSLog(@"Error received, will retry synching with a initial sync tag in case this was due to a receiver reset...");
     syncInProgress = NO;
     [GrowlApplicationBridge notifyWithTitle:@"Sync Error"
-                                description:@"Error synching data from dexcom. Please email alexandre.normand@mygluk.it."
+                                description:@"Error synching data from dexcom. Consider sending logs and emailling alexandre.normand@mygluk.it."
                            notificationName:SYNC_ERROR
                                    iconData:nil
                                    priority:-2
                                    isSticky:NO
                                clickContext:nil];
-    // TODO Change icon to warning about failure?
+
+    // Try restarting from a initial sync tag since this might have been caused by a bad
+    // reference page due to a receiver reset
+    [syncManager stop];
+    syncManager = [[SyncManager alloc] init];
+    [syncManager start:[SyncTag initialSyncTag]];
 }
 
 - (void)syncProgress:(SyncProgressEvent *)event {
