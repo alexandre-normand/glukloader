@@ -1,5 +1,0 @@
-#include "Pods-GTMHTTPFetcher.xcconfig"
-GCC_PREPROCESSOR_DEFINITIONS = COCOAPODS=1
-HEADER_SEARCH_PATHS = "${PODS_ROOT}/BuildHeaders" "${PODS_ROOT}/BuildHeaders/GTMHTTPFetcher" "${PODS_ROOT}/Headers" "${PODS_ROOT}/Headers/AFNetworking" "${PODS_ROOT}/Headers/GTMHTTPFetcher" "${PODS_ROOT}/Headers/IYLoginItem" "${PODS_ROOT}/Headers/Mantle" "${PODS_ROOT}/Headers/ReactiveCocoa" "${PODS_ROOT}/Headers/ReactiveCocoa/ReactiveCocoa" "${PODS_ROOT}/Headers/gtm-oauth2" "${PODS_ROOT}/Headers/mailgun"
-OTHER_LDFLAGS = -ObjC
-PODS_ROOT = ${SRCROOT}
