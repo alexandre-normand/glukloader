@@ -596,6 +596,7 @@
 /* Begin XCBuildConfiguration section */
 		0B488CCF18C83C3A00631DA1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B81981D524D474690A6E907 /* Pods.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -643,6 +644,7 @@
 		};
 		0B488CD018C83C3A00631DA1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B81981D524D474690A6E907 /* Pods.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -737,6 +739,7 @@
 		};
 		0B488CD518C83C3A00631DA1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B81981D524D474690A6E907 /* Pods.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/glukloader.app/Contents/MacOS/glukloader";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -761,6 +764,7 @@
 		};
 		0B488CD618C83C3A00631DA1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6B81981D524D474690A6E907 /* Pods.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/glukloader.app/Contents/MacOS/glukloader";
 				COMBINE_HIDPI_IMAGES = YES;
