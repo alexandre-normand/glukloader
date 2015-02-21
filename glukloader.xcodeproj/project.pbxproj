@@ -42,6 +42,7 @@
 		7DCB958326C7D23B089846AF /* JsonEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB9F54BDEA563D44C01FC8 /* JsonEncoder.m */; };
 		7DCB99F20ABC96CF22336134 /* GlukitInjection.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB95F5024C0C1B0F86387B /* GlukitInjection.m */; };
 		7DCB9A3A244A661C4A22C582 /* GlukitGlucoseRead.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */; };
+		7DCB9ADD93684746EE9FBB7C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 7DCB9616170CDB4B586655CB /* README.md */; };
 		7DCB9DE57DCBB87AD8DFF762 /* GlukitExercise.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB925B9F670C898282DD02 /* GlukitExercise.m */; };
 		7DCB9F0023DDF3D95E8CD05E /* GlukitCalibrationRead.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB94EAF3291CAFE946A34B /* GlukitCalibrationRead.m */; };
 		7F135C6DF41344DEBE6B868F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DC192142C3E48BA9493BAD0 /* libPods.a */; };
@@ -153,6 +154,7 @@
 		7DCB94EAF3291CAFE946A34B /* GlukitCalibrationRead.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitCalibrationRead.m; sourceTree = "<group>"; };
 		7DCB95AB3B94E0E0A4BA5016 /* GrowlDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GrowlDelegate.m; sourceTree = "<group>"; };
 		7DCB95F5024C0C1B0F86387B /* GlukitInjection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitInjection.m; sourceTree = "<group>"; };
+		7DCB9616170CDB4B586655CB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = file.md; path = README.md; sourceTree = "<group>"; };
 		7DCB96B4676BACF9BF0D77F3 /* GlukitGlucoseRead.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlukitGlucoseRead.m; sourceTree = "<group>"; };
 		7DCB975FB58355B8CE96B24D /* ModelConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelConverter.h; sourceTree = "<group>"; };
 		7DCB976DDAA8E2964CF90646 /* GrowlDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GrowlDelegate.h; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 				0B488CA118C83C3A00631DA1 /* Products */,
 				0B488CD718C83D1100631DA1 /* bloodSheltie.xcodeproj */,
 				3D1E432E75C5AFACF03FBE28 /* Pods */,
+				7DCB9616170CDB4B586655CB /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -477,6 +480,7 @@
 				0B488CBC18C83C3A00631DA1 /* Images.xcassets in Resources */,
 				0B488CB418C83C3A00631DA1 /* Credits.rtf in Resources */,
 				0B61B669193C3911009331CD /* MainMenu.xib in Resources */,
+				7DCB9ADD93684746EE9FBB7C /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
