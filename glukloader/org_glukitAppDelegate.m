@@ -17,6 +17,7 @@
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import <NSBundle+LoginItem.h>
 #import "ASLogger.h"
+#import "GlukitSecrets.h"
 
 #define kAlreadyBeenLaunched @"AlreadyBeenLaunched"
 
@@ -24,8 +25,8 @@ static NSString *const TOKEN_URL = @"https://glukit.appspot.com/token";
 static NSString *const AUTHORIZATION_URL = @"https://glukit.appspot.com/authorize";
 static NSString *const REDIRECT_URL = @"urn:ietf:wg:oauth:2.0:oob";
 static NSString *const GLUKIT_KEYCHAIN_NAME = @"glukloader";
-static NSString *const CLIENT_SECRET = @"***REMOVED***";
-static NSString *const CLIENT_ID = @"***REMOVED***";
+static NSString *const CLIENT_SECRET = CLIENT_SECRET_VALUE;
+static NSString *const CLIENT_ID = CLIENT_ID_VALUE;
 
 static NSImage *_menuBarIcon = nil;
 

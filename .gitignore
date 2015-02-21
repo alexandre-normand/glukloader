@@ -27,3 +27,4 @@ bloodSheltie/ORSSerialPort
 *.moved-aside
 *.xccheckout
 *.log
+GlukitSecrets.h
