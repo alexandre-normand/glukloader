@@ -1,0 +1,65 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "BCF145DB63716F888F36DFA0526DC1724F1EDC22",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "C3D2E6968A27AF6DBB9B38829F8866A6C9B2F6D0" : 0,
+    "A192194C-AD88-4C1D-A056-4DBFAC65054A" : 0,
+    "50619FBC-2F12-4C90-A13E-BC89BA387DF7" : 0,
+    "6EF8B2D0-AE05-40ED-946A-4F9189B0FFD9" : 0,
+    "FB9FF8AE-D22E-4FDF-BBD5-FDB86E01AB28" : 0,
+    "BCF145DB63716F888F36DFA0526DC1724F1EDC22" : 0,
+    "5A811E91F5DFF59170683E14D2C5755F19DE18CB" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "5D74E65D-DBB7-4155-A9B6-80A42C8764B3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "C3D2E6968A27AF6DBB9B38829F8866A6C9B2F6D0" : "glukloader\/bloodSheltie",
+    "A192194C-AD88-4C1D-A056-4DBFAC65054A" : "glukloader\/bloodSheltie\/Mantle\/Configuration",
+    "50619FBC-2F12-4C90-A13E-BC89BA387DF7" : "glukloader\/bloodSheltie\/Mantle",
+    "6EF8B2D0-AE05-40ED-946A-4F9189B0FFD9" : "glukloader\/bloodSheltie\/Mantle\/MantleTests\/expecta",
+    "FB9FF8AE-D22E-4FDF-BBD5-FDB86E01AB28" : "glukloader\/bloodSheltie\/Mantle\/MantleTests\/specta",
+    "BCF145DB63716F888F36DFA0526DC1724F1EDC22" : "glukloader",
+    "5A811E91F5DFF59170683E14D2C5755F19DE18CB" : "glukloader\/bloodSheltie\/ORSSerialPort"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "glukloader",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "glukloader.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "ssh:\/\/github.com\/alexandre-normand\/Mantle.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "50619FBC-2F12-4C90-A13E-BC89BA387DF7"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "ssh:\/\/github.com\/alexandre-normand\/ORSSerialPort.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5A811E91F5DFF59170683E14D2C5755F19DE18CB"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/github\/expecta.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6EF8B2D0-AE05-40ED-946A-4F9189B0FFD9"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/jspahrsummers\/xcconfigs.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A192194C-AD88-4C1D-A056-4DBFAC65054A"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "ssh:\/\/github.com\/alexandre-normand\/glukloader.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "BCF145DB63716F888F36DFA0526DC1724F1EDC22"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "ssh:\/\/github.com\/alexandre-normand\/bloodSheltie.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C3D2E6968A27AF6DBB9B38829F8866A6C9B2F6D0"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/github\/specta.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FB9FF8AE-D22E-4FDF-BBD5-FDB86E01AB28"
+    }
+  ]
+}

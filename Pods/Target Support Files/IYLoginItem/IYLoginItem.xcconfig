@@ -1,0 +1,1 @@
+IYLOGINITEM_OTHER_LDFLAGS = -framework "CoreServices"

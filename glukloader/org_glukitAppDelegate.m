@@ -543,6 +543,10 @@ static NSImage *_menuBarIcon = nil;
                                    isSticky:NO
                                clickContext:nil];
     [self transmitSyncedData:[event syncData] commitSyncTag:[event syncTag]];
+
+    // Stop and close the sync when complete. This means that we'll wait for a reconnect to reopen
+    [syncManager stop];
+    syncManager = [[SyncManager alloc] init];
 }
 
 - (void)transmitSyncedData:(SyncData *)syncData commitSyncTag:(SyncTag *)syncTag {
