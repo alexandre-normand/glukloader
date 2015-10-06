@@ -430,6 +430,7 @@ static NSImage *_menuBarIcon = nil;
     if (syncManager != nil) {
         NSLog(@"Stopping sync manager...");
         // Get the SyncManager
+        [syncManager unregisterEventListener:self];
         [syncManager stop];
         syncManager = nil;
     }
@@ -512,8 +513,7 @@ static NSImage *_menuBarIcon = nil;
     // Try restarting from a initial sync tag since this might have been caused by a bad
     // reference page due to a receiver reset
     [syncManager stop];
-    syncManager = [[SyncManager alloc] init];
-    [syncManager start:[SyncTag initialSyncTag]];
+    [self startSyncManagerIfAuthenticated];
 }
 
 - (void)syncProgress:(SyncProgressEvent *)event {
@@ -543,10 +543,6 @@ static NSImage *_menuBarIcon = nil;
                                    isSticky:NO
                                clickContext:nil];
     [self transmitSyncedData:[event syncData] commitSyncTag:[event syncTag]];
-
-    // Stop and close the sync when complete. This means that we'll wait for a reconnect to reopen
-    [syncManager stop];
-    syncManager = [[SyncManager alloc] init];
 }
 
 - (void)transmitSyncedData:(SyncData *)syncData commitSyncTag:(SyncTag *)syncTag {
