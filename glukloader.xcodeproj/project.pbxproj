@@ -33,8 +33,8 @@
 		0BD82BF219BD5F9300E9C1FD /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BF119BD5F9300E9C1FD /* NSData+Base64.m */; };
 		0BD82BF519BD5FB600E9C1FD /* b64.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BF419BD5FB600E9C1FD /* b64.m */; };
 		0BD82BF819BD601400E9C1FD /* NSString+PropertyKVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BD82BF719BD601400E9C1FD /* NSString+PropertyKVC.m */; };
-		1E2616FC1BB85DB300953176 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E2616FB1BB85DB300953176 /* Growl.framework */; settings = {ASSET_TAGS = (); }; };
-		1E2616FD1BB85DB300953176 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E2616FB1BB85DB300953176 /* Growl.framework */; settings = {ASSET_TAGS = (); }; };
+		1E2616FC1BB85DB300953176 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E2616FB1BB85DB300953176 /* Growl.framework */; };
+		1E2616FD1BB85DB300953176 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E2616FB1BB85DB300953176 /* Growl.framework */; };
 		1E2616FF1BB8605700953176 /* libMantle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E2616FE1BB8605700953176 /* libMantle.a */; };
 		1EE178BB1BB86500001625E7 /* Growl.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 1E2616FB1BB85DB300953176 /* Growl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7DCB91C198397AB64583582D /* ModelConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCB98CA6644CEC41E81DB1B /* ModelConverter.m */; };
